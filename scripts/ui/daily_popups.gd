@@ -46,7 +46,7 @@ static func open_calendar(on_changed: Callable = Callable()) -> GamePopup:
 			if items.is_empty():
 				return
 			AudioManager.play("reward")
-			ScreenManager.close_modal(p)
+			Popups.close_id("calendar")
 			ChestPopup.show_granted(_t("Day %d reward") % (idx + 1), items, on_changed, "gold")},
 		],
 	})
@@ -132,7 +132,7 @@ static func open_missions(on_changed: Callable = Callable()) -> GamePopup:
 			b.pressed.connect(func() -> void:
 				var contents := DailyManager.claim_mission_chest()
 				if not contents.is_empty():
-					ScreenManager.close_modal(p)
+					Popups.close_id("missions")
 					ChestPopup.open(_t("Mission chest"), contents, "mission_chest", on_changed, "mission"))
 			body.add_child(b)
 			UIKit.pulse.call_deferred(b, 1.04, 1.0)

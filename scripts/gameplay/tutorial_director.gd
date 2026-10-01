@@ -43,7 +43,7 @@ func setup(gameplay: Node, layer: CanvasLayer, level: Dictionary, moves_done: in
 	layer.add_child(hand)
 	var id := String(level.get("tutorial", ""))
 	# The Haat Helper joins the booster bar at its level (generated, no data).
-	if id == "" and int(level.get("level", 0)) == int(GameData.economy().get("helper_from", 60)) and not ProgressionManager.tutorial_done("helper"):
+	if id == "" and int(level.get("level", 0)) >= int(GameData.economy().get("helper_from", 60)) and not level.get("daily", false) and not ProgressionManager.tutorial_done("helper"):
 		id = "helper"
 	if id != "" and not ProgressionManager.tutorial_done(id):
 		step = id

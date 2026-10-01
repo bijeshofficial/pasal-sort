@@ -37,7 +37,7 @@ static func open(home: HomePage) -> GamePopup:
 			b.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 			b.disabled = i == current and home.visiting < 0
 			b.pressed.connect(func() -> void:
-				ScreenManager.close_modal(popup)
+				Popups.close_id("areas")
 				home.visit_area(i))
 			row.add_child(b)
 		list.add_child(card)

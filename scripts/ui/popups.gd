@@ -9,6 +9,15 @@ static func show(spec: Dictionary) -> GamePopup:
 	return p
 
 
+## Closes an open popup by its id. (Button callbacks can't hold the popup
+## variable itself: lambdas capture locals by value when they are created,
+## before Popups.show() has returned it.)
+static func close_id(id: String) -> void:
+	var m := ScreenManager.find_modal(id)
+	if m:
+		ScreenManager.close_modal(m)
+
+
 static func confirm(title: String, body: String, yes_text: String, on_yes: Callable, yes_kind: String = "primary", no_text: String = "Cancel") -> GamePopup:
 	return show({
 		"id": "confirm",

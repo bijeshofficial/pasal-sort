@@ -490,32 +490,6 @@
 			]
 		},
 		{
-			"id": "racer",
-			"title": "Racer",
-			"desc": "Win {n} Bazaar Races",
-			"stat": "race_wins",
-			"tiers": [
-				{
-					"target": 1,
-					"reward": {
-						"coins": 250
-					}
-				},
-				{
-					"target": 5,
-					"reward": {
-						"coins": 625
-					}
-				},
-				{
-					"target": 20,
-					"reward": {
-						"coins": 1000
-					}
-				}
-			]
-		},
-		{
 			"id": "streak_master",
 			"title": "Streak Master",
 			"desc": "Reach a Dami streak of {n}",
@@ -670,32 +644,6 @@
 					"target": 100000,
 					"reward": {
 						"coins": 400
-					}
-				}
-			]
-		},
-		{
-			"id": "festival_fan",
-			"title": "Festival Fan",
-			"desc": "Reach {n} event milestones",
-			"stat": "event_milestones",
-			"tiers": [
-				{
-					"target": 5,
-					"reward": {
-						"coins": 150
-					}
-				},
-				{
-					"target": 15,
-					"reward": {
-						"coins": 375
-					}
-				},
-				{
-					"target": 45,
-					"reward": {
-						"coins": 600
 					}
 				}
 			]

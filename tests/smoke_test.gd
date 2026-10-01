@@ -66,6 +66,7 @@ func _main() -> void:
 	RM = root.get_node("RenovationManager")
 	DM.instant = true
 	IAP.offer_shown_this_session = true
+	IAP.force_store = true
 
 	S.set_save_path(TEST_SAVE)
 	_remove_test_files()
@@ -682,25 +683,11 @@ func _test_ads() -> void:
 	await _wait(0.4)
 	_check(CM.get_coins() == coins0 + 50 and not current_scene.shop.daily_available(), "daily free gift via ad, once per day")
 	SM.close_all_modals()
-	# Interstitial frequency cap.
+	# Rewarded ads only: never an ad break between levels.
 	AD.reset_session_state()
-	AD.on_run_finished()
-	_check(not AD.can_show_interstitial(), "no interstitial on the first run of a session")
-	AD.on_run_finished()
-	AD.on_run_finished()
-	AD.on_run_finished()
-	_check(AD.can_show_interstitial(), "interstitial allowed after N runs")
-	var closed := [false]
-	AD.show_interstitial(func() -> void: closed[0] = true)
-	await _until(func() -> bool: return closed[0], 2.0)
-	_check(closed[0] and not AD.can_show_interstitial(), "interstitial shown, then capped again")
-	AD.reset_session_state()
-	for k in 5:
+	for k in 10:
 		AD.on_run_finished()
-	got[0] = null
-	AD.show_rewarded("x", func(ok: bool) -> void: got[0] = ok)
-	await _until(func() -> bool: return got[0] != null, 2.0)
-	_check(not AD.can_show_interstitial(), "no interstitial right after a rewarded ad")
+	_check(not AD.can_show_interstitial(), "no interstitial ads, ever (rewarded only)")
 
 
 func _test_shop_iap_achievements() -> void:

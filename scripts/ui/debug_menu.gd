@@ -99,7 +99,6 @@ static func _clock(seconds: int) -> void:
 	TimeManager.advance(seconds)
 	LivesManager.tick()
 	DailyManager.roll()
-	EventManager.roll()
 	VFXManager.toast("Clock: %s ahead" % TimeManager.short_duration(int(TimeManager.debug_offset)))
 
 

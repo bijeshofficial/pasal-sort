@@ -277,13 +277,6 @@ func _run() -> void:
 		for k in 6:
 			AL.open_pack("capture")
 		S.data["game"]["album"]["stars"] = 22
-		var EV := root.get_node("EventManager")
-		EV.roll()
-		EV.add_currency(14)
-		var RC := root.get_node("RaceManager")
-		RC.join()
-		root.get_node("TimeManager").advance(3600 * 3)
-		RC.block()["wins"] = 3
 		SM.hub_tab = "home"
 		await _scene("res://scenes/main/hub.tscn", 0.9)
 		await _save("92_home_live")
@@ -298,14 +291,6 @@ func _run() -> void:
 		load("res://scripts/ui/live_popups.gd").open_pack_result(AL.open_pack("capture"))
 		await _wait(1.6)
 		await _save("95_pack")
-		SM.close_all_modals()
-		load("res://scripts/ui/live_popups.gd").open_event()
-		await _wait(0.5)
-		await _save("96_event")
-		SM.close_all_modals()
-		load("res://scripts/ui/live_popups.gd").open_race()
-		await _wait(0.5)
-		await _save("97_race")
 		SM.close_all_modals()
 		root.get_node("TimeManager").debug_offset = 0.0
 		var cat_level := 110

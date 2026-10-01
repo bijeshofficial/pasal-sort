@@ -44,17 +44,16 @@ func build() -> void:
 	rib.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	list.add_child(rib)
 	list.add_child(_daily_card())
-	if IAPManager.is_available("starter_pack"):
-		list.add_child(_offer_card("starter_pack", UIKit.PINK))
-	if IAPManager.is_available("no_ads"):
-		list.add_child(_offer_card("no_ads", UIKit.PURPLE))
-	_section(tr("Coins"))
-	var packs := HBoxContainer.new()
-	packs.add_theme_constant_override("separation", 18)
-	list.add_child(packs)
-	for id in ["coins_small", "coins_medium", "coins_large"]:
-		packs.add_child(_coin_pack_card(GameData.iap_product(id)))
-	list.add_child(_offer_card("booster_chest", UIKit.SECONDARY))
+	if IAPManager.store_enabled():
+		if IAPManager.is_available("starter_pack"):
+			list.add_child(_offer_card("starter_pack", UIKit.PINK))
+		_section(tr("Coins"))
+		var packs := HBoxContainer.new()
+		packs.add_theme_constant_override("separation", 18)
+		list.add_child(packs)
+		for id in ["coins_small", "coins_medium", "coins_large"]:
+			packs.add_child(_coin_pack_card(GameData.iap_product(id)))
+		list.add_child(_offer_card("booster_chest", UIKit.SECONDARY))
 	_section(tr("Boosters"))
 	var grid := GridContainer.new()
 	grid.columns = 2
@@ -74,11 +73,12 @@ func build() -> void:
 		list.add_child(cg)
 		for item in GameData.cosmetics(cat["id"]):
 			cg.add_child(_cosmetic_card(item))
-	var restore := UIKit.button(tr("Restore purchases"), "neutral", "", 34, Vector2(0, 110))
-	restore.pressed.connect(func() -> void:
-		IAPManager.restore_purchases(func(_ok: bool) -> void: VFXManager.toast(tr("Purchases restored"))))
-	list.add_child(UIKit.spacer(10))
-	list.add_child(restore)
+	if IAPManager.store_enabled():
+		var restore := UIKit.button(tr("Restore purchases"), "neutral", "", 34, Vector2(0, 110))
+		restore.pressed.connect(func() -> void:
+			IAPManager.restore_purchases(func(_ok: bool) -> void: VFXManager.toast(tr("Purchases restored"))))
+		list.add_child(UIKit.spacer(10))
+		list.add_child(restore)
 	_refresh_buttons()
 
 
@@ -187,20 +187,22 @@ func _coin_pack_card(p: Dictionary) -> Control:
 	b.pressed.connect(func() -> void:
 		IAPManager.buy(p["id"], func(ok: bool) -> void:
 			if ok:
-				Popups.reward(tr("Test purchase"), "+%d coins" % coins)))
+				Popups.reward(tr("Test purchase"), tr("+%d coins") % coins)))
 	v.add_child(b)
-	v.add_child(UIKit.label("test only", 24, UIKit.INK_SOFT, HORIZONTAL_ALIGNMENT_CENTER, false))
+	v.add_child(UIKit.label(tr("test only"), 24, UIKit.INK_SOFT, HORIZONTAL_ALIGNMENT_CENTER, false))
+	# Every pack gets the same ribbon slot (empty for most), so the three
+	# cards line up exactly; the "Best value" ribbon overlaps its card's top.
+	var holder := VBoxContainer.new()
+	holder.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	holder.add_theme_constant_override("separation", -24)
+	var ribbon := CenterContainer.new()
+	ribbon.custom_minimum_size = Vector2(0, 50)
+	ribbon.z_index = 2
 	if p.has("ribbon"):
-		var holder := VBoxContainer.new()
-		holder.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		holder.add_theme_constant_override("separation", -26)
-		var ribbon := CenterContainer.new()
-		ribbon.z_index = 2
-		ribbon.add_child(UIKit.badge(String(p["ribbon"]), UIKit.DANGER, 28))
-		holder.add_child(ribbon)
-		holder.add_child(card)
-		return holder
-	return card
+		ribbon.add_child(UIKit.badge(tr(String(p["ribbon"])), UIKit.DANGER, 28))
+	holder.add_child(ribbon)
+	holder.add_child(card)
+	return holder
 
 
 func _bundle_card(b: Dictionary) -> Control:

@@ -23,6 +23,12 @@ var drift := 0.0:
 		queue_redraw()
 ## Where the silhouette sits, as a fraction of the height.
 var horizon := 0.8
+## Calm mode (behind the puzzle): a deeper, quieter gradient with no bokeh,
+## sparkles or light pools, so the glass jars and candies stand out.
+var calm := false:
+	set(v):
+		calm = v
+		queue_redraw()
 ## Unused by the game look; kept so older callers still work.
 var wainscot := 0.7
 var window_top := 0.05
@@ -65,10 +71,17 @@ func _draw() -> void:
 	var top := pal("top")
 	var mid := pal("mid")
 	var bottom := pal("bottom")
+	if calm:
+		top = top.darkened(0.35).lerp(Color("1a1440"), 0.25)
+		mid = mid.darkened(0.42).lerp(Color("1a1440"), 0.3)
+		bottom = bottom.darkened(0.5).lerp(Color("1a1440"), 0.35)
 	# Three-stop vertical gradient.
 	var m := h * 0.55
 	draw_polygon(PackedVector2Array([Vector2(0, 0), Vector2(w, 0), Vector2(w, m), Vector2(0, m)]), PackedColorArray([top, top, mid, mid]))
 	draw_polygon(PackedVector2Array([Vector2(0, m), Vector2(w, m), Vector2(w, h), Vector2(0, h)]), PackedColorArray([mid, mid, bottom, bottom]))
+	if calm:
+		_draw_calm(w, h, u)
+		return
 	# Soft light pooling at the top centre.
 	for k in 5:
 		var rr := (520.0 - k * 80.0) * u
@@ -116,6 +129,25 @@ func _draw() -> void:
 		_garland(w, u)
 
 
+## Calm: only a faint skyline at the very bottom and a soft vignette.
+func _draw_calm(w: float, h: float, u: float) -> void:
+	var sil := pal("sil")
+	match String(THEMES[theme_id]["skyline"]):
+		"roofs":
+			_roofs(h * 0.92, w, h, u, 0.0, Color(sil.darkened(0.4), 0.35))
+		_:
+			var pts := PackedVector2Array([Vector2(0, h)])
+			for i in 13:
+				pts.append(Vector2(w * i / 12.0, h * 0.9 - sin(i * 0.8) * 30 * u))
+			pts.append(Vector2(w, h))
+			draw_colored_polygon(pts, Color(sil.darkened(0.4), 0.3))
+	# Vignette: darker edges keep the eye on the jars.
+	for k in 6:
+		var a := 0.05
+		draw_rect(Rect2(0, 0, w * (0.05 + k * 0.012), h), Color(0, 0, 0.05, a))
+		draw_rect(Rect2(w - w * (0.05 + k * 0.012), 0, w * (0.05 + k * 0.012), h), Color(0, 0, 0.05, a))
+
+
 ## Kathmandu-style rooftops: sloped tiled roofs, a few tall Newari houses.
 func _roofs(base_y: float, w: float, h: float, u: float, shift: float, col: Color) -> void:
 	var x := -40.0 * u + shift
@@ -158,6 +190,8 @@ func _garland(w: float, u: float) -> void:
 
 
 func _draw_twinkles() -> void:
+	if calm:
+		return
 	var w := size.x
 	var h := size.y
 	var u := w / 1080.0

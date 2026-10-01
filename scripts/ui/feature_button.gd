@@ -10,6 +10,8 @@ var _dot: Control
 var _label: Label
 var _timer: Label
 var _icon: IconView
+## A number bubble (Tasks: how many you can afford).
+var count_badge: PanelContainer
 
 
 func setup(feature_id: String, icon: String, text: String, fill: Color) -> void:
@@ -39,6 +41,11 @@ func setup(feature_id: String, icon: String, text: String, fill: Color) -> void:
 	_dot.position = Vector2(100, 4)
 	_dot.visible = false
 	add_child(_dot)
+	count_badge = UIKit.badge("0", UIKit.HEART, 30)
+	count_badge.position = Vector2(92, -6)
+	count_badge.visible = false
+	count_badge.z_index = 2
+	add_child(count_badge)
 	pressed.connect(func() -> void:
 		AudioManager.play("button_click")
 		HapticsManager.light()
@@ -53,6 +60,11 @@ func _draw() -> void:
 func set_icon(icon: String) -> void:
 	icon_name = icon
 	_icon.icon = icon
+
+
+func set_count(n: int) -> void:
+	count_badge.visible = n > 0
+	(count_badge.get_child(0) as Label).text = str(n)
 
 
 func set_dot(on: bool) -> void:

@@ -3,7 +3,8 @@ extends Control
 ## Home = the current renovation area. The scene itself (HomeView) is owned
 ## by the Hub and fills the whole screen behind the top bar; this page holds
 ## the overlay: area title + progress, feature icons in two slim side
-## columns, the Tasks button (badge = tasks you can afford) and PLAY.
+## columns (Tasks first on the right, its badge = tasks you can afford) and
+## a full-width PLAY.
 ##
 ## Doing a task: stars fly from the counter to the object -> dust poof ->
 ## style picker -> the object pops in -> a short dialogue -> coins.
@@ -15,7 +16,7 @@ const HintScript := preload("res://scripts/ui/hint_hand.gd")
 var view: HomeView
 var hub: Control
 var play_button: GameButton
-var tasks_button: GameButton
+var tasks_button: FeatureButton
 var tasks_badge: PanelContainer
 var left_col: VBoxContainer
 var right_col: VBoxContainer
@@ -67,21 +68,15 @@ func _ready() -> void:
 	add_feature("calendar", "calendar", "left", tr("Daily"), UIKit.GOLD)
 	add_feature("missions", "tasks", "left", tr("Missions"), UIKit.PRIMARY)
 	add_feature("album", "album", "left", tr("Album"), Color("ff6b9a"))
+	# Tasks leads the right column: the renovation is the reason to play.
+	tasks_button = add_feature("tasks", "brush", "right", tr("Tasks"), UIKit.GOLD)
+	tasks_badge = tasks_button.count_badge
 	add_feature("challenge", "flag", "right", tr("Challenge"), UIKit.PURPLE)
-	add_feature("event", "kite", "right", tr("Event"), UIKit.SECONDARY)
-	add_feature("race", "race", "right", tr("Race"), Color("ff7a3d"))
 	add_feature("star_chest", "chest", "right", tr("Star chest"), UIKit.PINK)
-	# Bottom row: Tasks + PLAY.
+	# Bottom: a full-width PLAY.
 	_bottom = HBoxContainer.new()
 	_bottom.add_theme_constant_override("separation", 24)
 	add_child(_bottom)
-	tasks_button = UIKit.button(tr("Tasks"), "gold", "tasks", 40, Vector2(250, 200))
-	tasks_button.pressed.connect(func() -> void: open_tasks())
-	_bottom.add_child(tasks_button)
-	tasks_badge = UIKit.badge("0", UIKit.HEART, 40)
-	tasks_badge.position = Vector2(180, -26)
-	tasks_badge.z_index = 3
-	tasks_button.add_child(tasks_badge)
 	var play_col := VBoxContainer.new()
 	play_col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	play_col.add_theme_constant_override("separation", 0)
@@ -102,8 +97,6 @@ func _ready() -> void:
 	RenovationManager.task_completed.connect(_on_reno_changed)
 	DailyManager.changed.connect(refresh_features)
 	AlbumManager.changed.connect(refresh_features)
-	EventManager.changed.connect(refresh_features)
-	RaceManager.changed.connect(refresh_features)
 	RenovationManager.style_changed.connect(_on_reno_changed)
 	CurrencyManager.stars_changed.connect(_on_stars_changed)
 	_layout()
@@ -125,8 +118,8 @@ func _layout() -> void:
 	left_col.position = Vector2(26, 170)
 	right_col.reset_size()
 	right_col.position = Vector2(w - right_col.size.x - 26, 170)
-	_bottom.position = Vector2(40, h - 270)
-	_bottom.size = Vector2(w - 80, 254)
+	_bottom.position = Vector2(90, h - 270)
+	_bottom.size = Vector2(w - 180, 254)
 	_back_button.position = Vector2(140, h - 200)
 	_back_button.size = Vector2(w - 280, 150)
 	if view:
@@ -164,10 +157,8 @@ func _on_feature(id: String) -> void:
 			DailyPopups.open_star_chest(refresh)
 		"album":
 			LivePopups.open_album(refresh)
-		"event":
-			LivePopups.open_event(refresh)
-		"race":
-			LivePopups.open_race(refresh)
+		"tasks":
+			open_tasks()
 	feature_pressed.emit(id)
 
 
@@ -187,25 +178,6 @@ func refresh_features() -> void:
 		features["star_chest"].set_dot(n > 0)
 	if features.has("album"):
 		features["album"].set_dot(AlbumManager.has_new() or AlbumManager.claimable_sets() > 0)
-	if features.has("event"):
-		var ev := EventManager.current()
-		features["event"].visible = not ev.is_empty()
-		if not ev.is_empty():
-			var f: FeatureButton = features["event"]
-			if f.icon_name != String(ev["icon"]):
-				f.set_icon(String(ev["icon"]))
-			f.set_dot(EventManager.claimable_count() > 0)
-			f.set_timer(TimeManager.short_duration(TimeManager.seconds_to_week_end()))
-	if features.has("race"):
-		var rf: FeatureButton = features["race"]
-		rf.set_dot(RaceManager.attention())
-		var st := String(RaceManager.block().get("state", "idle"))
-		if st == "running":
-			rf.set_timer("%d/%d" % [RaceManager.player_wins(), RaceManager.goal()])
-		elif not RaceManager.can_join() and st == "idle":
-			rf.set_timer(TimeManager.short_duration(RaceManager.seconds_until_open()))
-		else:
-			rf.set_timer("")
 
 
 func _process(_delta: float) -> void:

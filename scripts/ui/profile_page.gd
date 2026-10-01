@@ -174,8 +174,7 @@ func _pick_avatar() -> void:
 		b.pressed.connect(func() -> void:
 			AudioManager.play("button_click")
 			set_avatar(i)
-			if popup:
-				popup.close())
+			Popups.close_id("avatars"))
 		grid.add_child(b)
 	popup = Popups.show({"id": "avatars", "title": "Choose your avatar", "content": grid, "closable": true})
 

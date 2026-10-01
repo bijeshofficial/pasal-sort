@@ -70,16 +70,11 @@ def from_data():
         for t in diff["tiers"].values(): add(t.get(k))
     daily = load("daily.json")
     for m in daily["missions"]: add(m["text"])
-    ev = load("events.json")
-    for e in ev["events"]:
-        add(e["name"]); add(e["text"]); add(e["currency"])
     al = load("album.json")
     for p in al["shop"]: add(p["name"])
     for s in al["sets"]:
         add(s["name"])
         for st in s["stickers"]: add(st["name"])
-    for r in load("race.json")["rivals"]:
-        add(r["name"]); add(r["shop"])
     for c in load("candies.json")["candies"]: add(c.get("name"))
     adir = os.path.join(ROOT, "data", "areas")
     for f in sorted(os.listdir(adir)):

@@ -76,6 +76,9 @@ func on_run_finished() -> void:
 ## Frequency cap: never on the first run of a session, never right after a
 ## rewarded ad, at most once every N runs and every X seconds.
 func can_show_interstitial() -> bool:
+	# The game only uses rewarded ads; interstitials are off in economy.json.
+	if not bool(GameData.economy().get("interstitial", {}).get("enabled", false)):
+		return false
 	if _showing or IAPManager.has_no_ads():
 		return false
 	if _session_runs <= 1:

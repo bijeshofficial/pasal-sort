@@ -22,8 +22,6 @@ const SYSTEM_BLOCKS := {
 	"daily": "res://scripts/meta/daily_manager.gd",
 	"chests": "res://scripts/meta/chest_manager.gd",
 	"album": "res://scripts/meta/album_manager.gd",
-	"events": "res://scripts/meta/event_manager.gd",
-	"race": "res://scripts/meta/race_manager.gd",
 }
 
 var save_path := "user://save.json"

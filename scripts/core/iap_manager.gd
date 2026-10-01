@@ -11,6 +11,8 @@ signal no_ads_changed(on: bool)
 
 ## Tests skip the confirmation popup.
 var auto_confirm := false
+## Tests and desktop previews: show the paid store on any platform.
+var force_store := false
 ## At most one offer popup per session (never during a level).
 var offer_shown_this_session := false
 
@@ -44,7 +46,18 @@ func is_bought(product_id: String) -> bool:
 
 ## One-time products disappear once bought; the starter pack also waits
 ## for its level.
+## Real-money products only where we can sell (iOS; no Play Store merchant
+## account in Nepal, so Android never shows prices). Rewarded ads stay.
+func store_enabled() -> bool:
+	if force_store or "--store" in OS.get_cmdline_user_args():
+		return true
+	var platforms: Array = GameData.load_json(GameData.IAP).get("store_platforms", ["iOS"])
+	return platforms.has(OS.get_name())
+
+
 func is_available(product_id: String) -> bool:
+	if not store_enabled():
+		return false
 	var p := product(product_id)
 	if p.is_empty():
 		return false
@@ -108,9 +121,7 @@ func grant(product_id: String) -> Array:
 		block()["no_ads"] = true
 		no_ads_changed.emit(true)
 	c.erase("no_ads")
-	if bool(c.get("event_pass", false)):
-		EventManager.buy_pass()
-	c.erase("event_pass")
+
 	var items := Rewards.grant(c, "iap_" + product_id)
 	SaveManager.save_game()
 	purchased.emit(product_id)

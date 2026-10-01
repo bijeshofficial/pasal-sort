@@ -2,7 +2,7 @@ class_name Rewards
 extends RefCounted
 ## Grants a reward bundle from data and describes it for the UI.
 ## Bundle keys: coins, stars, lives, unlimited_lives_min, boosters {id: n},
-## sticker_packs, event_currency. Other systems register extra keys by
+## sticker_packs. Other systems register extra keys by
 ## listening to `granted` (e.g. the sticker album).
 
 ## Applies the bundle. Returns display items: [{icon, text, color, key}].
@@ -36,12 +36,6 @@ static func grant(bundle: Dictionary, source: String = "") -> Array:
 		for k in packs:
 			for s in album.open_pack(source):
 				items.append({"icon": "sticker", "text": String(s["name"]), "color": UIKit.PINK, "key": "sticker", "sticker": s})
-	if Engine.get_main_loop().root.has_node("EventManager"):
-		var ev := int(bundle.get("event_currency", 0))
-		if ev > 0:
-			var em: Node = Engine.get_main_loop().root.get_node("EventManager")
-			em.add_currency(ev)
-			items.append({"icon": em.currency_icon(), "text": "+%d" % ev, "color": UIKit.PURPLE, "key": "event"})
 	SaveManager.save_game()
 	if Engine.get_main_loop().root.has_node("AnalyticsManager"):
 		Engine.get_main_loop().root.get_node("AnalyticsManager").log_event("reward_granted", {"source": source, "items": items.size()})

@@ -1,5 +1,5 @@
 {
-	"_comment": "All economy numbers. Pacing targets (check with the analytics log, Debug > Analytics): a player who never pays or watches ads should (1) never wait for lives more than ~1 in 5 sessions, (2) earn ~1 booster per 3 levels from chests, missions, streaks and events, (3) afford the next renovation task after every 1-2 wins (stars) and keep ~300-600 coins in hand from level 30 on. Offers: max 1 offer popup per session, never during a level.",
+	"_comment": "All economy numbers. Pacing targets (check with the analytics log, Debug > Analytics): a player who never pays or watches ads should (1) never wait for lives more than ~1 in 5 sessions, (2) earn ~1 booster per 3 levels from chests, missions, streaks and events, (3) afford the next renovation task after every 1-2 wins (stars) and keep ~300-600 coins in hand from level 30 on. Ads: rewarded only (interstitial.enabled is false). Offers: max 1 offer popup per session, never during a level.",
 	"starting_coins": 200,
 	"level_reward": 10,
 	"stars_per_win": 1,
@@ -51,6 +51,7 @@
 		"extra_jar": 150
 	},
 	"interstitial": {
+		"enabled": false,
 		"from_level": 20,
 		"every_n_levels": 3,
 		"min_seconds": 120

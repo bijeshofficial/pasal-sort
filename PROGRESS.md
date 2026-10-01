@@ -28,6 +28,13 @@ Read this first at the start of every session. Godot 4.7.2 at
   Save v1 -> v2 migration grants 1 star per completed level and drops the
   old decoration fields.
 
+- 2026-10-02 (user feedback): no interstitial ads, rewarded ads only (No Ads
+  product removed); no real-money products on Android (no Play Store
+  merchant account in Nepal), paid store kept for iOS (`store_platforms` in
+  iap_products.json; `--store` shows it on desktop); weekly events and the
+  Bazaar Race removed; Tasks moved to the right feature column with a full-
+  width PLAY; new bottom nav; calm gameplay background.
+
 ## How it fits together (meta)
 
 - Every win: 1 star + coins (`ProgressionManager.complete_level`).
@@ -63,9 +70,9 @@ Read this first at the start of every session. Godot 4.7.2 at
 - `AnalyticsManager`: JSON lines in user://analytics.log, no personal data.
 - Theme: `assets/ui/game_theme.tres` (built by tools/build_theme.gd) is the
   project-wide fallback; UIKit styles everything in code.
-- Live: `AlbumManager` (`data/album.json`), `EventManager` (`data/events.json`,
-  weekly rotation, Event Pass is an IAP product), `RaceManager`
-  (`data/race.json`, rivals simulated from seeded timetables).
+- Live: `AlbumManager` (`data/album.json`).
+- Popups opened from another popup close it with `Popups.close_id(id)`:
+  lambdas capture locals by value, so a captured popup variable is null.
 - Twists: the cat's route is planned from a known solution (solvable by
   construction) and stored with `solution_moves`; gift boxes are cosmetic for
   the rules; orders and move limits come from `LevelGenerator.decorate`.

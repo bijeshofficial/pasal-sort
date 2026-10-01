@@ -1,7 +1,7 @@
 class_name LivePopups
 extends RefCounted
-## Popups for the live features on Home: the sticker album (sets, pages,
-## sticker shop), pack openings, the weekly event track and the Bazaar Race.
+## Popups for the sticker album on Home: sets, pages, the sticker shop and
+## pack openings.
 
 
 static func _t(s: String) -> String:
@@ -28,7 +28,7 @@ static func open_album(on_changed: Callable = Callable()) -> GamePopup:
 	var p: GamePopup
 	for s in AlbumManager.sets():
 		grid.add_child(_set_tile(s, func() -> void:
-			ScreenManager.close_modal(p)
+			Popups.close_id("album")
 			open_set(String(s["id"]), on_changed)))
 	var scroll := ScrollContainer.new()
 	scroll.custom_minimum_size = Vector2(0, 760)
@@ -46,7 +46,7 @@ static func open_album(on_changed: Callable = Callable()) -> GamePopup:
 		b.pressed.connect(func() -> void:
 			var got := AlbumManager.buy_with_stars(pid)
 			if not got.is_empty():
-				ScreenManager.close_modal(p)
+				Popups.close_id("album")
 				open_pack_result(got, on_changed))
 		shop.add_child(b)
 	body.add_child(shop)
@@ -161,188 +161,3 @@ static func open_pack_result(stickers: Array, on_changed: Callable = Callable())
 		"buttons": [{"id": "ok", "text": _t("Into the album"), "kind": "primary", "icon": "album", "cb": func() -> void:
 			if on_changed.is_valid():
 				on_changed.call()}]})
-
-
-# --- Weekly event ------------------------------------------------------------
-
-static func open_event(on_changed: Callable = Callable()) -> GamePopup:
-	var ev := EventManager.current()
-	if ev.is_empty():
-		return null
-	var col := Color.html(String(ev.get("color", "2f9bff")))
-	var body := VBoxContainer.new()
-	body.add_theme_constant_override("separation", 12)
-	var head := HBoxContainer.new()
-	head.add_theme_constant_override("separation", 16)
-	head.add_child(UIKit.disk(String(ev["icon"]), 130, col, col.darkened(0.35)))
-	var hv := VBoxContainer.new()
-	hv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	var txt := UIKit.label(_t(String(ev.get("text", ""))), 30, UIKit.INK_SOFT, HORIZONTAL_ALIGNMENT_LEFT, false)
-	txt.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	hv.add_child(txt)
-	var timer := UIKit.label("", 30, UIKit.INK, HORIZONTAL_ALIGNMENT_LEFT)
-	hv.add_child(timer)
-	head.add_child(hv)
-	body.add_child(head)
-	body.add_child(UIKit.title(_t("You have %d %s") % [EventManager.currency(), EventManager.currency_name()], 42, col, HORIZONTAL_ALIGNMENT_CENTER, col.darkened(0.5)))
-	var list := VBoxContainer.new()
-	list.add_theme_constant_override("separation", 10)
-	var scroll := ScrollContainer.new()
-	scroll.custom_minimum_size = Vector2(0, 700)
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
-	scroll.add_child(list)
-	list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	body.add_child(scroll)
-	var p: GamePopup
-	var holder := [Callable()]
-	var rebuild := func() -> void:
-		for ch in list.get_children():
-			ch.queue_free()
-		var track: Array = EventManager.track()
-		for i in track.size():
-			list.add_child(_milestone_row(i, track[i], col, func(premium: bool) -> void:
-				var r := EventManager.claim(i, premium)
-				if not r.is_empty():
-					AudioManager.play("reward")
-					VFXManager.toast(Rewards.describe(r))
-					(holder[0] as Callable).call()
-					if on_changed.is_valid():
-						on_changed.call()))
-	holder[0] = rebuild
-	rebuild.call()
-	var buttons: Array = []
-	if not EventManager.has_pass():
-		buttons.append({"id": "pass", "text": _t("Event Pass  %s") % String(GameData.iap_product("event_pass").get("price_label", "")), "kind": "purple", "icon": "flag", "close": false, "cb": func() -> void:
-			IAPManager.buy("event_pass", func(ok: bool) -> void:
-				if ok:
-					ScreenManager.close_modal(p)
-					open_event(on_changed))})
-	p = Popups.show({"id": "event", "title": _t(String(ev["name"])), "content": body, "closable": true, "width": 980, "buttons": buttons})
-	DailyPopups._tick_timer(p, timer, func() -> String: return _t("Ends in %s") % TimeManager.short_duration(TimeManager.seconds_to_week_end()))
-	return p
-
-
-static func _milestone_row(i: int, m: Dictionary, col: Color, on_claim: Callable) -> Control:
-	var reached := EventManager.milestone_reached(i)
-	var card := PanelContainer.new()
-	card.add_theme_stylebox_override("panel", UIKit.card_box(Color("fff6cf") if reached else Color.WHITE, 14, UIKit.LINE))
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 12)
-	card.add_child(row)
-	var num := UIKit.badge(str(int(m["target"])), col if reached else UIKit.DISABLED, 30)
-	num.custom_minimum_size = Vector2(110, 0)
-	row.add_child(num)
-	for premium in [false, true]:
-		var r: Dictionary = m["pass" if premium else "free"]
-		var cell := VBoxContainer.new()
-		cell.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		var l := UIKit.label(Rewards.describe(r), 24, UIKit.INK if not premium else UIKit.PURPLE_EDGE, HORIZONTAL_ALIGNMENT_CENTER, false)
-		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		l.custom_minimum_size = Vector2(260, 0)
-		cell.add_child(l)
-		var claimed: bool = (EventManager.block()["claimed_pass" if premium else "claimed_free"] as Array).has(i)
-		var b: GameButton
-		if claimed:
-			b = UIKit.button("", "neutral", "check", 26, Vector2(0, 80))
-			b.disabled = true
-		elif premium and not EventManager.has_pass():
-			b = UIKit.button(_t("Pass"), "neutral", "lock", 26, Vector2(0, 80))
-			b.disabled = true
-		else:
-			b = UIKit.button(_t("Claim"), "primary" if not premium else "purple", "", 28, Vector2(0, 80))
-			b.disabled = not reached
-			var pr: bool = premium
-			b.pressed.connect(func() -> void: on_claim.call(pr))
-		cell.add_child(b)
-		row.add_child(cell)
-	return card
-
-
-# --- Bazaar Race -------------------------------------------------------------
-
-static func open_race(on_changed: Callable = Callable()) -> GamePopup:
-	RaceManager.update()
-	var body := VBoxContainer.new()
-	body.add_theme_constant_override("separation", 12)
-	var intro := UIKit.label(_t("Race the shopkeepers of the bazaar to %d wins! (They're friendly characters, not real players.)") % RaceManager.goal(), 30, UIKit.INK_SOFT, HORIZONTAL_ALIGNMENT_CENTER, false)
-	intro.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	body.add_child(intro)
-	var st := RaceManager.state()
-	var p: GamePopup
-	var buttons: Array = []
-	if st == "running" or st == "done":
-		for row in RaceManager.standings():
-			body.add_child(_racer_row(row))
-		var timer := UIKit.label("", 30, UIKit.INK)
-		body.add_child(timer)
-		if st == "running":
-			DailyPopups._tick_timer(body, timer, func() -> String: return _t("Race ends in %s") % TimeManager.short_duration(int(float(RaceManager.block()["end"]) - TimeManager.now())))
-		else:
-			var rk := RaceManager.rank()
-			timer.text = (_t("You finished #%d!") % rk) if rk > 0 else _t("The race is over. Better luck next time!")
-			buttons.append({"id": "claim", "text": _t("Collect") if rk >= 1 and rk <= 3 else _t("OK"), "kind": "gold", "icon": "trophy", "cb": func() -> void:
-				var r := RaceManager.claim()
-				if not r.is_empty():
-					Popups.reward(_t("Bazaar Race"), Rewards.describe(r), "trophy")
-				if on_changed.is_valid():
-					on_changed.call()})
-	else:
-		var row := HBoxContainer.new()
-		row.alignment = BoxContainer.ALIGNMENT_CENTER
-		row.add_theme_constant_override("separation", 14)
-		for k in 3:
-			var r := RaceManager.reward_for(k + 1)
-			var v := VBoxContainer.new()
-			v.add_child(UIKit.disk("trophy", 110, [UIKit.GOLD, Color("c9d1d9"), Color("d9884a")][k], [UIKit.GOLD_EDGE, Color("6b7b88"), Color("8a4b20")][k]))
-			var l := UIKit.label(Rewards.describe(r), 24, UIKit.INK, HORIZONTAL_ALIGNMENT_CENTER, false)
-			l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-			l.custom_minimum_size = Vector2(250, 0)
-			v.add_child(l)
-			row.add_child(v)
-		body.add_child(row)
-		if RaceManager.can_join():
-			buttons.append({"id": "join", "text": _t("Join the race"), "kind": "primary", "icon": "race", "cb": func() -> void:
-				RaceManager.join()
-				open_race(on_changed)
-				if on_changed.is_valid():
-					on_changed.call()})
-		else:
-			var timer := UIKit.label("", 32, UIKit.INK)
-			body.add_child(timer)
-			DailyPopups._tick_timer(body, timer, func() -> String: return _t("Next race in %s") % TimeManager.short_duration(RaceManager.seconds_until_open()))
-	p = Popups.show({"id": "race", "title": _t("Bazaar Race"), "content": body, "closable": true, "width": 960, "buttons": buttons})
-	return p
-
-
-static func _racer_row(row: Dictionary) -> Control:
-	var me := bool(row["player"])
-	var card := PanelContainer.new()
-	card.add_theme_stylebox_override("panel", UIKit.card_box(Color("e9f8df") if me else Color.WHITE, 12, UIKit.PRIMARY if me else UIKit.LINE))
-	var h := HBoxContainer.new()
-	h.add_theme_constant_override("separation", 12)
-	card.add_child(h)
-	var av := AvatarView.new()
-	av.index = int(row["avatar"])
-	av.frame = ProgressionManager.selected_cosmetic("frame") if me else "frame_plain"
-	av.custom_minimum_size = Vector2(96, 96)
-	av.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	h.add_child(av)
-	var v := VBoxContainer.new()
-	v.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	v.add_child(UIKit.label("%s  -  %s" % [String(row["name"]), String(row["shop"])], 30, UIKit.INK, HORIZONTAL_ALIGNMENT_LEFT))
-	var wins := int(row["wins"])
-	var goal := RaceManager.goal()
-	var bar := Control.new()
-	bar.custom_minimum_size = Vector2(0, 34)
-	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bar.draw.connect(func() -> void:
-		DrawKit.rrect(bar, Rect2(Vector2.ZERO, bar.size), 17, Color(UIKit.INK, 0.15))
-		var k := float(wins) / goal
-		if k > 0.0:
-			var c := UIKit.PRIMARY if me else UIKit.SECONDARY
-			DrawKit.gradient_fill(bar, DrawKit.rounded_rect(Rect2(Vector2(3, 3), Vector2(maxf(28.0, (bar.size.x - 6) * k), bar.size.y - 6)), 14, 6), c.lightened(0.3), c))
-	v.add_child(bar)
-	h.add_child(v)
-	h.add_child(UIKit.label("%d/%d" % [wins, goal], 34, UIKit.INK))
-	return card

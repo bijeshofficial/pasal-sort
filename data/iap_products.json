@@ -1,5 +1,5 @@
 {
-	"_comment": "Mock store catalogue. contents use the Rewards bundle keys plus no_ads (bool). one_time products can be bought once. price_label is display only: nothing is ever charged.",
+	"_comment": "Mock store catalogue (real money). Only shown on store_platforms (no Play Store merchant account for Nepal, so Android has no paid products). contents use the Rewards bundle keys. one_time products can be bought once. price_label is display only: nothing is ever charged.",
 	"products": [
 		{
 			"id": "coins_small",
@@ -50,17 +50,6 @@
 			}
 		},
 		{
-			"id": "no_ads",
-			"name": "No Ads",
-			"price_label": "$2.99",
-			"one_time": true,
-			"icon": "ad",
-			"contents": {
-				"no_ads": true,
-				"coins": 300
-			}
-		},
-		{
 			"id": "booster_chest",
 			"name": "Booster chest",
 			"price_label": "$1.99",
@@ -73,15 +62,9 @@
 					"helper": 2
 				}
 			}
-		},
-		{
-			"id": "event_pass",
-			"name": "Event Pass",
-			"price_label": "$2.99",
-			"icon": "flag",
-			"contents": {
-				"event_pass": true
-			}
 		}
+	],
+	"store_platforms": [
+		"iOS"
 	]
 }

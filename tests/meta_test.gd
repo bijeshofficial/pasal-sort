@@ -46,6 +46,7 @@ func _main() -> void:
 	AD.mock_duration = 0.05
 	DM.instant = true
 	root.get_node("IAPManager").offer_shown_this_session = true
+	root.get_node("IAPManager").force_store = true
 
 	_test_area_data()
 	_test_story_data()
@@ -70,11 +71,10 @@ func _main() -> void:
 	_test_achievement_tiers()
 	_test_twist_rules()
 	_test_album()
-	_test_events()
-	_test_race()
 	await _test_cat_level_play()
 	await _test_orders_and_move_limit()
 	await _test_polish()
+	await _test_popup_switching()
 	_finish()
 
 
@@ -405,16 +405,15 @@ func _test_iap() -> void:
 	IAP.buy("starter_pack", func(ok: bool) -> void: got[0] = ok)
 	_check(got[0] == true and CM.get_coins() == c0 + 1000 and root.get_node("BoosterManager").count("lucky") >= 2 and LM.unlimited_active(), "starter pack grants coins, boosters and unlimited lives")
 	_check(not IAP.is_available("starter_pack"), "the starter pack is one-time")
-	AD.reset_session_state()
-	for k in 5:
-		AD.on_run_finished()
-	_check(AD.can_show_interstitial(), "interstitials are allowed without No Ads")
-	IAP.buy("no_ads", func(_ok: bool) -> void: pass)
-	_check(IAP.has_no_ads() and not AD.can_show_interstitial(), "No Ads disables interstitials")
+	_check(GameData.iap_product("no_ads").is_empty() and GameData.iap_product("event_pass").is_empty(), "no No Ads or Event Pass products (rewarded ads only, no events)")
 	S.save_game()
 	S.data = {}
 	S.load_game()
-	_check(IAP.has_no_ads() and IAP.is_bought("starter_pack"), "purchases persist")
+	_check(IAP.is_bought("starter_pack"), "purchases persist")
+	# Android: no merchant account in Nepal, so no prices at all.
+	IAP.force_store = false
+	_check(IAP.store_enabled() == (OS.get_name() == "iOS") and not IAP.is_available("coins_small"), "real-money products only on iOS (none on Android)")
+	IAP.force_store = true
 	IAP.auto_confirm = false
 	AD.reset_session_state()
 	TM.debug_offset = 0.0
@@ -701,57 +700,6 @@ func _test_album() -> void:
 	_check(S.game_stat("stickers_unique") == AL.unique_count(), "unique stickers are counted for achievements")
 
 
-func _test_events() -> void:
-	var EV := root.get_node("EventManager")
-	var IAP := root.get_node("IAPManager")
-	_fresh(5)
-	S.game()["time"]["max_seen"] = TM.now()
-	EV.roll()
-	var id0: String = EV.current().get("id", "")
-	_check(id0 != "" and EV.currency() == 0, "a weekly event is running (%s)" % id0)
-	_check(EV.on_win("normal") == 1 and EV.on_win("hard") == 2 and EV.on_win("super") == 3 and EV.currency() == 6, "wins drop event currency (+1, HARD +2, SUPER HARD +3)")
-	_check(EV.can_claim(0, false) and not EV.can_claim(0, true), "milestone 1: free reward yes, pass reward needs the pass")
-	EV.claim(0, false)
-	_check(not EV.can_claim(0, false), "a milestone pays once")
-	IAP.auto_confirm = true
-	IAP.buy("event_pass", func(_ok: bool) -> void: pass)
-	IAP.auto_confirm = false
-	_check(EV.has_pass() and EV.can_claim(0, true), "the Event Pass unlocks the premium track")
-	TM.advance(86400 * 7)
-	EV.roll()
-	_check(String(EV.current().get("id", "")) != id0 and EV.currency() == 0 and not EV.has_pass(), "next week: a new event with fresh progress")
-	TM.debug_offset = 0.0
-	S.game()["time"]["max_seen"] = TM.now()
-
-
-func _test_race() -> void:
-	var RC := root.get_node("RaceManager")
-	var GM := root.get_node("GameManager")
-	_fresh(20)
-	S.game()["time"]["max_seen"] = TM.now()
-	_check(RC.can_join() and RC.join() and RC.state() == "running", "join a Bazaar Race")
-	_check(RC.standings().size() == 5 and not RC.can_join(), "you race 4 shopkeepers; one race at a time")
-	var start: Array = RC.standings().map(func(r): return int(r["wins"]))
-	TM.advance(3600 * 2)
-	var later := 0
-	for row in RC.standings():
-		if not bool(row["player"]):
-			later += int(row["wins"])
-	_check(later > 0, "rivals keep winning while you're away (simulated by their timetable)")
-	TM.debug_offset = 0.0
-	for k in 7:
-		GM.emit_event("win", 1)
-	_check(RC.state() == "done" and RC.rank() == 1, "7 quick wins: you finish first")
-	var c0: int = CM.get_coins()
-	var r: Dictionary = RC.claim()
-	_check(int(r.get("coins", 0)) == 300 and CM.get_coins() >= c0 + 300 and S.game_stat("race_wins") == 1, "1st place reward and a Racer win")
-	_check(not RC.can_join() and RC.seconds_until_open() > 0, "the next race opens after a cooldown")
-	TM.advance(3600 * 4)
-	_check(RC.can_join(), "...a few hours later")
-	TM.debug_offset = 0.0
-	S.game()["time"]["max_seen"] = TM.now()
-
-
 ## A generated cat level, played through Gameplay with its planned solution.
 func _test_cat_level_play() -> void:
 	var n := 110
@@ -858,6 +806,50 @@ func _test_polish() -> void:
 	SM.close_all_modals()
 	_check(String(ProjectSettings.get_setting("gui/theme/custom", "")) == "res://assets/ui/game_theme.tres" and ResourceLoader.exists("res://assets/ui/game_theme.tres"), "a project-wide game theme is set")
 	_check(int(ProjectSettings.get_setting("display/window/handheld/orientation", 0)) == 1 and String(ProjectSettings.get_setting("display/window/stretch/aspect", "")) == "expand", "portrait, stretch aspect expand")
+
+
+## Opening one popup from another must replace it, not stack under it
+## (the old popup used to stay behind with its ribbon showing through).
+func _test_popup_switching() -> void:
+	SM.close_all_modals()
+	var LP = load("res://scripts/ui/live_popups.gd")
+	LP.open_album()
+	await _wait(0.2)
+	var album: Node = SM.find_modal("album")
+	var tile: Node = null
+	for n in album.find_children("*", "Button", true, false):
+		if n.get_child_count() > 0 and n.custom_minimum_size == Vector2(420, 230):
+			tile = n
+			break
+	_check(tile != null, "album shows set tiles")
+	if tile:
+		tile.pressed.emit()
+	await _wait(0.2)
+	_check(SM.modal_count() == 1 and SM.find_modal("album_set") != null and SM.find_modal("album") == null, "opening a set replaces the album (one popup, one ribbon)")
+	SM.find_modal("album_set").press("back")
+	await _wait(0.2)
+	_check(SM.modal_count() == 1 and SM.find_modal("album") != null, "Back returns to a single album")
+	SM.find_modal("album").on_back()
+	await _wait(0.2)
+	_check(SM.modal_count() == 0, "closing the album really closes it")
+	# Missions: opening the chest closes the missions popup.
+	_fresh(5)
+	S.game()["time"]["max_seen"] = TM.now()
+	var DY := root.get_node("DailyManager")
+	DY.roll()
+	S.game()["daily"]["points"] = 30
+	load("res://scripts/ui/daily_popups.gd").open_missions()
+	await _wait(0.2)
+	var chest_btn: Node = null
+	for n in SM.find_modal("missions").find_children("*", "Button", true, false):
+		if n.has_method("get_label") and String(n.get_label()).contains("chest"):
+			chest_btn = n
+	var found := chest_btn != null
+	if chest_btn:
+		chest_btn.pressed.emit()
+	await _wait(0.3)
+	_check(found and SM.find_modal("missions") == null and SM.find_modal("chest") != null, "opening the mission chest closes the missions popup")
+	SM.close_all_modals()
 
 
 # --- Helpers -----------------------------------------------------------------

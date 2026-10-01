@@ -90,6 +90,7 @@ func _ready() -> void:
 	backdrop = ShopBackdrop.new()
 	backdrop.theme_id = ProgressionManager.selected_cosmetic("theme")
 	backdrop.horizon = 0.86
+	backdrop.calm = true
 	backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	bg_layer.add_child(backdrop)
 
@@ -621,7 +622,7 @@ func _pick_helper_type() -> void:
 			DrawKit.glossy_rrect(b, Rect2(Vector2(6, 6), b.size - Vector2(12, 12)), 30, Color.WHITE, UIKit.LINE.darkened(0.1), 0.0, 4.0, 8.0, true)
 			CandyArt.draw_candy(b, b.size * 0.5 - Vector2(0, 6), 120, tt))
 		b.pressed.connect(func() -> void:
-			ScreenManager.close_modal(popup)
+			Popups.close_id("helper")
 			apply_helper(tt))
 		grid.add_child(b)
 	popup = Popups.show({"id": "helper", "title": tr("Haat Helper"), "art": "basket", "art_color": UIKit.GOLD, "body": tr("Which candy should the helper gather?"), "content": grid, "closable": true})
@@ -949,7 +950,6 @@ func _win(delay: float) -> void:
 		_summary["dami"] = StreakManager.dami()
 		_summary["milestone"] = ChestManager.level_chest_due(level)
 		_summary["order_bonus"] = order_bonus
-		_summary["event"] = EventManager.on_win(String(_summary.get("tier", "normal")))
 		var tier := String(_summary.get("tier", "normal"))
 		GameManager.emit_event("win")
 		if tier == "hard" or tier == "super":
@@ -1072,12 +1072,8 @@ func continue_next() -> void:
 	if not LivesManager.can_play(next):
 		Popups.lives(true, continue_next)
 		return
-	var go := func() -> void: HomePage.start_next_level()
-	var from := int(GameData.economy().get("interstitial", {}).get("from_level", 20))
-	if level > from and AdManager.can_show_interstitial():
-		AdManager.show_interstitial(go)
-	else:
-		go.call()
+	# No ad breaks between levels: only rewarded ads the player chooses.
+	HomePage.start_next_level()
 
 
 # --- In-progress save --------------------------------------------------------
@@ -1148,7 +1144,6 @@ func _clear_progress() -> void:
 
 func _process(delta: float) -> void:
 	_t += delta
-	backdrop.drift = sin(_t * 0.25)
 	if _save_timer > 0.0:
 		_save_timer -= delta
 		if _save_timer <= 0.0:
