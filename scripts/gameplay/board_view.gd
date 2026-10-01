@@ -25,6 +25,10 @@ var skin: Dictionary = {}
 var wrapper_style := "classic"
 
 var fly_layer: Node2D
+## Biralo (cat paw twist), sitting on the jar the Board says.
+var cat_node: Node2D
+var cat_jar := -1
+var _cat_t := 0.0
 var _jar_layer: Node2D
 var _rows: Array = []            # [{y, x0, x1}]
 var _busy_until := 0.0
@@ -39,6 +43,12 @@ func _init() -> void:
 	fly_layer.name = "Flying"
 	fly_layer.z_index = 20
 	add_child(fly_layer)
+	cat_node = Node2D.new()
+	cat_node.name = "Cat"
+	cat_node.z_index = 15
+	cat_node.visible = false
+	cat_node.draw.connect(_draw_cat)
+	add_child(cat_node)
 
 
 func build(b: Board, rect: Rect2, skin_data: Dictionary, style: String, intro: bool = true) -> void:
@@ -54,6 +64,7 @@ func build(b: Board, rect: Rect2, skin_data: Dictionary, style: String, intro: b
 		_create_jar(i)
 	layout(false)
 	sync_all()
+	sync_cat()
 	if intro:
 		_intro()
 
@@ -85,7 +96,7 @@ func layout(animate: bool = true) -> void:
 	var per_row := ceili(float(n) / rows)
 	var max_slots := 4
 	for i in n:
-		max_slots = maxi(max_slots, int(board.caps[i]))
+		max_slots = maxi(max_slots, int(board.caps[i]) + (1 if bool(board.gifts[i]) else 0))
 	var gap := 22.0
 	var by_width := (area.size.x - gap * (per_row + 1)) / per_row
 	# Jar height ~ width * (0.42 + 0.64 * slots); keep head-room for lifts/lids.
@@ -108,7 +119,11 @@ func layout(animate: bool = true) -> void:
 		_rows.append({"y": y, "x0": x0 - jar_width * 0.5 - 30.0, "x1": x0 + pitch * (count - 1) + jar_width * 0.5 + 30.0})
 		for k in count:
 			var j := jars[idx]
-			j.setup(jar_width, int(board.caps[idx]), skin)
+			j.gift_slots = 1 if bool(board.gifts[idx]) and not board.is_done(idx) else 0
+			if bool(board.gifts[idx]) and board.is_done(idx):
+				j.gift_slots = 1
+				j.gift_open = 1.0
+			j.setup(jar_width, int(board.caps[idx]) + j.gift_slots, skin)
 			var pos := Vector2(x0 + pitch * k, y)
 			if animate:
 				j.move_home(pos)
@@ -136,6 +151,9 @@ func _restack(i: int, animate: bool) -> void:
 
 
 func _process(delta: float) -> void:
+	if cat_node.visible:
+		_cat_t += delta
+		cat_node.queue_redraw()
 	_glint_t -= delta
 	if _glint_t <= 0.0 and not jars.is_empty():
 		_glint_t = randf_range(2.0, 4.0)
@@ -224,6 +242,8 @@ func sync_jar(i: int) -> void:
 func sync_all() -> void:
 	for i in jars.size():
 		sync_jar(i)
+	if cat_node.visible or (board and board.cat_jar() >= 0):
+		sync_cat()
 
 
 func _sync_jar_state(i: int, animate: bool) -> void:
@@ -307,6 +327,17 @@ func animate_move(a: int, b: int, result: Dictionary) -> float:
 					top.reveal()
 					AudioManager.play("reveal"))
 	var dur := start + POUR_STEP * (n - 1) + DROP_TIME + 0.05
+	if bool(result.get("gift", false)):
+		var jg := jars[b]
+		_after(dur + 0.35, func() -> void:
+			jg.open_gift()
+			AudioManager.play("chest_open", 1.2, -4.0)
+			VFXManager.sparkle(fly_layer, jg.to_global(jg.slot_position(-1)), Color("ff6b9a"), 1.6))
+		dur += 0.3
+	var cat_to := int(result.get("cat_to", -1))
+	if cat_to >= 0 and cat_to != int(result.get("cat_from", -1)):
+		_after(dur + 0.1, move_cat.bind(cat_to))
+		dur += 0.45
 	var unsealed: Array = result.get("unsealed", [])
 	if not unsealed.is_empty():
 		_after(dur + 0.35, func() -> void:
@@ -464,7 +495,52 @@ func animate_undo(a: int, b: int, count: int) -> float:
 	refresh_states(false)
 	var dur := FLY_TIME + STAGGER * n + 0.1
 	_after(dur, sync_all)
+	if board.cat_jar() != cat_jar:
+		_after(0.1, move_cat.bind(board.cat_jar()))
 	return dur
+
+
+# --- The cat (Biralo) --------------------------------------------------------
+
+func _cat_unit() -> float:
+	return jar_width / 420.0
+
+
+func _cat_spot(i: int) -> Vector2:
+	var j := jars[i]
+	return j.home_position + Vector2(0, -j.total_height() + jar_width * 0.06)
+
+
+## Puts the cat on its jar instantly (build, resume, undo after a sync).
+func sync_cat() -> void:
+	cat_jar = board.cat_jar() if board else -1
+	cat_node.visible = cat_jar >= 0 and cat_jar < jars.size()
+	if cat_node.visible:
+		cat_node.position = _cat_spot(cat_jar)
+	refresh_states(false)
+
+
+## Biralo hops along an arc to another jar.
+func move_cat(to: int) -> void:
+	if to < 0 or to >= jars.size():
+		sync_cat()
+		return
+	var from := cat_node.position
+	var dest := _cat_spot(to)
+	cat_jar = to
+	cat_node.visible = true
+	AudioManager.play("pop", 0.8)
+	var tw := create_tween()
+	tw.tween_method(func(t: float) -> void:
+		cat_node.position = from.lerp(dest, t) + Vector2(0, -sin(t * PI) * jar_width * 1.2), 0.0, 1.0, 0.42).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tw.tween_callback(func() -> void:
+		refresh_states(true)
+		jars[to].bounce(1.05))
+
+
+func _draw_cat() -> void:
+	var blink := 1.0 if fmod(_cat_t, 3.7) < 0.12 else 0.0
+	CharacterArt.draw_cat(cat_node, Vector2.ZERO, _cat_unit(), "happy" if fmod(_cat_t, 6.0) < 1.5 else "neutral", _cat_t, blink)
 
 
 # --- Boosters ----------------------------------------------------------------

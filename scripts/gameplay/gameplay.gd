@@ -52,6 +52,17 @@ var second_chance_used := false
 var _lucky_move: Array = []
 var _lucky_t := 0.0
 var _trunk_ready := false
+## Move-limit levels: moves used (undo gives one back) and the +5 offer.
+var move_limit := 0
+var moves_used := 0
+var moves_offer_used := false
+var moves_label: Label
+## Customer orders: [{type, patience, bonus, state: waiting|filled|left, left}]
+var orders: Array = []
+var order_cards: HBoxContainer
+## Gift box jars already paid out (undo never pays twice).
+var gifts_paid: Array = []
+var order_bonus := 0
 
 
 func _ready() -> void:
@@ -91,12 +102,20 @@ func _ready() -> void:
 	_build_top_bar(insets)
 	_build_booster_bar(vp, insets)
 
+	move_limit = int(level_data.get("move_limit", 0))
 	var restored := _try_resume()
 	var pre := ProgressionManager.take_pre_boosters()
 	if not restored:
 		board = Board.from_level(level_data)
 		_apply_pre_boosters(pre)
-	var top := insets.x + 230.0
+		orders = []
+		for o in level_data.get("orders", []):
+			var c: Dictionary = (o as Dictionary).duplicate()
+			c["state"] = "waiting"
+			c["left"] = int(c.get("patience", 3))
+			orders.append(c)
+	_build_level_hud(insets)
+	var top := insets.x + (330.0 if (move_limit > 0 or not orders.is_empty()) else 230.0)
 	var bottom := insets.y + 330.0
 	var area := Rect2(24, top, vp.x - 48, vp.y - top - bottom)
 	view.build(board, area, ProgressionManager.selected_cosmetic_data("jar"), String(ProgressionManager.selected_cosmetic_data("wrapper").get("style", "classic")))
@@ -222,16 +241,117 @@ func _build_booster_bar(vp: Vector2, insets: Vector2) -> void:
 	hud.add_child(strip)
 	var row := HBoxContainer.new()
 	row.alignment = BoxContainer.ALIGNMENT_CENTER
-	row.add_theme_constant_override("separation", 60)
+	row.add_theme_constant_override("separation", 60 if BoosterManager.bar_ids().size() <= 3 else 22)
 	row.position = Vector2(0, vp.y - insets.y - 290)
 	row.size = Vector2(vp.x, 260)
 	hud.add_child(row)
-	for id in BoosterManager.IDS:
+	for id in BoosterManager.bar_ids():
 		var b := BoosterButton.new()
 		b.setup(id)
 		b.pressed.connect(func() -> void: use_booster(id))
 		row.add_child(b)
 		booster_buttons[id] = b
+
+
+## Moves left (move-limit levels) and customer order cards under the title.
+func _build_level_hud(insets: Vector2) -> void:
+	var vp := get_viewport_rect().size
+	if move_limit > 0:
+		var pill := PanelContainer.new()
+		var sb := UIKit.chip_box(10)
+		sb.content_margin_left = 28
+		sb.content_margin_right = 28
+		pill.add_theme_stylebox_override("panel", sb)
+		pill.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 10)
+		pill.add_child(row)
+		row.add_child(UIKit.icon("moves", 56, UIKit.DANGER))
+		moves_label = UIKit.title("", 46)
+		row.add_child(moves_label)
+		hud.add_child(pill)
+		pill.position = Vector2(vp.x * 0.5 - 150, insets.x + 196)
+		pill.size = Vector2(300, 80)
+		_update_moves()
+	if not orders.is_empty():
+		order_cards = HBoxContainer.new()
+		order_cards.alignment = BoxContainer.ALIGNMENT_CENTER
+		order_cards.add_theme_constant_override("separation", 18)
+		order_cards.position = Vector2(0, insets.x + 190)
+		order_cards.size = Vector2(vp.x, 120)
+		order_cards.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		hud.add_child(order_cards)
+		_refresh_orders()
+
+
+func _update_moves() -> void:
+	if moves_label:
+		var left := move_limit - moves_used
+		moves_label.text = tr("%d moves") % left
+		moves_label.add_theme_color_override("font_color", Color("ff6b6b") if left <= 3 else Color.WHITE)
+		if left <= 3:
+			UIKit.bounce(moves_label, 1.15)
+
+
+func _refresh_orders() -> void:
+	if order_cards == null:
+		return
+	for c in order_cards.get_children():
+		c.queue_free()
+	for o in orders:
+		order_cards.add_child(_order_card(o))
+
+
+## A customer card: who's asking, the candy, patience dots, the bonus.
+func _order_card(o: Dictionary) -> Control:
+	var st := String(o.get("state", "waiting"))
+	var c := Control.new()
+	c.custom_minimum_size = Vector2(230, 120)
+	c.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var t := int(o["type"])
+	var who: String = ["sunita", "kanchha", "bhai"][t % 3]
+	c.draw.connect(func() -> void:
+		var r := Rect2(Vector2(4, 4), c.size - Vector2(8, 8))
+		var base := Color.WHITE if st == "waiting" else (Color("c9f2b5") if st == "filled" else Color("d6d2e6"))
+		DrawKit.glossy_rrect(c, r, 24, base, UIKit.PRIMARY_EDGE if st == "filled" else UIKit.LINE.darkened(0.1), 0.0, 4.0, 8.0, true)
+		CharacterArt.draw(c, who, Vector2(48, 112), 0.16, "happy" if st == "filled" else ("grumpy" if st == "left" else "neutral"), 0.0)
+		CandyArt.draw_candy(c, Vector2(128, 54), 70, t)
+		if st == "waiting":
+			for k in int(o.get("left", 0)):
+				c.draw_circle(Vector2(102 + k * 18, 100), 6, UIKit.GOLD_EDGE, true, -1.0, true)
+		var f := UIKit.font(true)
+		var txt := "+%d" % int(o.get("bonus", 5)) if st != "left" else "x"
+		c.draw_string_outline(f, Vector2(168, 70), txt, HORIZONTAL_ALIGNMENT_LEFT, -1, 34, 6, UIKit.OUTLINE)
+		c.draw_string(f, Vector2(168, 70), txt, HORIZONTAL_ALIGNMENT_LEFT, -1, 34, UIKit.GOLD if st != "left" else Color.WHITE)
+		if st == "filled":
+			c.draw_circle(Vector2(200, 28), 18, UIKit.PRIMARY, true, -1.0, true)
+			c.draw_polyline(PackedVector2Array([Vector2(191, 28), Vector2(198, 35), Vector2(210, 21)]), Color.WHITE, 5.0, true))
+	return c
+
+
+## A jar of `type` was just completed: serve a waiting customer (bonus
+## coins) or make the others a little less patient.
+func _on_jar_completed(type: int) -> void:
+	if orders.is_empty():
+		return
+	var served := false
+	for o in orders:
+		if String(o["state"]) == "waiting" and int(o["type"]) == type and not served:
+			o["state"] = "filled"
+			served = true
+			var bonus := int(o.get("bonus", 5))
+			CurrencyManager.add_coins(bonus, false)
+			order_bonus += bonus
+			SaveManager.add_game_stat("orders_filled")
+			GameManager.emit_event("order")
+			AudioManager.play("coin_pickup")
+			VFXManager.toast(tr("Order filled! +%d coins") % bonus)
+	for o in orders:
+		if String(o["state"]) == "waiting" and not (served and int(o["type"]) == type):
+			o["left"] = int(o["left"]) - 1
+			if int(o["left"]) <= 0:
+				o["state"] = "left"
+	_refresh_orders()
 
 
 func hint_text_y() -> float:
@@ -318,11 +438,17 @@ func do_move(a: int, b: int) -> void:
 		return
 	history.append({"board": snapshot, "move": [a, b], "count": result["count"], "completed": result["completed"]})
 	moves += 1
+	moves_used += 1
+	_update_moves()
 	SaveManager.add_game_stat("candies_moved", int(result["count"]))
 	GameManager.emit_event("candies", int(result["count"]))
 	if result["completed"]:
 		SaveManager.add_game_stat("jars_filled")
 		GameManager.emit_event("jar")
+		_on_jar_completed(int(result["type"]))
+		if bool(result.get("gift", false)) and not gifts_paid.has(b):
+			gifts_paid.append(b)
+			_pay_gift(b)
 	var dur := view.animate_move(a, b, result)
 	tutorial.on_move(a, b, before)
 	if lucky_left > 0:
@@ -334,7 +460,62 @@ func do_move(a: int, b: int) -> void:
 	if result["won"]:
 		_win(dur)
 		return
+	if move_limit > 0 and moves_used >= move_limit:
+		_after(dur + 0.2, out_of_moves)
+		return
 	_after(dur + 0.15, _check_stuck)
+
+
+## Gift box: a small reward when its jar is completed.
+func _pay_gift(jar: int) -> void:
+	var table: Array = GameData.economy().get("gift_box", [{"coins": 15}])
+	var reward: Dictionary = table[posmod(level * 7 + jar, table.size())]
+	var items := Rewards.grant(reward, "gift_box")
+	if not items.is_empty():
+		_after(0.9, func() -> void: VFXManager.toast(tr("Gift box: %s") % Rewards.describe(reward)))
+
+
+## Move limit reached: "So close!" offers +5 moves once, else the level fails.
+func out_of_moves() -> void:
+	if state != State.PLAYING or board.is_won():
+		return
+	var cfg: Dictionary = GameData.economy().get("fail_offers", {})
+	var price := int(cfg.get("moves", 200))
+	var extra := int(cfg.get("moves_amount", 5))
+	if moves_offer_used:
+		confirm_fail()
+		return
+	Popups.show({
+		"id": "out_of_moves",
+		"title": tr("Out of moves!"),
+		"art": func(c: Control) -> void: CharacterArt.draw(c, "maya", Vector2(c.size.x * 0.5, c.size.y), 0.6, "worried", 0.0),
+		"art_size": 260,
+		"body": tr("So close! Keep going with %d more moves?") % extra,
+		"vertical": true,
+		"buttons": [
+			{"id": "coins", "text": tr("+%d moves  %d") % [extra, price], "kind": "gold", "icon": "coin", "disabled": not CurrencyManager.can_afford(price), "cb": func() -> void:
+				if CurrencyManager.spend(price):
+					SaveManager.save_game()
+					_add_moves(extra)},
+			{"id": "ad", "text": tr("+%d moves  (Watch ad)") % extra, "kind": "secondary", "icon": "ad", "cb": func() -> void:
+				AdManager.show_rewarded("revive", func(ok: bool) -> void:
+					if ok:
+						_add_moves(extra)
+					else:
+						VFXManager.toast(tr("Ad not available right now"))
+						confirm_fail())},
+			{"id": "give_up", "text": tr("Give up  (-1 life)") if LivesManager.level_costs_life(level) else tr("Start over"), "kind": "danger", "cb": confirm_fail},
+		],
+		"on_back": confirm_fail,
+	})
+
+
+func _add_moves(n: int) -> void:
+	moves_offer_used = true
+	move_limit += n
+	_update_moves()
+	_queue_save()
+	VFXManager.toast(tr("+%d moves!") % n)
 
 
 func _check_stuck() -> void:
@@ -368,8 +549,17 @@ func use_booster(id: String, free: bool = false) -> bool:
 				return false
 		"shuffle":
 			if board.shuffle_jars().size() < 2:
-				VFXManager.toast("Nothing left to shuffle")
+				VFXManager.toast(tr("Nothing left to shuffle"))
 				return false
+		"helper":
+			if not _has_free_empty_jar():
+				VFXManager.toast(tr("The Haat Helper needs an empty jar"))
+				return false
+			if board.top_types().is_empty():
+				return false
+	if id == "helper" and not free and BoosterManager.count(id) > 0:
+		_pick_helper_type()
+		return true
 	if not free:
 		if BoosterManager.count(id) <= 0:
 			Popups.buy_booster(id, func() -> void: use_booster(id))
@@ -392,9 +582,93 @@ func use_booster(id: String, free: bool = false) -> bool:
 				if not free:
 					BoosterManager.grant(id, 1)
 				return false
+		"helper":
+			_pick_helper_type()
+			return true
 	tutorial.on_booster(id)
 	_stuck_shown = false
 	_queue_save()
+	return true
+
+
+func _has_free_empty_jar() -> bool:
+	for i in board.jar_count():
+		if board.size_of(i) == 0 and not board.is_sealed(i):
+			return true
+	return false
+
+
+## Haat Helper: pick a candy; the helper gathers it from the jar tops.
+func _pick_helper_type() -> void:
+	var row := HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", 16)
+	var grid := GridContainer.new()
+	grid.columns = 4
+	grid.add_theme_constant_override("h_separation", 16)
+	grid.add_theme_constant_override("v_separation", 16)
+	var popup: GamePopup
+	for t in board.top_types():
+		var b := Button.new()
+		b.flat = true
+		b.focus_mode = Control.FOCUS_NONE
+		b.custom_minimum_size = Vector2(170, 170)
+		for st in ["normal", "hover", "pressed", "focus"]:
+			b.add_theme_stylebox_override(st, StyleBoxEmpty.new())
+		var tt: int = t
+		b.draw.connect(func() -> void:
+			DrawKit.glossy_rrect(b, Rect2(Vector2(6, 6), b.size - Vector2(12, 12)), 30, Color.WHITE, UIKit.LINE.darkened(0.1), 0.0, 4.0, 8.0, true)
+			CandyArt.draw_candy(b, b.size * 0.5 - Vector2(0, 6), 120, tt))
+		b.pressed.connect(func() -> void:
+			ScreenManager.close_modal(popup)
+			apply_helper(tt))
+		grid.add_child(b)
+	popup = Popups.show({"id": "helper", "title": tr("Haat Helper"), "art": "basket", "art_color": UIKit.GOLD, "body": tr("Which candy should the helper gather?"), "content": grid, "closable": true})
+
+
+## Gathers `type` into an empty jar (one undo step, not a move).
+func apply_helper(type: int) -> bool:
+	var mvs := board.helper_moves(type)
+	if mvs.is_empty():
+		VFXManager.toast(tr("Nothing to gather"))
+		return false
+	if BoosterManager.count("helper") > 0:
+		BoosterManager.consume("helper")
+	else:
+		SaveManager.add_game_stat("boosters_used")
+	boosters_used = true
+	SaveManager.add_game_stat("helper_used")
+	GameManager.emit_event("booster")
+	GameManager.emit_event("helper")
+	_deselect()
+	var snapshot := board.to_dict()
+	state = State.BUSY
+	var delay := 0.0
+	var won := false
+	for mv in mvs:
+		var a := int(mv[0])
+		var b := int(mv[1])
+		var result := board.apply_move(a, b)
+		board.move_count -= 1
+		result["cat_to"] = result.get("cat_from", -1)
+		if result["completed"]:
+			SaveManager.add_game_stat("jars_filled")
+			GameManager.emit_event("jar")
+			_on_jar_completed(int(result["type"]))
+		_after(delay, view.animate_move.bind(a, b, result))
+		delay += 0.45
+		won = bool(result["won"])
+	history.append({"board": snapshot, "move": [-1, -1], "count": 0, "helper": true})
+	AudioManager.play("reward")
+	_queue_save()
+	_after(delay + 0.5, func() -> void:
+		view.sync_all()
+		if won:
+			state = State.PLAYING
+			_win(0.1)
+		elif state == State.BUSY:
+			state = State.PLAYING
+			_check_stuck())
 	return true
 
 
@@ -404,6 +678,12 @@ func _apply_undo() -> void:
 		SaveManager.add_game_stat("jars_filled", -1)
 	board = Board.from_level(e["board"])
 	view.board = board
+	if bool(e.get("helper", false)):
+		view.sync_all()
+		AudioManager.play("undo")
+		return
+	moves_used = maxi(0, moves_used - 1)
+	_update_moves()
 	var mv: Array = e["move"]
 	view.animate_undo(int(mv[0]), int(mv[1]), int(e["count"]))
 	AudioManager.play("undo")
@@ -525,7 +805,7 @@ func confirm_fail() -> void:
 	AudioManager.play("failure")
 	HapticsManager.heavy()
 	AdManager.on_run_finished()
-	_log("level_fail", {"level": level, "reason": "give_up", "moves": moves})
+	_log("level_fail", {"level": level, "reason": "out_of_moves" if move_limit > 0 and moves_used >= move_limit else "give_up", "moves": moves})
 	var p := Popups.show({
 		"id": "failed",
 		"title": tr("Level failed"),
@@ -655,6 +935,7 @@ func _win(delay: float) -> void:
 		_trunk_ready = StreakManager.on_win()
 		_summary["dami"] = StreakManager.dami()
 		_summary["milestone"] = ChestManager.level_chest_due(level)
+		_summary["order_bonus"] = order_bonus
 		var tier := String(_summary.get("tier", "normal"))
 		GameManager.emit_event("win")
 		if tier == "hard" or tier == "super":
@@ -801,6 +1082,11 @@ func _try_resume() -> bool:
 	pre_applied = ip.get("pre_applied", [])
 	lucky_left = int(ip.get("lucky_left", 0))
 	second_chance_used = bool(ip.get("second_chance_used", false))
+	moves_used = int(ip.get("moves_used", moves))
+	move_limit = int(ip.get("move_limit", move_limit))
+	moves_offer_used = bool(ip.get("moves_offer_used", false))
+	orders = ip.get("orders", [])
+	gifts_paid = ip.get("gifts_paid", [])
 	resumed = moves > 0
 	return true
 
@@ -818,6 +1104,11 @@ func _in_progress() -> Dictionary:
 		"pre_applied": pre_applied.duplicate(),
 		"lucky_left": lucky_left,
 		"second_chance_used": second_chance_used,
+		"moves_used": moves_used,
+		"move_limit": move_limit,
+		"moves_offer_used": moves_offer_used,
+		"orders": orders.duplicate(true),
+		"gifts_paid": gifts_paid.duplicate(),
 	}
 
 

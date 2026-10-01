@@ -42,6 +42,9 @@ func setup(gameplay: Node, layer: CanvasLayer, level: Dictionary, moves_done: in
 	hand.z_index = 30
 	layer.add_child(hand)
 	var id := String(level.get("tutorial", ""))
+	# The Haat Helper joins the booster bar at its level (generated, no data).
+	if id == "" and int(level.get("level", 0)) == int(GameData.economy().get("helper_from", 60)) and not ProgressionManager.tutorial_done("helper"):
+		id = "helper"
 	if id != "" and not ProgressionManager.tutorial_done(id):
 		step = id
 		if id == "tap":
@@ -75,6 +78,13 @@ func start() -> void:
 				VFXManager.toast("%d free Shuffles!" % n)
 			say("All mixed up? Try a Shuffle.")
 			game.booster_buttons["shuffle"].start_pulse()
+		"helper":
+			var n := BoosterManager.grant_tutorial("helper")
+			if n > 0:
+				VFXManager.toast(tr("New: the Haat Helper! %d free") % n)
+			say(tr("The Haat Helper gathers one candy for you."))
+			if game.booster_buttons.has("helper"):
+				game.booster_buttons["helper"].start_pulse()
 
 
 func is_active() -> bool:
@@ -120,9 +130,10 @@ func on_move(a: int, b: int, board_before: Board) -> void:
 				_undo_hinted = true
 				say("Oops? Tap Undo.")
 				game.booster_buttons["undo"].start_pulse()
-		"extra_jar", "shuffle":
+		"extra_jar", "shuffle", "helper":
 			hide_text()
-			game.booster_buttons[step].stop_pulse()
+			if game.booster_buttons.has(step):
+				game.booster_buttons[step].stop_pulse()
 
 
 func on_booster(id: String) -> void:
@@ -136,7 +147,7 @@ func on_win() -> void:
 	_hide_hand()
 	hide_text()
 	if step != "":
-		for id in ["undo", "extra_jar", "shuffle"]:
+		for id in ["undo", "extra_jar", "shuffle", "helper"]:
 			if game.booster_buttons.has(id):
 				game.booster_buttons[id].stop_pulse()
 		complete()
@@ -262,6 +273,18 @@ static func _draw_twist_art(c: Control, twist_id: String) -> void:
 		"tall":
 			CandyArt.draw_mini_jar(c, Vector2(cx - 80, bottom), 70, [0, 1, 2, 3])
 			CandyArt.draw_mini_jar(c, Vector2(cx + 80, bottom), 70, [0, 1, 2, 3, 3, 2])
+		"cat":
+			CandyArt.draw_mini_jar(c, Vector2(cx - 90, bottom), 80, [1, 3, 2, 0])
+			CandyArt.draw_mini_jar(c, Vector2(cx + 90, bottom), 80, [2, 0, 1])
+			CharacterArt.draw_cat(c, Vector2(cx - 90, bottom - 250), 0.36, "happy", 0.0)
+			c.draw_arc(Vector2(cx, bottom - 250), 90, PI * 1.1, PI * 1.9, 16, UIKit.INK_SOFT, 6, true)
+			c.draw_colored_polygon(PackedVector2Array([Vector2(cx + 80, bottom - 270), Vector2(cx + 100, bottom - 236), Vector2(cx + 66, bottom - 240)]), UIKit.INK_SOFT)
+		"gift":
+			CandyArt.draw_mini_jar(c, Vector2(cx, bottom), 110, [5, 5, 5])
+			var gb := Rect2(cx - 40, bottom - 80, 80, 56)
+			DrawKit.rrect(c, gb, 8, Color("e8457a"))
+			c.draw_rect(Rect2(cx - 7, gb.position.y, 14, gb.size.y), Color("ffd23f"))
+			DrawKit.rrect(c, Rect2(cx - 46, gb.position.y - 18, 92, 20), 6, Color("ff6b9a"))
 
 
 ## Runs `fn` after `sec` seconds on a tween owned by this node, so it never

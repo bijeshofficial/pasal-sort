@@ -9,7 +9,7 @@ extends RefCounted
 ##
 ## Pure static code (no nodes): runs on a worker thread.
 
-const TWIST_ORDER := ["wrapped", "cloth", "lock", "tall"]
+const TWIST_ORDER := ["wrapped", "cloth", "lock", "tall", "cat", "gift"]
 
 
 static func generate(level: int) -> Dictionary:
@@ -20,9 +20,44 @@ static func generate(level: int) -> Dictionary:
 			out["tier"] = tier_for(level)
 		if not out.has("capacity"):
 			out["capacity"] = GameData.capacity()
-		return out
+		return decorate(level, out)
 	var p := params_for(level)
-	return build(level, p)
+	return decorate(level, build(level, p))
+
+
+## Goal variants on top of the board, from the level number:
+##   customer orders (from L25, sometimes): cards asking for candy types,
+##     each with a patience (jar completions) - optional bonus coins;
+##   move limit (SUPER HARD from L60): solution length x factor + slack.
+static func decorate(level: int, lvl: Dictionary) -> Dictionary:
+	var d := GameData.difficulty()
+	var rng := RandomNumberGenerator.new()
+	rng.seed = base_seed(level) ^ 0x2545f491
+	var types := int(lvl.get("types", 0))
+	if types <= 0:
+		var seen := {}
+		for j in lvl.get("jars", []):
+			for t in j.get("c", []):
+				seen[int(t)] = true
+		types = seen.size()
+	var oc: Dictionary = d.get("orders", {})
+	var tier := String(lvl.get("tier", "normal"))
+	var ml: Dictionary = d.get("move_limit", {})
+	if tier == "super" and level >= int(ml.get("from", 60)) and lvl.has("solution"):
+		lvl["move_limit"] = int(ceil(float(lvl["solution"]) * float(ml.get("factor", 1.5)))) + int(ml.get("slack", 3))
+	elif level >= int(oc.get("from", 25)) and types >= 3 and String(lvl.get("teach", "")) == "" \
+			and (level == int(oc.get("teach_level", 25)) or rng.randf() < float(oc.get("chance", 0.4))):
+		var count := rng.randi_range(1, mini(int(oc.get("max_cards", 3)), maxi(1, types - 2)))
+		if level == int(oc.get("teach_level", 25)):
+			count = 1
+		var pool: Array = range(types)
+		Board._shuffle_array(pool, rng)
+		var orders: Array = []
+		for k in count:
+			orders.append({"type": int(pool[k]), "patience": k + 2 + rng.randi_range(0, 1),
+				"bonus": rng.randi_range(int(oc.get("bonus_min", 5)), int(oc.get("bonus_max", 10)))})
+		lvl["orders"] = orders
+	return lvl
 
 
 static func base_seed(level: int) -> int:
@@ -94,6 +129,7 @@ static func params_for(level: int) -> Dictionary:
 		for id in TWIST_ORDER:
 			if tw.has(id) and level > int(tw[id]["from"]):
 				avail.append(id)
+		# Never more than 2 twist types in one level (max_twists).
 		var roll := rng.randf()
 		if level >= int(d.get("twist_combo_from", 120)) and avail.size() >= 2 and roll < float(d.get("twist_combo_chance", 0.35)):
 			var first: String = avail[rng.randi_range(0, avail.size() - 1)]
@@ -126,7 +162,13 @@ static func build(level: int, p: Dictionary) -> Dictionary:
 	var wanted := maxi(1, int(p.get("candidates", 3)))
 	var seed0 := int(p.get("seed", base_seed(level)))
 	var found: Array = []
+	# Deterministic effort cap: once this many solver nodes have been spent,
+	# keep the candidates found so far (big boards stay under ~1 s).
+	var total_budget := int(gen.get("total_node_budget", 9000))
+	var spent := 0
 	for attempt in max_attempts:
+		if not found.is_empty() and spent > total_budget:
+			break
 		var rng := RandomNumberGenerator.new()
 		rng.seed = seed0 + attempt
 		var lvl := _random_board(level, p, cap, rng)
@@ -134,8 +176,26 @@ static func build(level: int, p: Dictionary) -> Dictionary:
 			continue
 		var board := Board.from_level(lvl)
 		var r := Solver.solve(board, budget)
+		spent += int(r["nodes"])
 		if not r["solvable"]:
 			continue
+		if lvl.has("_wants_cat"):
+			lvl.erase("_wants_cat")
+			var path := _plan_cat(lvl, r["moves"], rng)
+			if path.is_empty():
+				continue
+			lvl["cat"] = path
+			# Replay the solution with the cat to be sure every move is legal.
+			var check := Board.from_level(lvl)
+			var legal := true
+			for mv in r["moves"]:
+				if not check.can_move(int(mv[0]), int(mv[1])):
+					legal = false
+					break
+				check.apply_move(int(mv[0]), int(mv[1]))
+			if not legal or not check.is_won():
+				continue
+			lvl["solution_moves"] = r["moves"]
 		lvl["seed"] = seed0 + attempt
 		lvl["solution"] = (r["moves"] as Array).size()
 		lvl["dead_ends"] = r["dead_ends"]
@@ -198,6 +258,7 @@ static func _random_board(level: int, p: Dictionary, cap: int, rng: RandomNumber
 	var twists: Array = p.get("twists", [])
 	var tw: Dictionary = GameData.difficulty()["twists"]
 	var special := {}  # jar index -> twist id (one twist per jar)
+	var wants_cat := false
 	for id in twists:
 		match id:
 			"wrapped":
@@ -232,7 +293,16 @@ static func _random_board(level: int, p: Dictionary, cap: int, rng: RandomNumber
 				if j >= 0:
 					jars[j]["cap"] = cap + int(tw["tall"].get("extra", 2))
 					special[j] = "tall"
-	return {
+			"gift":
+				for k in rng.randi_range(1, int(tw["gift"].get("max", 2))):
+					var j := _free_filled_jar(types, special, rng)
+					if j >= 0:
+						jars[j]["gift"] = true
+						special[j] = "gift"
+			"cat":
+				# The route is planned after solving (see _plan_cat).
+				wants_cat = true
+	var out := {
 		"level": level,
 		"capacity": cap,
 		"cloth_after": int(tw.get("cloth", {}).get("unlock_after", 2)),
@@ -242,6 +312,42 @@ static func _random_board(level: int, p: Dictionary, cap: int, rng: RandomNumber
 		"teach": String(p.get("teach", "")),
 		"jars": jars,
 	}
+	if wants_cat:
+		out["cat_every"] = int(tw["cat"].get("every", 5))
+		out["_wants_cat"] = true
+	return out
+
+
+## Biralo's route, planned from a known solution so the level stays
+## solvable by construction: in each window of `every` moves the cat sits on
+## a jar that the solution doesn't touch in that window (filled jars first,
+## never twice in a row). Returns [] if no route exists.
+static func _plan_cat(lvl: Dictionary, solution: Array, rng: RandomNumberGenerator) -> Array:
+	var every := int(lvl.get("cat_every", 5))
+	var n := (lvl["jars"] as Array).size()
+	var windows := int(ceil(float(solution.size()) / every)) + 1
+	var path: Array = []
+	var prev := -1
+	for w in windows:
+		var used := {}
+		for k in range(w * every, mini((w + 1) * every, solution.size())):
+			used[int(solution[k][0])] = true
+			used[int(solution[k][1])] = true
+		var filled: Array = []
+		var others: Array = []
+		for i in n:
+			if used.has(i) or i == prev:
+				continue
+			if ((lvl["jars"][i] as Dictionary).get("c", []) as Array).is_empty():
+				others.append(i)
+			else:
+				filled.append(i)
+		var pick: Array = filled if not filled.is_empty() else others
+		if pick.is_empty():
+			return []
+		prev = int(pick[rng.randi_range(0, pick.size() - 1)])
+		path.append(prev)
+	return path
 
 
 static func _free_filled_jar(types: int, special: Dictionary, rng: RandomNumberGenerator) -> int:

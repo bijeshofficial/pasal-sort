@@ -24,6 +24,9 @@ var shine := -1.0         # sweep position; <0 = off
 var shine_color := Color(1.0, 0.86, 0.45, 0.55)
 var selected := false
 var dimmed := false
+## Gift box twist: the bottom slot holds a gift until the jar completes.
+var gift_slots := 0
+var gift_open := 0.0      # 0 = wrapped, 1 = opened & gone
 
 var candies: Node2D
 var front: Node2D
@@ -83,7 +86,7 @@ func total_height() -> float:
 
 ## Local position of the centre of candy slot i (0 = bottom).
 func slot_position(i: int) -> Vector2:
-	return Vector2(0, -base_height() - slot_step() * (i + 0.5) - candy_diameter() * 0.04)
+	return Vector2(0, -base_height() - slot_step() * (i + gift_slots + 0.5) - candy_diameter() * 0.04)
 
 
 ## Area that accepts taps (generous, includes the space above the jar).
@@ -122,6 +125,32 @@ func _draw() -> void:
 	# Thick glass base.
 	var bh := base_height()
 	draw_colored_polygon(DrawKit.rounded_rect(Rect2(-w * 0.46, -bh, w * 0.92, bh - 3), w * 0.12, 5), Color(base, 0.75))
+	if gift_slots > 0 and gift_open < 1.0:
+		_draw_gift()
+
+
+## A wrapped present in the bottom slot; opening lifts the lid and fades it.
+func _draw_gift() -> void:
+	var w := jar_width
+	var c := Vector2(0, -base_height() - slot_step() * 0.5)
+	var s := candy_diameter() * 0.86
+	var a := 1.0 - gift_open
+	var box := Rect2(c.x - s * 0.5, c.y - s * 0.32, s, s * 0.7)
+	draw_colored_polygon(DrawKit.rounded_rect(box, s * 0.08, 4), Color(Color("e8457a"), a))
+	draw_rect(Rect2(c.x - s * 0.08, box.position.y, s * 0.16, box.size.y), Color(Color("ffd23f"), a))
+	var lid_y := box.position.y - s * 0.12 - gift_open * w * 0.6
+	var lid := Rect2(c.x - s * 0.56, lid_y, s * 1.12, s * 0.2)
+	draw_colored_polygon(DrawKit.rounded_rect(lid, s * 0.06, 4), Color(Color("ff6b9a"), a))
+	draw_rect(Rect2(c.x - s * 0.08, lid_y, s * 0.16, s * 0.2), Color(Color("ffd23f"), a))
+	for side in [-1.0, 1.0]:
+		draw_circle(Vector2(c.x + side * s * 0.14, lid_y - s * 0.06), s * 0.1, Color(Color("ffd23f"), a), true, -1.0, true)
+
+
+func open_gift() -> void:
+	var tw := create_tween()
+	tw.tween_method(func(v: float) -> void:
+		gift_open = v
+		queue_redraw(), 0.0, 1.0, 0.6).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
 
 func _draw_front() -> void:

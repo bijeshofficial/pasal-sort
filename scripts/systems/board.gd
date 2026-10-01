@@ -9,6 +9,11 @@ extends RefCounted
 ##   lock   - locked until a jar of that candy type is complete
 ##   caps   - a tall jar has a larger capacity (it still completes at `capacity`)
 ##   hidden - wrapped candies; a wrapper opens when the candy becomes the top
+##   gifts  - a gift box under the candies (cosmetic for the rules: the jar
+##            holds `capacity` candies); it opens when the jar completes
+##   cat    - Biralo naps on cat_path[(move_count / cat_every) % size]; that
+##            jar is sealed. The cat hops every `cat_every` moves, so the
+##            move count is part of the state (undo restores it).
 
 var capacity := 4
 var cloth_after := 2
@@ -17,12 +22,20 @@ var hidden: Array = []   # Array of Array[bool], parallel to stacks
 var caps: Array = []     # Array[int]
 var cloth: Array = []    # Array[bool]
 var locks: Array = []    # Array[int], candy type or -1
+var gifts: Array = []    # Array[bool]
+var cat_path: Array = [] # jar indices the cat visits in order
+var cat_every := 5
+var move_count := 0
 
 
 static func from_level(level: Dictionary) -> Board:
 	var b := Board.new()
 	b.capacity = int(level.get("capacity", 4))
 	b.cloth_after = int(level.get("cloth_after", 2))
+	for k in level.get("cat", []):
+		b.cat_path.append(int(k))
+	b.cat_every = maxi(1, int(level.get("cat_every", 5)))
+	b.move_count = int(level.get("move_count", 0))
 	for j in level.get("jars", []):
 		var c: Array = []
 		for t in j.get("c", []):
@@ -40,6 +53,7 @@ static func from_level(level: Dictionary) -> Board:
 		b.caps.append(int(j.get("cap", b.capacity)))
 		b.cloth.append(bool(j.get("cloth", false)))
 		b.locks.append(int(j.get("lock", -1)))
+		b.gifts.append(bool(j.get("gift", false)))
 	return b
 
 
@@ -52,6 +66,10 @@ func duplicate_board() -> Board:
 	b.caps = caps.duplicate()
 	b.cloth = cloth.duplicate()
 	b.locks = locks.duplicate()
+	b.gifts = gifts.duplicate()
+	b.cat_path = cat_path.duplicate()
+	b.cat_every = cat_every
+	b.move_count = move_count
 	return b
 
 
@@ -71,8 +89,15 @@ func to_dict() -> Dictionary:
 			j["cloth"] = true
 		if locks[i] >= 0:
 			j["lock"] = locks[i]
+		if gifts[i]:
+			j["gift"] = true
 		jars.append(j)
-	return {"capacity": capacity, "cloth_after": cloth_after, "jars": jars}
+	var d := {"capacity": capacity, "cloth_after": cloth_after, "jars": jars}
+	if not cat_path.is_empty():
+		d["cat"] = cat_path.duplicate()
+		d["cat_every"] = cat_every
+		d["move_count"] = move_count
+	return d
 
 
 func jar_count() -> int:
@@ -138,9 +163,27 @@ func is_locked(i: int) -> bool:
 	return int(locks[i]) >= 0 and not is_type_completed(int(locks[i]))
 
 
-## Covered by cloth or padlocked: cannot give or take candies.
+## The jar Biralo is sitting on (-1 = no cat).
+func cat_jar() -> int:
+	if cat_path.is_empty():
+		return -1
+	return int(cat_path[(move_count / cat_every) % cat_path.size()])
+
+
+func is_cat_on(i: int) -> bool:
+	return cat_jar() == i
+
+
+## Moves until the cat hops (0 = no cat).
+func moves_until_cat_hops() -> int:
+	if cat_path.is_empty():
+		return 0
+	return cat_every - move_count % cat_every
+
+
+## Covered by cloth, padlocked or under the cat: cannot give or take candies.
 func is_sealed(i: int) -> bool:
-	return is_cloth_on(i) or is_locked(i)
+	return is_cloth_on(i) or is_locked(i) or is_cat_on(i)
 
 
 func can_select(i: int) -> bool:
@@ -172,6 +215,7 @@ func apply_move(a: int, b: int) -> Dictionary:
 	var sealed_before: Array = []
 	for i in stacks.size():
 		sealed_before.append(is_sealed(i))
+	var cat_before := cat_jar()
 	var n := move_amount(a, b)
 	var t := top(a)
 	var src: Array = stacks[a]
@@ -190,11 +234,14 @@ func apply_move(a: int, b: int) -> Dictionary:
 		# A completed jar shows all its candies.
 		for k in (hidden[b] as Array).size():
 			hidden[b][k] = false
+	move_count += 1
 	var unsealed: Array = []
 	for i in stacks.size():
-		if sealed_before[i] and not is_sealed(i):
+		if sealed_before[i] and not is_sealed(i) and i != cat_before:
 			unsealed.append(i)
-	return {"count": n, "type": t, "completed": completed, "revealed": revealed, "unsealed": unsealed, "won": is_won()}
+	var gift := completed and bool(gifts[b])
+	return {"count": n, "type": t, "completed": completed, "revealed": revealed, "unsealed": unsealed, "won": is_won(),
+		"cat_from": cat_before, "cat_to": cat_jar(), "gift": gift}
 
 
 func is_won() -> bool:
@@ -223,6 +270,12 @@ func has_useful_move() -> bool:
 		for b in stacks.size():
 			if can_move(a, b) and not is_pointless(a, b):
 				return true
+	# With the cat, any legal move passes time until it hops.
+	if not cat_path.is_empty():
+		for a in stacks.size():
+			for b in stacks.size():
+				if can_move(a, b):
+					return true
 	return false
 
 
@@ -232,7 +285,47 @@ func add_jar(cap: int = -1) -> int:
 	caps.append(capacity if cap <= 0 else cap)
 	cloth.append(false)
 	locks.append(-1)
+	gifts.append(false)
 	return stacks.size() - 1
+
+
+## Haat Helper: the moves that gather `type` from jar tops into an empty jar
+## (up to `capacity`). Returns [[from, to], ...] or [] when there is no
+## empty jar or nothing to gather. Doesn't change the board.
+func helper_moves(type: int) -> Array:
+	var target := -1
+	for i in stacks.size():
+		if size_of(i) == 0 and not is_sealed(i):
+			target = i
+			break
+	if target < 0:
+		return []
+	var sim := duplicate_board()
+	var out: Array = []
+	var guard := 0
+	while sim.size_of(target) < capacity and guard < 64:
+		guard += 1
+		var best := -1
+		for i in sim.stacks.size():
+			if i != target and sim.can_move(i, target) and sim.top(i) == type and (sim.size_of(target) == 0 or sim.top(target) == type):
+				best = i
+				break
+		if best < 0:
+			break
+		sim.apply_move(best, target)
+		sim.move_count -= 1   # the helper isn't a move
+		out.append([best, target])
+	return out
+
+
+## Candy types currently on top of a jar that can give candies.
+func top_types() -> Array:
+	var out: Array = []
+	for i in stacks.size():
+		if can_select(i) and not out.has(top(i)):
+			out.append(top(i))
+	out.sort()
+	return out
 
 
 ## Jars whose candies a Shuffle may redistribute: unfinished and not sealed.
@@ -277,7 +370,7 @@ func shuffle(rng: RandomNumberGenerator, tries: int = 30, budget: int = 8000) ->
 				unchanged = false
 		if instant or unchanged:
 			continue
-		if Solver.solve(self, budget)["solvable"]:
+		if Solver.solve(self, budget, true)["solvable"]:
 			return true
 	stacks = original
 	hidden = original_hidden

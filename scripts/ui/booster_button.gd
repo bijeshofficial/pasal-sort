@@ -7,6 +7,7 @@ const COLORS := {
 	"undo": [Color("2f9bff"), Color("1756c8")],
 	"extra_jar": [Color("a35cff"), Color("6a2ad2")],
 	"shuffle": [Color("ff7a3d"), Color("cc4a10")],
+	"helper": [Color("2fbf71"), Color("17804a")],
 }
 
 var booster_id := "undo"
@@ -25,7 +26,7 @@ func setup(id: String) -> void:
 	custom_minimum_size = Vector2(230, 250)
 	for st in ["normal", "hover", "pressed", "focus", "disabled", "hover_pressed"]:
 		add_theme_stylebox_override(st, StyleBoxEmpty.new())
-	_icon = UIKit.icon({"undo": "undo", "extra_jar": "jar_plus", "shuffle": "shuffle"}[id], 92, Color.WHITE)
+	_icon = UIKit.icon(BoosterManager.icon_for(id), 92, Color.WHITE)
 	_icon.accent = COLORS[id][0]
 	_icon.shadow = true
 	_icon.shadow_color = COLORS[id][1].darkened(0.4)

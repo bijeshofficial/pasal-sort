@@ -336,5 +336,31 @@
 			"accent": "ffffff",
 			"fx": "peaks"
 		}
+	],
+	"gift_box": [
+		{
+			"coins": 15
+		},
+		{
+			"boosters": {
+				"undo": 1
+			}
+		},
+		{
+			"coins": 25
+		},
+		{
+			"boosters": {
+				"shuffle": 1
+			}
+		},
+		{
+			"coins": 20
+		},
+		{
+			"boosters": {
+				"peek": 1
+			}
+		}
 	]
 }

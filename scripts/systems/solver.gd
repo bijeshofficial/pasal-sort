@@ -6,7 +6,10 @@ extends RefCounted
 ## cheap to copy and hash. The visited key sorts jars that share the same
 ## signature (capacity, lock, cloth), so boards that differ only by the order
 ## of interchangeable jars are explored once. Hidden candies are treated as
-## known (they are fixed by the level seed).
+## known (they are fixed by the level seed). With the cat twist the move
+## count is the last element of the state ("#n"): the cat's jar is sealed,
+## jars are no longer interchangeable, and pointless moves are allowed
+## (they pass time until the cat hops).
 ##
 ## Returns {solvable, moves: [[a, b], ...], nodes, dead_ends, exhausted}.
 ## `exhausted` is true when the node budget ran out before an answer.
@@ -14,22 +17,32 @@ extends RefCounted
 const A := 97  # 'a'
 
 
-static func solve(board: Board, budget: int = 20000) -> Dictionary:
+## `ignore_cat`: plan as if Biralo weren't there (quick checks like Shuffle;
+## the cat only ever delays a move).
+static func solve(board: Board, budget: int = 20000, ignore_cat: bool = false) -> Dictionary:
 	var ctx := _Ctx.new()
 	ctx.capacity = board.capacity
 	ctx.cloth_after = board.cloth_after
 	ctx.caps = board.caps.duplicate()
 	ctx.locks = board.locks.duplicate()
 	ctx.cloth = board.cloth.duplicate()
+	ctx.n = board.jar_count()
+	ctx.cat_path = [] if ignore_cat else board.cat_path.duplicate()
+	ctx.cat_every = board.cat_every
 	ctx.sigs = []
 	for i in board.jar_count():
-		ctx.sigs.append("%d.%d.%d:" % [int(board.caps[i]), int(board.locks[i]), 1 if board.cloth[i] else 0])
+		var sig := "%d.%d.%d:" % [int(board.caps[i]), int(board.locks[i]), 1 if board.cloth[i] else 0]
+		if not ctx.cat_path.is_empty():
+			sig = "%d/" % i + sig
+		ctx.sigs.append(sig)
 	var start := PackedStringArray()
 	for s in board.stacks:
 		var str := ""
 		for t in s:
 			str += String.chr(A + int(t))
 		start.append(str)
+	if not ctx.cat_path.is_empty():
+		start.append("#%d" % board.move_count)
 	return _search(ctx, start, budget)
 
 
@@ -48,6 +61,9 @@ class _Ctx:
 	var locks: Array
 	var cloth: Array
 	var sigs: Array
+	var n := 0
+	var cat_path: Array = []
+	var cat_every := 5
 
 
 class _Frame:
@@ -80,7 +96,7 @@ static func _search(ctx: _Ctx, start: PackedStringArray, budget: int) -> Diction
 			continue
 		var mv: Array = f.moves[f.idx]
 		f.idx += 1
-		var next := _apply(f.state, mv)
+		var next := _apply(ctx, f.state, mv)
 		var k := _key(ctx, next)
 		if visited.has(k):
 			continue
@@ -105,11 +121,24 @@ static func _search(ctx: _Ctx, start: PackedStringArray, budget: int) -> Diction
 
 static func _key(ctx: _Ctx, state: PackedStringArray) -> String:
 	var parts := PackedStringArray()
-	parts.resize(state.size())
-	for i in state.size():
+	parts.resize(ctx.n)
+	for i in ctx.n:
 		parts[i] = ctx.sigs[i] + state[i]
 	parts.sort()
-	return "|".join(parts)
+	var k := "|".join(parts)
+	if not ctx.cat_path.is_empty():
+		k += "#%d" % (_count(ctx, state) % (ctx.cat_every * ctx.cat_path.size()))
+	return k
+
+
+static func _count(ctx: _Ctx, state: PackedStringArray) -> int:
+	return int(state[ctx.n].substr(1)) if state.size() > ctx.n else 0
+
+
+static func _cat_jar(ctx: _Ctx, state: PackedStringArray) -> int:
+	if ctx.cat_path.is_empty():
+		return -1
+	return int(ctx.cat_path[(_count(ctx, state) / ctx.cat_every) % ctx.cat_path.size()])
 
 
 static func _is_done(ctx: _Ctx, s: String) -> bool:
@@ -123,7 +152,8 @@ static func _is_done(ctx: _Ctx, s: String) -> bool:
 
 
 static func _won(ctx: _Ctx, state: PackedStringArray) -> bool:
-	for s in state:
+	for i in ctx.n:
+		var s := state[i]
 		if s.length() > 0 and not _is_done(ctx, s):
 			return false
 	return true
@@ -144,7 +174,8 @@ static func _run(s: String) -> int:
 
 ## Legal, non-pointless moves, best first (deterministic order).
 static func _moves(ctx: _Ctx, state: PackedStringArray) -> Array:
-	var n := state.size()
+	var n := ctx.n
+	var cat := _cat_jar(ctx, state)
 	var done: Array = []
 	done.resize(n)
 	var done_count := 0
@@ -162,6 +193,8 @@ static func _moves(ctx: _Ctx, state: PackedStringArray) -> Array:
 		if ctx.cloth[i] and done_count < ctx.cloth_after:
 			s = true
 		if int(ctx.locks[i]) >= 0 and not done_types.has(int(ctx.locks[i])):
+			s = true
+		if i == cat:
 			s = true
 		sealed[i] = s
 	var scored: Array = []
@@ -184,6 +217,10 @@ static func _moves(ctx: _Ctx, state: PackedStringArray) -> Array:
 			var moved := mini(run, free)
 			if sb.length() == 0:
 				if uniform:
+					if cat >= 0 and not empty_sig_seen.has("wait"):
+						# Pointless, but it moves the clock on for the cat.
+						empty_sig_seen["wait"] = true
+						scored.append([1, a, b, moved])
 					continue  # pointless
 				# Empty jars of the same kind are interchangeable: try the first.
 				if empty_sig_seen.has(ctx.sigs[b]):
@@ -200,19 +237,23 @@ static func _moves(ctx: _Ctx, state: PackedStringArray) -> Array:
 				else:
 					score = 5
 			scored.append([score, a, b, moved])
-	scored.sort_custom(func(x: Array, y: Array) -> bool:
-		if x[0] != y[0]:
-			return x[0] > y[0]
-		if x[1] != y[1]:
-			return x[1] < y[1]
-		return x[2] < y[2])
+	# Sort by (score desc, a, b) with packed integer keys (much faster than
+	# a comparator lambda on every node).
+	var keys := PackedInt64Array()
+	keys.resize(scored.size())
+	for i in scored.size():
+		var sc: Array = scored[i]
+		keys[i] = (((1000 - int(sc[0])) * 64 + int(sc[1])) * 64 + int(sc[2])) * 1024 + i
+	keys.sort()
 	var out: Array = []
-	for s in scored:
-		out.append([s[1], s[2], s[3]])
+	out.resize(scored.size())
+	for i in keys.size():
+		var sc: Array = scored[keys[i] % 1024]
+		out[i] = [sc[1], sc[2], sc[3]]
 	return out
 
 
-static func _apply(state: PackedStringArray, mv: Array) -> PackedStringArray:
+static func _apply(ctx: _Ctx, state: PackedStringArray, mv: Array) -> PackedStringArray:
 	var a: int = mv[0]
 	var b: int = mv[1]
 	var n: int = mv[2]
@@ -220,4 +261,6 @@ static func _apply(state: PackedStringArray, mv: Array) -> PackedStringArray:
 	var sa := state[a]
 	next[a] = sa.substr(0, sa.length() - n)
 	next[b] = state[b] + sa.substr(sa.length() - n)
+	if state.size() > ctx.n:
+		next[ctx.n] = "#%d" % (_count(ctx, state) + 1)
 	return next
