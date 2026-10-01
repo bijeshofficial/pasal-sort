@@ -19,6 +19,8 @@ const SYSTEM_BLOCKS := {
 	"renovation": "res://scripts/meta/renovation_manager.gd",
 	"purchases": "res://scripts/core/iap_manager.gd",
 	"streaks": "res://scripts/meta/streak_manager.gd",
+	"daily": "res://scripts/meta/daily_manager.gd",
+	"chests": "res://scripts/meta/chest_manager.gd",
 }
 
 var save_path := "user://save.json"
@@ -34,7 +36,7 @@ func defaults() -> Dictionary:
 	var econ := GameData.economy()
 	var achievements := {}
 	for a in GameData.achievements():
-		achievements[a["id"]] = {"progress": 0, "claimed": false}
+		achievements[a["id"]] = {"tier": 0, "progress": 0}
 	var d := {
 		"version": CURRENT_VERSION,
 		"coins": int(econ.get("starting_coins", 0)),
@@ -74,7 +76,6 @@ func defaults() -> Dictionary:
 				"stars_earned": 0,
 			},
 			"daily_free_claimed_date": "",
-			"milestones_claimed": [],
 			"in_progress_level": null,
 		},
 	}

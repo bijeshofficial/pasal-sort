@@ -15,6 +15,8 @@ const CACHE_LIMIT := 6
 ## Dami streak.
 var pending_pre: Array = []
 var pending_free: Array = []
+## "level" or "daily": what the next Gameplay scene plays.
+var play_mode := "level"
 
 var _cache: Dictionary = {}     # level -> Dictionary
 var _tasks: Dictionary = {}     # level -> WorkerThreadPool task id
@@ -92,31 +94,13 @@ func complete_level(level: int, used_boosters: bool) -> Dictionary:
 		SaveManager.add_game_stat("no_booster_wins")
 		SaveManager.add_game_stat("no_booster_streak")
 		SaveManager.set_game_stat("best_no_booster_streak", maxi(SaveManager.game_stat("best_no_booster_streak"), SaveManager.game_stat("no_booster_streak")))
-	var every := int(GameData.economy().get("milestone_every", 10))
-	var claimed: Array = SaveManager.game()["milestones_claimed"]
-	var milestone := level % every == 0 and not claimed.has(level)
+	var milestone := ChestManager.level_chest_due(level)
 	var stars := int(GameData.economy().get("stars_per_win", 1))
 	SaveManager.game()["in_progress_level"] = null
 	CurrencyManager.add_coins(coins, false)
 	CurrencyManager.add_stars(stars, false)
 	SaveManager.save_game()
 	return {"coins": coins, "stars": stars, "tier": tier, "milestone": milestone}
-
-
-## Milestone gift every N levels: coins plus a booster picked by the level
-## number (deterministic). Returns {coins, booster}.
-func claim_milestone(level: int) -> Dictionary:
-	var claimed: Array = SaveManager.game()["milestones_claimed"]
-	if claimed.has(level):
-		return {}
-	claimed.append(level)
-	var coins := int(GameData.economy().get("milestone_coins", 100))
-	var boosters := ["undo", "shuffle", "extra_jar"]
-	var booster: String = boosters[(level / 10) % boosters.size()]
-	CurrencyManager.add_coins(coins, false)
-	BoosterManager.grant(booster, 1)
-	SaveManager.save_game()
-	return {"coins": coins, "booster": booster}
 
 
 func set_pre_boosters(paid: Array, free: Array) -> void:

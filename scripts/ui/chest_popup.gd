@@ -19,6 +19,8 @@ var bundle: Dictionary = {}
 var source := ""
 var style := "wood"
 var items: Array = []
+## Rewards already granted elsewhere (daily calendar): just show them.
+var granted_items: Array = []
 var collect_button: GameButton
 
 var _chest: Control
@@ -27,6 +29,16 @@ var _lid := 0.0       # 0 closed, 1 open
 var _rays := 0.0
 var _row: HBoxContainer
 var _on_done: Callable
+
+
+static func show_granted(title_text: String, granted: Array, on_done: Callable = Callable(), chest_style: String = "gold") -> ChestPopup:
+	var p := ChestPopup.new()
+	p.title = title_text
+	p.granted_items = granted
+	p.style = chest_style
+	p._on_done = on_done
+	ScreenManager.push_modal(p)
+	return p
 
 
 static func open(title_text: String, contents: Dictionary, source_id: String = "", on_done: Callable = Callable(), chest_style: String = "wood") -> ChestPopup:
@@ -58,7 +70,11 @@ func _ready() -> void:
 	collect_button.disabled = true
 	collect_button.pressed.connect(close)
 	v.add_child(collect_button)
-	items = Rewards.grant(bundle, source)
+	if not granted_items.is_empty():
+		items = granted_items
+	else:
+		items = Rewards.grant(bundle, source)
+		ChestManager.note_opened(source)
 	_animate()
 
 

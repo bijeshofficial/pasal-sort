@@ -197,6 +197,8 @@ func complete_task(task_id: String, style: int) -> Dictionary:
 		area_state(index)["complete"] = true
 		SaveManager.add_game_stat("areas_completed")
 	SaveManager.save_game()
+	GameManager.emit_event("task")
+	GameManager.emit_event("stars", cost)
 	task_completed.emit(index, task_id, style)
 	if finished:
 		area_completed.emit(index)
@@ -215,6 +217,7 @@ func set_style(index: int, task_id: String, style: int, count_change: bool = tru
 	if count_change:
 		block()["style_changes"] = int(block().get("style_changes", 0)) + 1
 		SaveManager.add_game_stat("style_changes")
+		GameManager.emit_event("style")
 	SaveManager.save_game()
 	style_changed.emit(index, task_id, style)
 	return true

@@ -758,8 +758,9 @@ func _test_shop_iap_achievements() -> void:
 	_fresh(10)
 	var sum: Dictionary = PM.complete_level(10, false)
 	_check(sum["milestone"] and int(sum["stars"]) == 1 and CM.get_stars() == 1, "level 10: milestone gift and a star")
-	var gift: Dictionary = PM.claim_milestone(10)
-	_check(int(gift.get("coins", 0)) == 100 and PM.claim_milestone(10).is_empty(), "milestone gift claims once")
+	var CH := root.get_node("ChestManager")
+	var gift: Dictionary = CH.claim_level_chest(10)
+	_check(int(gift.get("coins", 0)) == 100 and CH.claim_level_chest(10).is_empty() and not CH.level_chest_due(10), "the level chest opens once")
 	_check(PM.coin_reward(25) == 15 and PM.coin_reward(20) == 25 and PM.coin_reward(12) == 10, "coins: 10, HARD 15, SUPER HARD 25")
 
 

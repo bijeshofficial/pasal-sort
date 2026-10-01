@@ -4,6 +4,10 @@ extends Node
 
 signal app_paused
 signal app_resumed
+## Game event bus: missions, events, races and achievements listen here.
+## ids: win, hard_win, clean_win, twist_win, jar, candies, booster, task,
+## style, stars, chest, challenge, daily_claim, sticker, order, helper.
+signal game_event(id: String, amount: int)
 
 ## Desktop testing aid: pretend the device has a notch (pass -- --safe-debug).
 var debug_safe_insets := Vector2.ZERO
@@ -72,6 +76,11 @@ func quit_game() -> void:
 	get_tree().quit()
 
 
+func emit_event(id: String, amount: int = 1) -> void:
+	if amount > 0:
+		game_event.emit(id, amount)
+
+
 ## Returns (top, bottom) safe-area insets in viewport (logical) pixels.
 func get_safe_insets() -> Vector2:
 	if debug_safe_insets != Vector2.ZERO:
@@ -87,7 +96,6 @@ func get_safe_insets() -> Vector2:
 	return Vector2(maxf(0.0, safe.position.y * k), maxf(0.0, (screen.y - safe.end.y) * k))
 
 
-## Local calendar date "YYYY-MM-DD" (daily gift).
+## Local calendar date "YYYY-MM-DD" (daily gift), from the debug-aware clock.
 func today() -> String:
-	var d := Time.get_date_dict_from_system()
-	return "%04d-%02d-%02d" % [d["year"], d["month"], d["day"]]
+	return TimeManager.today()

@@ -42,6 +42,8 @@ IAPManager="*res://scripts/core/iap_manager.gd"
 RenovationManager="*res://scripts/meta/renovation_manager.gd"
 DialogueManager="*res://scripts/meta/dialogue_manager.gd"
 StreakManager="*res://scripts/meta/streak_manager.gd"
+DailyManager="*res://scripts/meta/daily_manager.gd"
+ChestManager="*res://scripts/meta/chest_manager.gd"
 
 [display]
 

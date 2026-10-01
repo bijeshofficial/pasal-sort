@@ -109,7 +109,15 @@ func go_hub(tab: String = "home") -> void:
 
 ## Opens the current level (lives are checked by the caller).
 func start_level() -> void:
+	ProgressionManager.play_mode = "level"
 	change_screen(GAMEPLAY, ProgressionManager.current_level())
+
+
+## Opens today's daily challenge (free, no lives).
+func start_daily() -> void:
+	DailyManager.prefetch_challenge()
+	ProgressionManager.play_mode = "daily"
+	change_screen(GAMEPLAY)
 
 
 func push_modal(node: Control) -> Control:

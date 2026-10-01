@@ -1,0 +1,186 @@
+{
+	"_comment": "Daily features. Calendar: 7-day cycle, a missed day just waits. Missions: 3 a day picked from the pool by the date; each gives coins and points; points fill the mission chest. Challenge: one puzzle per day seeded by the date; twist and size follow the weekday (Monday first).",
+	"calendar": [
+		{
+			"coins": 50
+		},
+		{
+			"boosters": {
+				"undo": 2
+			}
+		},
+		{
+			"coins": 100
+		},
+		{
+			"boosters": {
+				"shuffle": 1,
+				"extra_jar": 1
+			}
+		},
+		{
+			"unlimited_lives_min": 30,
+			"coins": 50
+		},
+		{
+			"boosters": {
+				"peek": 1,
+				"lucky": 1
+			},
+			"coins": 100
+		},
+		{
+			"coins": 250,
+			"boosters": {
+				"extra_jar": 1
+			},
+			"sticker_packs": 1
+		}
+	],
+	"mission_count": 3,
+	"chest_points": 30,
+	"mission_chest": {
+		"coins": 120,
+		"boosters": {
+			"undo": 1,
+			"shuffle": 1
+		}
+	},
+	"missions": [
+		{
+			"id": "win3",
+			"text": "Win 3 levels",
+			"event": "win",
+			"target": 3,
+			"points": 10,
+			"coins": 30
+		},
+		{
+			"id": "win5",
+			"text": "Win 5 levels",
+			"event": "win",
+			"target": 5,
+			"points": 10,
+			"coins": 50
+		},
+		{
+			"id": "jars20",
+			"text": "Fill 20 jars",
+			"event": "jar",
+			"target": 20,
+			"points": 10,
+			"coins": 30
+		},
+		{
+			"id": "jars40",
+			"text": "Fill 40 jars",
+			"event": "jar",
+			"target": 40,
+			"points": 10,
+			"coins": 50
+		},
+		{
+			"id": "candies150",
+			"text": "Move 150 candies",
+			"event": "candies",
+			"target": 150,
+			"points": 10,
+			"coins": 30
+		},
+		{
+			"id": "booster1",
+			"text": "Use a booster",
+			"event": "booster",
+			"target": 1,
+			"points": 10,
+			"coins": 20
+		},
+		{
+			"id": "task1",
+			"text": "Complete a renovation task",
+			"event": "task",
+			"target": 1,
+			"points": 10,
+			"coins": 30
+		},
+		{
+			"id": "task2",
+			"text": "Complete 2 renovation tasks",
+			"event": "task",
+			"target": 2,
+			"points": 10,
+			"coins": 50
+		},
+		{
+			"id": "hard1",
+			"text": "Win a HARD level",
+			"event": "hard_win",
+			"target": 1,
+			"points": 10,
+			"coins": 40
+		},
+		{
+			"id": "challenge",
+			"text": "Finish the daily challenge",
+			"event": "challenge",
+			"target": 1,
+			"points": 10,
+			"coins": 40
+		},
+		{
+			"id": "clean2",
+			"text": "Win 2 levels without boosters",
+			"event": "clean_win",
+			"target": 2,
+			"points": 10,
+			"coins": 40
+		},
+		{
+			"id": "style1",
+			"text": "Change a style in your shop",
+			"event": "style",
+			"target": 1,
+			"points": 10,
+			"coins": 20
+		},
+		{
+			"id": "stars3",
+			"text": "Spend 3 stars",
+			"event": "stars",
+			"target": 3,
+			"points": 10,
+			"coins": 30
+		},
+		{
+			"id": "chest1",
+			"text": "Open a chest",
+			"event": "chest",
+			"target": 1,
+			"points": 10,
+			"coins": 20
+		}
+	],
+	"challenge": {
+		"coins": 60,
+		"streak_bonus": 10,
+		"streak_bonus_max": 70,
+		"types_by_weekday": [
+			6,
+			7,
+			7,
+			8,
+			8,
+			9,
+			10
+		],
+		"twists_by_weekday": [
+			"wrapped",
+			"cloth",
+			"lock",
+			"tall",
+			"wrapped",
+			"lock",
+			"cloth"
+		]
+	}
+}

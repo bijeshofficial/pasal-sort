@@ -224,6 +224,47 @@ func _run() -> void:
 		await _save("85_trunk")
 		SM.close_all_modals()
 
+	if which in ["all", "daily"]:
+		_fresh(37, 900, 4)
+		_reno(1, 5)
+		S.data["game"]["daily"]["cal_index"] = 2
+		S.data["game"]["daily"]["cal_last_day"] = -1
+		S.data["game"]["daily"]["challenge"]["done"] = [root.get_node("TimeManager").date_string(root.get_node("TimeManager").now() - 86400), root.get_node("TimeManager").date_string(root.get_node("TimeManager").now() - 86400 * 2)]
+		S.data["game"]["daily"]["challenge"]["streak"] = 2
+		S.data["game"]["daily"]["challenge"]["last_day"] = root.get_node("TimeManager").day_number() - 1
+		S.data["game"]["renovation"]["stars_spent"] = 16
+		SM.hub_tab = "home"
+		await _scene("res://scenes/main/hub.tscn", 0.8)
+		var DY := root.get_node("DailyManager")
+		DY.roll()
+		var m0: Dictionary = DY.mission_def(DY.missions()[0]["id"])
+		root.get_node("GameManager").emit_event(String(m0["event"]), int(m0["target"]))
+		current_scene.home.refresh()
+		await _wait(0.4)
+		await _save("86_home_features")
+		load("res://scripts/ui/daily_popups.gd").open_calendar()
+		await _wait(0.6)
+		await _save("87_calendar")
+		SM.close_all_modals()
+		load("res://scripts/ui/daily_popups.gd").open_missions()
+		await _wait(0.5)
+		await _save("88_missions")
+		SM.close_all_modals()
+		load("res://scripts/ui/daily_popups.gd").open_challenge()
+		await _wait(0.5)
+		await _save("89_challenge")
+		SM.close_all_modals()
+		S.data["game"]["stats"]["jars_filled"] = 140
+		S.data["game"]["stats"]["levels_completed"] = 36
+		current_scene.select_tab(2)
+		await _wait(0.6)
+		await _save("90_profile")
+		current_scene.profile.get_parent()
+		var sc: ScrollContainer = current_scene.profile.get_child(0)
+		sc.scroll_vertical = 1100
+		await _wait(0.3)
+		await _save("91_profile_achievements")
+
 	if which in ["all", "twists"]:
 		for spec in [[15, "20_wrapped"], [30, "21_cloth"], [50, "22_lock"], [80, "23_tall"]]:
 			_fresh(int(spec[0]))

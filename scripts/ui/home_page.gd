@@ -64,7 +64,10 @@ func _ready() -> void:
 	right_col.add_theme_constant_override("separation", 22)
 	add_child(right_col)
 	add_feature("areas", "map", "left", tr("Areas"), UIKit.SECONDARY)
-	add_feature("gift", "gift", "right", tr("Gift"), UIKit.PINK)
+	add_feature("calendar", "calendar", "left", tr("Daily"), UIKit.GOLD)
+	add_feature("missions", "tasks", "left", tr("Missions"), UIKit.PRIMARY)
+	add_feature("challenge", "flag", "right", tr("Challenge"), UIKit.PURPLE)
+	add_feature("star_chest", "chest", "right", tr("Star chest"), UIKit.PINK)
 	# Bottom row: Tasks + PLAY.
 	_bottom = HBoxContainer.new()
 	_bottom.add_theme_constant_override("separation", 24)
@@ -94,6 +97,7 @@ func _ready() -> void:
 	add_child(_back_button)
 	resized.connect(_layout)
 	RenovationManager.task_completed.connect(_on_reno_changed)
+	DailyManager.changed.connect(refresh_features)
 	RenovationManager.style_changed.connect(_on_reno_changed)
 	CurrencyManager.stars_changed.connect(_on_stars_changed)
 	_layout()
@@ -139,13 +143,41 @@ func add_feature(id: String, icon: String, side: String, label: String, color: C
 
 
 func _on_feature(id: String) -> void:
+	if busy:
+		return
 	match id:
 		"areas":
 			open_gallery()
-		"gift":
-			if hub:
-				hub.select_tab(0)
+		"calendar":
+			DailyPopups.open_calendar(refresh)
+		"missions":
+			DailyPopups.open_missions(refresh)
+		"challenge":
+			DailyPopups.open_challenge()
+		"star_chest":
+			DailyPopups.open_star_chest(refresh)
 	feature_pressed.emit(id)
+
+
+## Red dots, timers and which optional features are visible.
+func refresh_features() -> void:
+	if features.has("calendar"):
+		features["calendar"].set_dot(DailyManager.can_claim_calendar())
+	if features.has("missions"):
+		features["missions"].set_dot(DailyManager.missions_attention())
+	if features.has("challenge"):
+		var done := DailyManager.challenge_done_today()
+		features["challenge"].set_dot(not done)
+		features["challenge"].set_timer(TimeManager.short_duration(TimeManager.seconds_to_midnight()) if done else "")
+	if features.has("star_chest"):
+		var n := ChestManager.star_chests_available()
+		features["star_chest"].visible = n > 0
+		features["star_chest"].set_dot(n > 0)
+
+
+func _process(_delta: float) -> void:
+	if Engine.get_process_frames() % 30 == 0 and is_visible_in_tree():
+		refresh_features()
 
 
 func refresh() -> void:
@@ -169,9 +201,7 @@ func refresh() -> void:
 	var idx := visiting if visiting > 0 else RenovationManager.current_area()
 	_title_label.text = tr(RenovationManager.area_name(idx))
 	_progress.queue_redraw()
-	if features.has("gift"):
-		features["gift"].set_dot(ShopPage.daily_available())
-		features["gift"].visible = ShopPage.daily_available()
+	refresh_features()
 	_layout.call_deferred()
 
 

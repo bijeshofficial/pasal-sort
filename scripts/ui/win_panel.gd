@@ -43,10 +43,11 @@ func _ready() -> void:
 	coin_chip.show_plus = false
 	top.add_child(coin_chip)
 	v.add_child(top)
+	var daily := bool(summary.get("daily", false))
 	var sub := HBoxContainer.new()
 	sub.alignment = BoxContainer.ALIGNMENT_CENTER
 	sub.add_theme_constant_override("separation", 16)
-	sub.add_child(UIKit.label("Level %d" % level, 44, UIKit.INK_SOFT))
+	sub.add_child(UIKit.label(tr("Daily Challenge") if daily else tr("Level %d") % level, 44, UIKit.INK_SOFT))
 	var badge := UIKit.tier_badge(String(summary.get("tier", "normal")), 30)
 	if badge:
 		sub.add_child(badge)
@@ -61,6 +62,10 @@ func _ready() -> void:
 	_star_label = UIKit.title("+%d" % int(summary.get("stars", 1)), 110, Color("ffd23f"), HORIZONTAL_ALIGNMENT_CENTER, Color("8a4100"))
 	reward_row.add_child(_star_label)
 	reward_row.add_child(UIKit.hspacer(30))
+	if daily:
+		_star_icon.visible = false
+		_star_label.visible = false
+		star_chip.visible = false
 	reward_row.add_child(UIKit.icon("coin", 120))
 	_count_label = UIKit.title("+0", 110, Color("ffd23f"), HORIZONTAL_ALIGNMENT_CENTER, Color("8a4100"))
 	reward_row.add_child(_count_label)
@@ -68,10 +73,12 @@ func _ready() -> void:
 	double_button = UIKit.button("x2 COINS", "purple", "ad", 52)
 	double_button.pressed.connect(_on_double)
 	v.add_child(double_button)
-	continue_button = UIKit.button(tr("Renovate!") if renovate else tr("CONTINUE"), "primary", "brush" if renovate else "play", 70, Vector2(0, 190))
+	if daily:
+		v.add_child(UIKit.label(tr("Challenge streak: %d days") % int(summary.get("streak", 1)), 40, UIKit.PINK_EDGE))
+	continue_button = UIKit.button(tr("Renovate!") if renovate else (tr("HOME") if daily else tr("CONTINUE")), "primary", "brush" if renovate else ("home" if daily else "play"), 70, Vector2(0, 190))
 	continue_button.pressed.connect(func() -> void: continue_pressed.emit())
 	v.add_child(continue_button)
-	var can_renovate := RenovationManager.affordable_count() > 0 and not renovate
+	var can_renovate := RenovationManager.affordable_count() > 0 and not renovate and not daily
 	home_button = UIKit.button(tr("You can renovate!") if can_renovate else tr("Home"), "gold" if can_renovate else "neutral", "brush" if can_renovate else "home", 40, Vector2(0, 120))
 	home_button.pressed.connect(func() -> void: home_pressed.emit())
 	v.add_child(home_button)
@@ -83,6 +90,8 @@ func _ready() -> void:
 	var reward := int(summary.get("coins", 0))
 	coin_chip.display(CurrencyManager.get_coins() - reward)
 	star_chip.display(CurrencyManager.get_stars() - int(summary.get("stars", 1)))
+	if daily:
+		home_button.visible = false
 	_count_up.call_deferred(reward)
 	_fly_star.call_deferred()
 

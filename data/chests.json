@@ -1,0 +1,50 @@
+{
+	"_comment": "Level chest every 10 levels (rotates through 'level'), star chest every 'star_every' stars spent on renovation.",
+	"level": [
+		{
+			"coins": 100,
+			"boosters": {
+				"undo": 1
+			}
+		},
+		{
+			"coins": 120,
+			"boosters": {
+				"shuffle": 1
+			}
+		},
+		{
+			"coins": 150,
+			"boosters": {
+				"extra_jar": 1
+			},
+			"sticker_packs": 1
+		},
+		{
+			"coins": 150,
+			"boosters": {
+				"peek": 1,
+				"open_jar": 1
+			}
+		},
+		{
+			"coins": 200,
+			"boosters": {
+				"undo": 1,
+				"lucky": 1
+			},
+			"unlimited_lives_min": 15,
+			"sticker_packs": 1
+		}
+	],
+	"star_every": 15,
+	"star": {
+		"coins": 200,
+		"boosters": {
+			"undo": 1,
+			"shuffle": 1,
+			"extra_jar": 1
+		},
+		"sticker_packs": 1
+	}
+}

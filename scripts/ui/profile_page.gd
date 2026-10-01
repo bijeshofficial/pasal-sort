@@ -44,9 +44,21 @@ func build() -> void:
 	list.add_child(rib)
 	list.add_child(_header())
 	list.add_child(_stats())
-	list.add_child(UIKit.title("Achievements", 54, Color("ffe066"), HORIZONTAL_ALIGNMENT_LEFT))
-	for a in AchievementManager.definitions():
+	list.add_child(UIKit.title(tr("Achievements"), 54, Color("ffe066"), HORIZONTAL_ALIGNMENT_LEFT))
+	# Claimable first, then in progress, then finished.
+	var defs: Array = AchievementManager.definitions().duplicate()
+	defs.sort_custom(func(x: Dictionary, y: Dictionary) -> bool:
+		return _rank(x["id"]) < _rank(y["id"]))
+	for a in defs:
 		list.add_child(_achievement_card(a))
+
+
+func _rank(id: String) -> int:
+	if AchievementManager.can_claim(id):
+		return 0
+	if AchievementManager.is_claimed(id):
+		return 2
+	return 1
 
 
 func _card(fill: Color = UIKit.PAPER) -> PanelContainer:
@@ -99,8 +111,28 @@ func _header() -> Control:
 	name_edit.text_submitted.connect(func(_t: String) -> void: name_edit.release_focus())
 	name_edit.focus_exited.connect(func() -> void: set_player_name(name_edit.text))
 	col.add_child(name_edit)
-	col.add_child(UIKit.title("Level %d" % ProgressionManager.current_level(), 48, UIKit.GOLD, HORIZONTAL_ALIGNMENT_LEFT, Color("8a4100")))
+	col.add_child(UIKit.title(tr("Level %d") % ProgressionManager.current_level(), 48, UIKit.GOLD, HORIZONTAL_ALIGNMENT_LEFT, Color("8a4100")))
+	var chips := HBoxContainer.new()
+	chips.add_theme_constant_override("separation", 12)
+	chips.add_child(_chip("star", UIKit.GOLD, str(CurrencyManager.get_stars())))
+	chips.add_child(_chip("home", UIKit.PRIMARY, tr("%d areas") % RenovationManager.completed_area_count()))
+	col.add_child(chips)
 	return card
+
+
+func _chip(icon: String, color: Color, text: String) -> Control:
+	var p := PanelContainer.new()
+	var sb := UIKit.box(Color(color, 0.18), 30, Color.TRANSPARENT, 0, 8)
+	sb.content_margin_left = 12
+	sb.content_margin_right = 18
+	p.add_theme_stylebox_override("panel", sb)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 6)
+	p.add_child(row)
+	var ic := UIKit.icon(icon, 44, color.darkened(0.1))
+	row.add_child(ic)
+	row.add_child(UIKit.label(text, 32, UIKit.INK))
+	return p
 
 
 func set_player_name(value: String) -> void:
@@ -156,23 +188,31 @@ func _stats() -> Control:
 	var secs := SaveManager.stat("play_time_sec")
 	var play := "%dh %02dm" % [secs / 3600, (secs / 60) % 60] if secs >= 3600 else "%dm" % (secs / 60)
 	var rows := [
-		["Levels completed", str(SaveManager.game_stat("levels_completed"))],
-		["Jars filled", str(SaveManager.game_stat("jars_filled"))],
-		["Candies moved", str(SaveManager.game_stat("candies_moved"))],
-		["Boosters used", str(SaveManager.game_stat("boosters_used"))],
-		["Best no-booster streak", str(SaveManager.game_stat("best_no_booster_streak"))],
-		["Play time", play],
+		["Levels completed", str(SaveManager.game_stat("levels_completed")), "flag", UIKit.SECONDARY],
+		["Jars filled", str(SaveManager.game_stat("jars_filled")), "jar", UIKit.PRIMARY],
+		["Candies moved", str(SaveManager.game_stat("candies_moved")), "candy", UIKit.PINK],
+		["Boosters used", str(SaveManager.game_stat("boosters_used")), "shuffle", UIKit.PURPLE],
+		["Best streak", str(int(SaveManager.game().get("streaks", {}).get("best_dami", 0))), "fire", Color("ff7a1a")],
+		["Daily challenges", str(SaveManager.game_stat("daily_challenges")), "calendar", UIKit.GOLD],
+		["Tasks done", str(SaveManager.game_stat("tasks_completed")), "brush", UIKit.SECONDARY],
+		["Play time", play, "clock", UIKit.INK_SOFT],
 	]
 	for r in rows:
 		var c := _card(UIKit.PAPER)
 		c.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		var h := HBoxContainer.new()
+		h.add_theme_constant_override("separation", 12)
+		c.add_child(h)
+		var col: Color = r[3]
+		h.add_child(UIKit.disk(String(r[2]), 92, col, col.darkened(0.35)))
 		var v := VBoxContainer.new()
-		c.add_child(v)
-		v.add_child(UIKit.label(r[1], 54, UIKit.SECONDARY))
-		var cap := UIKit.label(r[0], 28, UIKit.INK_SOFT, HORIZONTAL_ALIGNMENT_CENTER, false)
+		v.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		v.alignment = BoxContainer.ALIGNMENT_CENTER
+		v.add_child(UIKit.label(r[1], 46, UIKit.INK, HORIZONTAL_ALIGNMENT_LEFT))
+		var cap := UIKit.label(tr(String(r[0])), 26, UIKit.INK_SOFT, HORIZONTAL_ALIGNMENT_LEFT, false)
 		cap.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		cap.custom_minimum_size = Vector2(200, 0)
 		v.add_child(cap)
+		h.add_child(v)
 		grid.add_child(c)
 	return grid
 
@@ -185,13 +225,23 @@ func _achievement_card(a: Dictionary) -> Control:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 20)
 	card.add_child(row)
-	row.add_child(UIKit.disk("trophy", 104, UIKit.GOLD if complete else UIKit.DISABLED, UIKit.GOLD_EDGE if complete else UIKit.DISABLED_EDGE))
+	# Medal colour by tier: bronze, silver, gold (grey until reached).
+	var t := mini(AchievementManager.tier(id), 2)
+	var medal: Array = [[Color("d9884a"), Color("8a4b20")], [Color("c9d1d9"), Color("6b7b88")], [UIKit.GOLD, UIKit.GOLD_EDGE]][t]
+	if not complete and not claimed:
+		medal = [UIKit.DISABLED, UIKit.DISABLED_EDGE]
+	var medal_box := UIKit.disk("trophy", 104, medal[0], medal[1])
+	if AchievementManager.tier_count(id) > 1:
+		var rn := UIKit.badge(AchievementManager.ROMAN[mini(AchievementManager.tier(id), AchievementManager.tier_count(id) - 1)], UIKit.PURPLE, 24)
+		rn.position = Vector2(58, 64)
+		medal_box.add_child(rn)
+	row.add_child(medal_box)
 	var col := VBoxContainer.new()
 	col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	col.add_theme_constant_override("separation", 6)
 	row.add_child(col)
-	col.add_child(UIKit.label(a["title"], 40, UIKit.INK, HORIZONTAL_ALIGNMENT_LEFT))
-	var desc := UIKit.label("%s  -  %s" % [a["desc"], AchievementManager.reward_text(a.get("reward", {}))], 28, UIKit.INK_SOFT, HORIZONTAL_ALIGNMENT_LEFT, false)
+	col.add_child(UIKit.label(AchievementManager.title(id), 40, UIKit.INK, HORIZONTAL_ALIGNMENT_LEFT))
+	var desc := UIKit.label("%s  -  %s" % [AchievementManager.description(id), AchievementManager.reward_text(AchievementManager.current_reward(id))], 28, UIKit.INK_SOFT, HORIZONTAL_ALIGNMENT_LEFT, false)
 	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	desc.custom_minimum_size = Vector2(300, 0)
 	col.add_child(desc)
@@ -212,7 +262,7 @@ func _achievement_card(a: Dictionary) -> Control:
 	col.add_child(UIKit.label("%d / %d" % [prog, tgt], 26, UIKit.INK_SOFT, HORIZONTAL_ALIGNMENT_LEFT, false))
 	var btn: GameButton
 	if claimed:
-		btn = UIKit.button("Claimed", "neutral", "check", 30, Vector2(200, 110))
+		btn = UIKit.button(tr("Done"), "neutral", "check", 30, Vector2(200, 110))
 		btn.disabled = true
 	else:
 		btn = UIKit.button("CLAIM", "primary", "", 34, Vector2(200, 110))
@@ -228,5 +278,5 @@ func claim(id: String) -> void:
 	var reward := AchievementManager.claim(id)
 	if reward.is_empty():
 		return
-	Popups.reward(AchievementManager.definition(id)["title"], AchievementManager.reward_text(reward), "trophy")
+	Popups.reward(tr(String(AchievementManager.definition(id)["title"])), AchievementManager.reward_text(reward), "trophy")
 	changed.emit()

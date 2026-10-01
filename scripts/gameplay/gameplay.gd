@@ -13,6 +13,9 @@ const SAVE_DELAY := 0.4
 
 var level := 1
 var level_data: Dictionary = {}
+## "level" (the main ladder) or "daily" (the daily challenge: no lives, no
+## star, separate rewards and resume slot).
+var mode := "level"
 var board: Board
 var view: BoardView
 var history: Array = []        # [{board, move: [a, b], count, completed}]
@@ -53,8 +56,14 @@ var _trunk_ready := false
 
 func _ready() -> void:
 	VFXManager.toast_anchor = "bottom"
-	level = ProgressionManager.current_level()
-	level_data = ProgressionManager.get_level(level)
+	mode = ProgressionManager.play_mode
+	ProgressionManager.play_mode = "level"
+	if mode == "daily":
+		level = 0
+		level_data = DailyManager.challenge_level()
+	else:
+		level = ProgressionManager.current_level()
+		level_data = ProgressionManager.get_level(level)
 	var vp := get_viewport_rect().size
 	var insets := GameManager.get_safe_insets()
 
@@ -129,6 +138,7 @@ func _apply_pre_boosters(pre: Dictionary) -> void:
 		if not ids.has(id) and BoosterManager.consume(id):
 			ids.append(id)
 			boosters_used = true
+			GameManager.emit_event("booster")
 	for id in pre.get("free", []):
 		if not ids.has(id):
 			ids.append(id)
@@ -188,7 +198,7 @@ func _build_top_bar(insets: Vector2) -> void:
 	mid.alignment = BoxContainer.ALIGNMENT_CENTER
 	mid.add_theme_constant_override("separation", 4)
 	bar.add_child(mid)
-	level_label = UIKit.title("Level %d" % level, 76)
+	level_label = UIKit.title(tr("Daily Challenge") if mode == "daily" else tr("Level %d") % level, 76 if mode != "daily" else 64)
 	mid.add_child(level_label)
 	var badge := UIKit.tier_badge(String(level_data.get("tier", "normal")), 30)
 	if badge:
@@ -309,8 +319,10 @@ func do_move(a: int, b: int) -> void:
 	history.append({"board": snapshot, "move": [a, b], "count": result["count"], "completed": result["completed"]})
 	moves += 1
 	SaveManager.add_game_stat("candies_moved", int(result["count"]))
+	GameManager.emit_event("candies", int(result["count"]))
 	if result["completed"]:
 		SaveManager.add_game_stat("jars_filled")
+		GameManager.emit_event("jar")
 	var dur := view.animate_move(a, b, result)
 	tutorial.on_move(a, b, before)
 	if lucky_left > 0:
@@ -365,6 +377,7 @@ func use_booster(id: String, free: bool = false) -> bool:
 		BoosterManager.consume(id)
 	else:
 		SaveManager.add_game_stat("boosters_used")
+	GameManager.emit_event("booster")
 	boosters_used = true
 	_idle = 0.0
 	_clear_hint()
@@ -553,6 +566,9 @@ func _log(event: String, data: Dictionary) -> void:
 
 
 func retry() -> void:
+	if mode == "daily":
+		ScreenManager.start_daily()
+		return
 	if not LivesManager.can_play(level):
 		Popups.lives(true, retry)
 		return
@@ -627,10 +643,29 @@ func _win(delay: float) -> void:
 	state = State.WON
 	_clear_hint()
 	var claimable_before := AchievementManager.claimable_count()
-	_summary = ProgressionManager.complete_level(level, boosters_used)
-	_trunk_ready = StreakManager.on_win()
-	_summary["dami"] = StreakManager.dami()
-	SaveManager.save_game()
+	if mode == "daily":
+		_summary = DailyManager.complete_challenge()
+		_summary["daily"] = true
+		_summary["stars"] = 0
+		_summary["tier"] = "hard"
+		SaveManager.game()["in_progress_level"] = null
+		SaveManager.save_game()
+	else:
+		_summary = ProgressionManager.complete_level(level, boosters_used)
+		_trunk_ready = StreakManager.on_win()
+		_summary["dami"] = StreakManager.dami()
+		_summary["milestone"] = ChestManager.level_chest_due(level)
+		var tier := String(_summary.get("tier", "normal"))
+		GameManager.emit_event("win")
+		if tier == "hard" or tier == "super":
+			GameManager.emit_event("hard_win")
+		if not boosters_used:
+			GameManager.emit_event("clean_win")
+		if not (level_data.get("twists", []) as Array).is_empty():
+			SaveManager.add_game_stat("twist_wins")
+			GameManager.emit_event("twist_win")
+		SaveManager.save_game()
+	_log("level_win", {"level": level, "mode": mode, "moves": moves, "time": int(_t), "boosters_used": boosters_used, "pre": pre_applied})
 	AchievementManager.refresh()
 	_new_achievement = AchievementManager.claimable_count() > claimable_before
 	AdManager.on_run_finished()
@@ -651,7 +686,7 @@ func _celebrate() -> void:
 
 ## Level 1: Hajurama introduces the story before the first win screen.
 func _after_celebration() -> void:
-	if level == 1 and not ProgressionManager.tutorial_done("story_intro"):
+	if mode == "level" and level == 1 and not ProgressionManager.tutorial_done("story_intro"):
 		ProgressionManager.mark_tutorial("story_intro")
 		DialogueManager.play("intro", _show_win_panel)
 	else:
@@ -660,7 +695,7 @@ func _after_celebration() -> void:
 
 func _show_win_panel() -> void:
 	var panel: WinPanel = WinPanelScript.new()
-	panel.setup(level, _summary, renovate_first())
+	panel.setup(level, _summary, renovate_first() and mode == "level")
 	panel.continue_pressed.connect(continue_next)
 	panel.home_pressed.connect(_go_home)
 	ScreenManager.push_modal(panel)
@@ -721,22 +756,19 @@ func _maya_worry() -> void:
 	tw.tween_callback(sk.queue_free)
 
 
+## Every 10 levels: the level chest.
 func _milestone_gift() -> void:
-	Popups.show({
-		"id": "gift",
-		"title": "Gift box!",
-		"art": "gift",
-		"art_color": UIKit.PINK,
-		"body": "Every 10 levels the bazaar sends you a present.",
-		"buttons": [{"id": "open", "text": "Open", "kind": "primary", "icon": "gift", "cb": func() -> void:
-			var g := ProgressionManager.claim_milestone(level)
-			if not g.is_empty():
-				Popups.reward("Gift box", "+%d coins\n+1 %s" % [int(g["coins"]), BoosterManager.display_name(g["booster"])], "gift")},
-		],
-	})
+	var contents := ChestManager.claim_level_chest(level)
+	if not contents.is_empty():
+		ChestPopup.open(tr("Level %d chest") % level, contents, "level_chest", func() -> void:
+			if _trunk_ready:
+				_open_trunk(), "wood")
 
 
 func continue_next() -> void:
+	if mode == "daily":
+		_go_home()
+		return
 	# After level 3 the first renovation task is taught on Home.
 	if renovate_first():
 		_go_home()
@@ -759,6 +791,8 @@ func _try_resume() -> bool:
 	var ip: Variant = SaveManager.game().get("in_progress_level")
 	if typeof(ip) != TYPE_DICTIONARY or int(ip.get("level", -1)) != level:
 		return false
+	if String(ip.get("mode", "level")) != mode or (mode == "daily" and String(ip.get("day", "")) != TimeManager.today()):
+		return false
 	board = Board.from_level(ip["board"])
 	history = ip.get("history", [])
 	moves = int(ip.get("moves", 0))
@@ -774,6 +808,8 @@ func _try_resume() -> bool:
 func _in_progress() -> Dictionary:
 	return {
 		"level": level,
+		"mode": mode,
+		"day": TimeManager.today(),
 		"board": board.to_dict(),
 		"history": history.duplicate(true),
 		"moves": moves,

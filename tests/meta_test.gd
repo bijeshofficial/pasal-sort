@@ -62,6 +62,12 @@ func _main() -> void:
 	_test_iap()
 	await _test_start_card_and_pre_boosters()
 	await _test_second_chance()
+	_test_calendar()
+	_test_missions()
+	_test_challenge_rules()
+	await _test_challenge_play()
+	_test_chests()
+	_test_achievement_tiers()
 	_finish()
 
 
@@ -482,6 +488,146 @@ func _test_second_chance() -> void:
 	g.give_up()
 	_check(SM.find_modal("so_close") == null and g.state == 4 and LM.lives() == lives0 - 1, "the second chance is once per level")
 	SM.close_all_modals()
+
+
+# --- Phase 6: daily loop -----------------------------------------------------
+
+func _test_calendar() -> void:
+	var DY := root.get_node("DailyManager")
+	_fresh(5)
+	S.game()["time"]["max_seen"] = TM.now()
+	var c0: int = CM.get_coins()
+	_check(DY.can_claim_calendar() and not DY.claim_calendar().is_empty() and CM.get_coins() == c0 + 50, "day 1 calendar reward: 50 coins")
+	_check(not DY.can_claim_calendar() and DY.claim_calendar().is_empty(), "the calendar can't be claimed twice in a day")
+	TM.advance(86400)
+	_check(DY.can_claim_calendar() and DY.calendar_index() == 1, "the next day unlocks day 2")
+	DY.claim_calendar()
+	TM.advance(86400 * 3)
+	_check(DY.calendar_index() == 2 and DY.can_claim_calendar(), "missing days doesn't reset the calendar, it waits")
+	S.game()["time"]["max_seen"] = TM.now() + 86400.0 * 5
+	_check(not DY.can_claim_calendar(), "a clock set backwards grants nothing")
+	S.game()["time"]["max_seen"] = TM.now()
+	TM.debug_offset = 0.0
+	S.game()["time"]["max_seen"] = TM.now()
+
+
+func _test_missions() -> void:
+	var DY := root.get_node("DailyManager")
+	var GM := root.get_node("GameManager")
+	_fresh(5)
+	S.game()["time"]["max_seen"] = TM.now()
+	DY.roll()
+	var list: Array = DY.missions()
+	var events := {}
+	for m in list:
+		events[DY.mission_def(m["id"])["event"]] = true
+	_check(list.size() == 3 and events.size() == 3, "3 daily missions with different goals")
+	var ids_a: Array = DY.pick_missions(DY.today_num()).map(func(m): return m["id"])
+	var ids_b: Array = DY.pick_missions(DY.today_num()).map(func(m): return m["id"])
+	var ids_c: Array = DY.pick_missions(DY.today_num() + 1).map(func(m): return m["id"])
+	_check(ids_a == ids_b and ids_a != ids_c, "missions are picked by the date (same day, same missions)")
+	# Finish every mission by sending its event.
+	for m in list:
+		var d: Dictionary = DY.mission_def(m["id"])
+		GM.emit_event(String(d["event"]), int(d["target"]))
+	_check(DY.missions_attention() and DY.mission_done(DY.missions()[0]), "game events fill mission progress")
+	var c0: int = CM.get_coins()
+	var got: int = DY.claim_mission(0)
+	_check(got > 0 and CM.get_coins() == c0 + got and DY.claim_mission(0) == -1, "a mission pays its coins once")
+	DY.claim_mission(1)
+	DY.claim_mission(2)
+	_check(DY.points() >= DY.chest_points() and DY.can_open_mission_chest(), "3 missions fill the mission chest")
+	_check(not DY.claim_mission_chest().is_empty() and DY.claim_mission_chest().is_empty(), "the mission chest opens once a day")
+	TM.advance(86400)
+	DY.roll()
+	_check(DY.points() == 0 and not DY.mission_done(DY.missions()[0]), "a new day brings new missions and an empty chest")
+	TM.debug_offset = 0.0
+	S.game()["time"]["max_seen"] = TM.now()
+
+
+func _test_challenge_rules() -> void:
+	var DY := root.get_node("DailyManager")
+	_fresh(5)
+	S.game()["time"]["max_seen"] = TM.now()
+	var a: Dictionary = DY.challenge_level()
+	var b: Dictionary = DY._build(DY.today_num())
+	_check(JSON.stringify(a["jars"]) == JSON.stringify(b["jars"]), "the daily challenge is the same puzzle all day (seeded by the date)")
+	var other: Dictionary = DY._build(DY.today_num() + 1)
+	_check(JSON.stringify(a["jars"]) != JSON.stringify(other["jars"]) and (a["twists"] as Array).size() == 1, "tomorrow brings a different puzzle with its own twist")
+	_check(bool(Solver.solve(Board.from_level(a), 80000)["solvable"]), "the daily challenge is solvable")
+	var r: Dictionary = DY.complete_challenge()
+	_check(int(r.get("coins", 0)) == 60 and int(r.get("streak", 0)) == 1 and DY.challenge_done_today(), "finishing the challenge pays 60 coins, streak 1")
+	_check(DY.complete_challenge().is_empty(), "the challenge pays once a day")
+	TM.advance(86400)
+	_check(DY.challenge_streak() == 1 and int(DY.complete_challenge().get("streak", 0)) == 2, "the next day continues the streak")
+	TM.advance(86400 * 2)
+	_check(DY.challenge_streak() == 0 and int(DY.complete_challenge().get("streak", 0)) == 1, "skipping a day restarts the streak")
+	_check(DY.challenge_history().size() == 3, "completed days are kept for the calendar")
+	TM.debug_offset = 0.0
+	S.game()["time"]["max_seen"] = TM.now()
+
+
+func _test_challenge_play() -> void:
+	var DY := root.get_node("DailyManager")
+	_fresh(40)
+	S.game()["time"]["max_seen"] = TM.now()
+	for k in ["twist_wrapped", "twist_cloth", "twist_lock", "twist_tall"]:
+		S.game()["tutorial_steps"][k] = true
+	S.game()["lives"] = 0
+	S.game()["last_life_time"] = LM.now()
+	var level0: int = PM.current_level()
+	var stars0: int = CM.get_stars()
+	SM.start_daily()
+	await _until(func() -> bool: return current_scene != null and current_scene.has_method("tap_jar") and current_scene.state == 1, 8.0)
+	var g := current_scene
+	_check(g.mode == "daily" and g.level_label.text == "Daily Challenge", "the daily challenge opens with 0 lives (free to play)")
+	var sol: Array = Solver.solve(g.board, 80000)["moves"]
+	for mv in sol:
+		g.do_move(mv[0], mv[1])
+	await _until(func() -> bool: return SM.find_modal("win") != null, 6.0)
+	_check(DY.challenge_done_today() and PM.current_level() == level0 and CM.get_stars() == stars0, "winning the challenge doesn't touch level progress or stars")
+	var win: Node = SM.find_modal("win")
+	_check(win != null and win.continue_button.get_label() == "HOME", "the challenge win screen goes Home")
+	SM.close_all_modals()
+
+
+func _test_chests() -> void:
+	var CH := root.get_node("ChestManager")
+	_fresh(5)
+	_check(CH.level_chest_due(10) and not CH.level_chest_due(11), "a level chest every 10 levels")
+	var c10: Dictionary = CH.claim_level_chest(10)
+	var c20: Dictionary = CH.claim_level_chest(20)
+	_check(not c10.is_empty() and JSON.stringify(c10) != JSON.stringify(c20), "level chests rotate their contents")
+	_check(CH.star_chests_available() == 0, "no star chest before spending stars")
+	CM.add_stars(20, false)
+	var spent := 0
+	for t in RM.open_tasks(1):
+		if spent >= 15:
+			break
+		var r: Dictionary = RM.complete_task(t["id"], 0)
+		spent += int(r.get("cost", 0))
+	var guard := 0
+	while spent < 15 and guard < 20:
+		guard += 1
+		for t in RM.open_tasks(1):
+			if spent >= 15:
+				break
+			spent += int(RM.complete_task(t["id"], 0).get("cost", 0))
+	_check(CH.star_chests_available() == 1, "15 stars spent: a star chest (%d spent)" % spent)
+	_check(not CH.claim_star_chest().is_empty() and CH.star_chests_available() == 0, "the star chest opens once")
+
+
+func _test_achievement_tiers() -> void:
+	var ACH := root.get_node("AchievementManager")
+	_fresh(5)
+	S.game()["stats"]["jars_filled"] = 150
+	ACH.refresh()
+	_check(ACH.title("jar_filler") == "Jar Filler I" and ACH.can_claim("jar_filler"), "tier I is claimable at 100 jars")
+	ACH.claim("jar_filler")
+	_check(ACH.title("jar_filler") == "Jar Filler II" and ACH.target("jar_filler") == 1000 and not ACH.can_claim("jar_filler"), "claiming tier I opens tier II (1,000 jars)")
+	_check(ACH.definitions().size() >= 30, "30+ achievements (%d)" % ACH.definitions().size())
+	S.game()["achievements"]["first_lid"] = {"progress": 1, "claimed": true}
+	_check(ACH.is_claimed("first_lid") and not ACH.can_claim("first_lid"), "old saves: a claimed achievement counts as its first tier")
 
 
 # --- Helpers -----------------------------------------------------------------

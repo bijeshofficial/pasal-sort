@@ -12,7 +12,7 @@ Read this first at the start of every session. Godot 4.7.2 at
 | 3 Hub & core meta | loading shutter, nav, top bar, lives, in-level boosters, tutorial, settings | done |
 | 4 Renovation | stars, areas 1-10 data, Home pan/zoom, tasks, style picker, dialogue | done |
 | 5 Economy & shop | pre-level boosters, start card, Dami streak, iap_products, No Ads, starter pack | done |
-| 6 Daily loop | calendar, missions + chest, daily challenge, chests, achievements 30+ | todo |
+| 6 Daily loop | calendar, missions + chest, daily challenge, chests, achievements 30+ | done |
 | 7 Live features | album, weekly event, Bazaar Race, treasure streak, cat paw, gift box, orders, move limit, Haat Helper | todo |
 | 8 Polish | i18n en/ne, accessibility, analytics, debug menu, QA screenshots | todo |
 
@@ -47,13 +47,18 @@ Read this first at the start of every session. Godot 4.7.2 at
   Dami streak meter, max 2 pre-level boosters, used only when the level starts.
 - `StreakManager`: Dami streak (free pre-boosters) and the 7-win treasure
   streak (Hajurama's Trunk). Give up -> "So close!" second chance once.
+- Daily: `DailyManager` (calendar, missions picked by date, date-seeded
+  challenge played in Gameplay `mode = "daily"`), `ChestManager` (level chest
+  every 10 levels, star chest per 15 stars spent), data in `data/daily.json`
+  and `data/chests.json`. Game events go through `GameManager.emit_event`.
+- Achievements: 32 families with tiers (`data/achievements.json`).
 
 ## Next step
 
-Phase 6: daily reward calendar (7-day), daily missions + mission chest,
-daily challenge (date-seeded, calendar of completed days), level chest every
-10 levels (replace the milestone gift) and star chest every 15 stars spent,
-profile stats + 30+ tiered achievements, avatar frames on the profile.
+Phase 7: sticker album (8 sets x 9, rarity, duplicates -> sticker stars,
+sticker shop), weekly events from events.json with a 15-milestone track and
+mock pass, Bazaar Race vs 4 AI shopkeepers, remaining twists (cat paw, gift
+box), customer orders, move-limit levels (+5 moves offer), Haat Helper.
 
 ## Known issues
 
