@@ -68,6 +68,12 @@ func _main() -> void:
 	await _test_challenge_play()
 	_test_chests()
 	_test_achievement_tiers()
+	_test_twist_rules()
+	_test_album()
+	_test_events()
+	_test_race()
+	await _test_cat_level_play()
+	await _test_orders_and_move_limit()
 	_finish()
 
 
@@ -628,6 +634,184 @@ func _test_achievement_tiers() -> void:
 	_check(ACH.definitions().size() >= 30, "30+ achievements (%d)" % ACH.definitions().size())
 	S.game()["achievements"]["first_lid"] = {"progress": 1, "claimed": true}
 	_check(ACH.is_claimed("first_lid") and not ACH.can_claim("first_lid"), "old saves: a claimed achievement counts as its first tier")
+
+
+# --- Phase 7: live features --------------------------------------------------
+
+func _board_of(jars: Array, extra: Dictionary = {}) -> Board:
+	var lvl := {"capacity": 4, "jars": []}
+	for j in jars:
+		lvl["jars"].append({"c": j} if typeof(j) == TYPE_ARRAY else j)
+	lvl.merge(extra, true)
+	return Board.from_level(lvl)
+
+
+func _test_twist_rules() -> void:
+	# Cat: sealed jar, hops every N moves, undo (snapshot) restores it.
+	var b := _board_of([[0, 0, 1], [1, 1, 0], [], []], {"cat": [2, 3], "cat_every": 2})
+	_check(b.cat_jar() == 2 and b.is_sealed(2) and not b.can_move(0, 2), "the cat seals the jar it sits on")
+	var snap := b.to_dict()
+	b.apply_move(0, 3)
+	_check(b.cat_jar() == 2, "the cat stays put until its move count")
+	var r := b.apply_move(1, 0)
+	_check(b.cat_jar() == 3 and int(r["cat_from"]) == 2 and int(r["cat_to"]) == 3, "every 2nd move the cat hops (2 -> 3)")
+	var back := Board.from_level(snap)
+	_check(back.cat_jar() == 2 and back.move_count == 0, "undo restores the cat's jar")
+	var stuck := _board_of([{"c": [0, 1, 0, 1]}, {"c": [1, 0, 1, 0]}, [2, 2], []], {"cat": [0], "cat_every": 5})
+	_check(stuck.has_useful_move(), "with the cat around, any legal move passes time (not stuck)")
+	_check(Solver.solve(_board_of([[0, 0, 0, 1], [1, 1, 1, 0], [], []], {"cat": [2, 3, 2], "cat_every": 1}), 5000)["solvable"], "the solver plays around the cat")
+	# Gift box: completing the jar reports the gift.
+	var g := _board_of([{"c": [3, 3, 3], "gift": true}, [3], []])
+	var rg := g.apply_move(1, 0)
+	_check(bool(rg["completed"]) and bool(rg["gift"]), "completing a gift jar opens the gift")
+	_check(Board.from_level(g.to_dict()).gifts[0], "gift jars survive save/undo snapshots")
+	# Haat Helper gathers a candy from the tops into the empty jar.
+	var h := _board_of([[0, 1, 2], [1, 2], [0, 2], []])
+	var mv := h.helper_moves(2)
+	_check(mv.size() == 3 and h.size_of(3) == 0, "Haat Helper plans 3 moves of the chosen candy (board untouched)")
+	for m in mv:
+		h.apply_move(int(m[0]), int(m[1]))
+	_check(h.stacks[3] == [2, 2, 2], "...and gathers them into the empty jar")
+	_check(_board_of([[0, 1], [1, 0]]).helper_moves(0).is_empty(), "no empty jar: the helper can't help")
+
+
+func _test_album() -> void:
+	var AL := root.get_node("AlbumManager")
+	_fresh(5)
+	var got: Array = AL.open_pack("test")
+	_check(got.size() == 3 and AL.unique_count() >= 1 and AL.unique_count() <= 3, "a sticker pack gives 3 stickers")
+	# Own every sticker of set 1 except the last, then complete it.
+	var set1: Dictionary = AL.sets()[0]
+	for st in set1["stickers"]:
+		S.game()["album"]["owned"][st["id"]] = 1
+	_check(AL.is_set_complete(set1["id"]) and AL.can_claim_set(set1["id"]), "9 of 9 stickers completes a set")
+	var c0: int = CM.get_coins()
+	var r: Dictionary = AL.claim_set(set1["id"])
+	_check(int(r.get("coins", 0)) > 0 and CM.get_coins() > c0 and not AL.can_claim_set(set1["id"]), "a set reward pays once")
+	# Duplicates become sticker stars; stars buy packs.
+	S.game()["album"]["stars"] = 0
+	var before: int = AL.sticker_stars()
+	for k in 20:
+		AL.open_pack("test")
+	_check(AL.sticker_stars() > before, "duplicates turn into sticker stars (%d)" % AL.sticker_stars())
+	S.game()["album"]["stars"] = 40
+	var gold: Array = AL.buy_with_stars("pack_gold")
+	_check(gold.size() == 4 and AL.sticker_stars() < 40 and int(gold[0]["rarity"]) >= 2, "the sticker shop sells packs for stars (gold: a 2-star or better)")
+	_check(S.game_stat("stickers_unique") == AL.unique_count(), "unique stickers are counted for achievements")
+
+
+func _test_events() -> void:
+	var EV := root.get_node("EventManager")
+	var IAP := root.get_node("IAPManager")
+	_fresh(5)
+	S.game()["time"]["max_seen"] = TM.now()
+	EV.roll()
+	var id0: String = EV.current().get("id", "")
+	_check(id0 != "" and EV.currency() == 0, "a weekly event is running (%s)" % id0)
+	_check(EV.on_win("normal") == 1 and EV.on_win("hard") == 2 and EV.on_win("super") == 3 and EV.currency() == 6, "wins drop event currency (+1, HARD +2, SUPER HARD +3)")
+	_check(EV.can_claim(0, false) and not EV.can_claim(0, true), "milestone 1: free reward yes, pass reward needs the pass")
+	EV.claim(0, false)
+	_check(not EV.can_claim(0, false), "a milestone pays once")
+	IAP.auto_confirm = true
+	IAP.buy("event_pass", func(_ok: bool) -> void: pass)
+	IAP.auto_confirm = false
+	_check(EV.has_pass() and EV.can_claim(0, true), "the Event Pass unlocks the premium track")
+	TM.advance(86400 * 7)
+	EV.roll()
+	_check(String(EV.current().get("id", "")) != id0 and EV.currency() == 0 and not EV.has_pass(), "next week: a new event with fresh progress")
+	TM.debug_offset = 0.0
+	S.game()["time"]["max_seen"] = TM.now()
+
+
+func _test_race() -> void:
+	var RC := root.get_node("RaceManager")
+	var GM := root.get_node("GameManager")
+	_fresh(20)
+	S.game()["time"]["max_seen"] = TM.now()
+	_check(RC.can_join() and RC.join() and RC.state() == "running", "join a Bazaar Race")
+	_check(RC.standings().size() == 5 and not RC.can_join(), "you race 4 shopkeepers; one race at a time")
+	var start: Array = RC.standings().map(func(r): return int(r["wins"]))
+	TM.advance(3600 * 2)
+	var later := 0
+	for row in RC.standings():
+		if not bool(row["player"]):
+			later += int(row["wins"])
+	_check(later > 0, "rivals keep winning while you're away (simulated by their timetable)")
+	TM.debug_offset = 0.0
+	for k in 7:
+		GM.emit_event("win", 1)
+	_check(RC.state() == "done" and RC.rank() == 1, "7 quick wins: you finish first")
+	var c0: int = CM.get_coins()
+	var r: Dictionary = RC.claim()
+	_check(int(r.get("coins", 0)) == 300 and CM.get_coins() >= c0 + 300 and S.game_stat("race_wins") == 1, "1st place reward and a Racer win")
+	_check(not RC.can_join() and RC.seconds_until_open() > 0, "the next race opens after a cooldown")
+	TM.advance(3600 * 4)
+	_check(RC.can_join(), "...a few hours later")
+	TM.debug_offset = 0.0
+	S.game()["time"]["max_seen"] = TM.now()
+
+
+## A generated cat level, played through Gameplay with its planned solution.
+func _test_cat_level_play() -> void:
+	var n := 110
+	var lvl: Dictionary = {}
+	while n < 400:
+		lvl = LevelGenerator.generate(n)
+		if lvl.has("cat"):
+			break
+		n += 1
+	_check(lvl.has("cat") and lvl.has("solution_moves"), "a cat level carries its route and solution (level %d)" % n)
+	_fresh(n)
+	for k in ["twist_wrapped", "twist_cloth", "twist_lock", "twist_tall", "twist_cat", "twist_gift", "helper"]:
+		S.game()["tutorial_steps"][k] = true
+	change_scene_to_file("res://scenes/gameplay/gameplay.tscn")
+	await _until(func() -> bool: return current_scene != null and current_scene.has_method("tap_jar") and current_scene.state == 1, 8.0)
+	var g := current_scene
+	_check(g.view.cat_node.visible and g.view.cat_jar == g.board.cat_jar(), "Biralo sits on the board")
+	for mv in lvl["solution_moves"]:
+		if g.state != 1:
+			break
+		g.do_move(int(mv[0]), int(mv[1]))
+	_check(g.board.is_won(), "the planned solution wins with the cat in play")
+	SM.close_all_modals()
+
+
+func _test_orders_and_move_limit() -> void:
+	_fresh(25)
+	S.game()["tutorial_steps"]["twist_wrapped"] = true
+	change_scene_to_file("res://scenes/gameplay/gameplay.tscn")
+	await _until(func() -> bool: return current_scene != null and current_scene.has_method("tap_jar") and current_scene.state == 1, 8.0)
+	var g := current_scene
+	_check(g.orders.size() >= 1 and g.order_cards != null, "level 25 introduces a customer order")
+	if not g.orders.is_empty():
+		var t := int(g.orders[0]["type"])
+		var c0: int = CM.get_coins()
+		g._on_jar_completed(t)
+		_check(String(g.orders[0]["state"]) == "filled" and CM.get_coins() > c0, "filling the asked-for jar serves the customer (bonus coins)")
+	SM.close_all_modals()
+	# Move limit: the first SUPER HARD level from 60.
+	var n := 60
+	while n < 200 and int(LevelGenerator.generate(n).get("move_limit", 0)) == 0:
+		n += 1
+	_fresh(n)
+	S.data["coins"] = 500
+	for k in ["twist_wrapped", "twist_cloth", "twist_lock", "twist_tall", "helper"]:
+		S.game()["tutorial_steps"][k] = true
+	change_scene_to_file("res://scenes/gameplay/gameplay.tscn")
+	await _until(func() -> bool: return current_scene != null and current_scene.has_method("tap_jar") and current_scene.state == 1, 8.0)
+	g = current_scene
+	_check(g.move_limit > 0 and g.moves_label != null, "SUPER HARD level %d has a move limit (%d)" % [n, g.move_limit])
+	g.moves_used = g.move_limit
+	g.out_of_moves()
+	var pop: Node = SM.find_modal("out_of_moves")
+	_check(pop != null, "running out of moves offers +5 moves")
+	var limit0: int = g.move_limit
+	if pop:
+		pop.press("coins")
+	_check(g.move_limit == limit0 + 5 and CM.get_coins() == 300 and g.state == 1, "+5 moves for 200 coins, the level goes on")
+	g.out_of_moves()
+	_check(SM.find_modal("out_of_moves") == null and g.state == 4, "the +5 moves offer is once per level")
+	SM.close_all_modals()
 
 
 # --- Helpers -----------------------------------------------------------------

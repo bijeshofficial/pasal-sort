@@ -1,0 +1,569 @@
+{
+	"_comment": "Sticker album: 8 sets x 9 stickers. rarity 1-3 stars. Packs give 3 stickers; duplicates turn into sticker stars (= rarity each). Completing a set pays its reward once.",
+	"pack_size": 3,
+	"rarity_weights": [
+		70,
+		24,
+		6
+	],
+	"duplicate_stars": [
+		1,
+		2,
+		3
+	],
+	"shop": [
+		{
+			"id": "pack_basic",
+			"name": "Sticker pack",
+			"stars": 15,
+			"stickers": 3
+		},
+		{
+			"id": "pack_gold",
+			"name": "Gold pack",
+			"stars": 40,
+			"stickers": 4,
+			"min_rarity": 2
+		}
+	],
+	"coin_pack_price": 300,
+	"sets": [
+		{
+			"id": "snacks",
+			"name": "Nepali Snacks",
+			"color": "ff9f1c",
+			"reward": {
+				"coins": 300,
+				"boosters": {
+					"undo": 2
+				}
+			},
+			"stickers": [
+				{
+					"id": "snacks_1",
+					"name": "Momo",
+					"glyph": "momo",
+					"rarity": 1
+				},
+				{
+					"id": "snacks_2",
+					"name": "Sel roti",
+					"glyph": "ring",
+					"rarity": 1
+				},
+				{
+					"id": "snacks_3",
+					"name": "Chatpate",
+					"glyph": "bowl",
+					"rarity": 1
+				},
+				{
+					"id": "snacks_4",
+					"name": "Pani puri",
+					"glyph": "ball",
+					"rarity": 1
+				},
+				{
+					"id": "snacks_5",
+					"name": "Samosa",
+					"glyph": "triangle",
+					"rarity": 2
+				},
+				{
+					"id": "snacks_6",
+					"name": "Lapsi candy",
+					"glyph": "candy:0",
+					"rarity": 2
+				},
+				{
+					"id": "snacks_7",
+					"name": "Juju dhau",
+					"glyph": "pot",
+					"rarity": 2
+				},
+				{
+					"id": "snacks_8",
+					"name": "Yomari",
+					"glyph": "drop",
+					"rarity": 3
+				},
+				{
+					"id": "snacks_9",
+					"name": "Chiya",
+					"glyph": "cup",
+					"rarity": 3
+				}
+			]
+		},
+		{
+			"id": "festivals",
+			"name": "Festival Fun",
+			"color": "e8457a",
+			"reward": {
+				"coins": 300,
+				"boosters": {
+					"shuffle": 2
+				}
+			},
+			"stickers": [
+				{
+					"id": "festivals_1",
+					"name": "Kite",
+					"glyph": "kite",
+					"rarity": 1
+				},
+				{
+					"id": "festivals_2",
+					"name": "Ping swing",
+					"glyph": "swing",
+					"rarity": 1
+				},
+				{
+					"id": "festivals_3",
+					"name": "Paper lantern",
+					"glyph": "lantern",
+					"rarity": 1
+				},
+				{
+					"id": "festivals_4",
+					"name": "Marigold garland",
+					"glyph": "garland",
+					"rarity": 1
+				},
+				{
+					"id": "festivals_5",
+					"name": "Diyo lamp",
+					"glyph": "diyo",
+					"rarity": 2
+				},
+				{
+					"id": "festivals_6",
+					"name": "Sparklers",
+					"glyph": "sparkle",
+					"rarity": 2
+				},
+				{
+					"id": "festivals_7",
+					"name": "Madal drum",
+					"glyph": "drum",
+					"rarity": 2
+				},
+				{
+					"id": "festivals_8",
+					"name": "Bunting",
+					"glyph": "bunting",
+					"rarity": 3
+				},
+				{
+					"id": "festivals_9",
+					"name": "Sweets box",
+					"glyph": "gift",
+					"rarity": 3
+				}
+			]
+		},
+		{
+			"id": "animals",
+			"name": "Animals of Nepal",
+			"color": "2e8b57",
+			"reward": {
+				"coins": 400,
+				"boosters": {
+					"extra_jar": 2
+				}
+			},
+			"stickers": [
+				{
+					"id": "animals_1",
+					"name": "Yak",
+					"glyph": "animal:5a3b22",
+					"rarity": 1
+				},
+				{
+					"id": "animals_2",
+					"name": "Red panda",
+					"glyph": "animal:c8552b",
+					"rarity": 1
+				},
+				{
+					"id": "animals_3",
+					"name": "Rhino",
+					"glyph": "animal:8a8f99",
+					"rarity": 1
+				},
+				{
+					"id": "animals_4",
+					"name": "Tiger",
+					"glyph": "animal:ff8a1f",
+					"rarity": 1
+				},
+				{
+					"id": "animals_5",
+					"name": "Danphe",
+					"glyph": "bird:2a9d8f",
+					"rarity": 2
+				},
+				{
+					"id": "animals_6",
+					"name": "Snow leopard",
+					"glyph": "animal:d9d4cc",
+					"rarity": 2
+				},
+				{
+					"id": "animals_7",
+					"name": "Monkey",
+					"glyph": "animal:a86e45",
+					"rarity": 2
+				},
+				{
+					"id": "animals_8",
+					"name": "Elephant",
+					"glyph": "animal:9aa5b1",
+					"rarity": 3
+				},
+				{
+					"id": "animals_9",
+					"name": "Street dog",
+					"glyph": "animal:c99a5b",
+					"rarity": 3
+				}
+			]
+		},
+		{
+			"id": "mountains",
+			"name": "Mountains",
+			"color": "5fa8ff",
+			"reward": {
+				"coins": 400,
+				"unlimited_lives_min": 60
+			},
+			"stickers": [
+				{
+					"id": "mountains_1",
+					"name": "Everest",
+					"glyph": "peak:3",
+					"rarity": 1
+				},
+				{
+					"id": "mountains_2",
+					"name": "Annapurna",
+					"glyph": "peak:2",
+					"rarity": 1
+				},
+				{
+					"id": "mountains_3",
+					"name": "Dhaulagiri",
+					"glyph": "peak:4",
+					"rarity": 1
+				},
+				{
+					"id": "mountains_4",
+					"name": "Manaslu",
+					"glyph": "peak:1",
+					"rarity": 1
+				},
+				{
+					"id": "mountains_5",
+					"name": "Ama Dablam",
+					"glyph": "peak:5",
+					"rarity": 2
+				},
+				{
+					"id": "mountains_6",
+					"name": "Langtang",
+					"glyph": "peak:2",
+					"rarity": 2
+				},
+				{
+					"id": "mountains_7",
+					"name": "Kanchenjunga",
+					"glyph": "peak:4",
+					"rarity": 2
+				},
+				{
+					"id": "mountains_8",
+					"name": "Makalu",
+					"glyph": "peak:1",
+					"rarity": 3
+				},
+				{
+					"id": "mountains_9",
+					"name": "Lhotse",
+					"glyph": "peak:3",
+					"rarity": 3
+				}
+			]
+		},
+		{
+			"id": "vehicles",
+			"name": "On the Road",
+			"color": "f2b632",
+			"reward": {
+				"coins": 500,
+				"boosters": {
+					"lucky": 2
+				}
+			},
+			"stickers": [
+				{
+					"id": "vehicles_1",
+					"name": "Safa tempo",
+					"glyph": "vehicle:2e8b57",
+					"rarity": 1
+				},
+				{
+					"id": "vehicles_2",
+					"name": "Micro bus",
+					"glyph": "vehicle:f2f2f2",
+					"rarity": 1
+				},
+				{
+					"id": "vehicles_3",
+					"name": "Rickshaw",
+					"glyph": "vehicle:c0392b",
+					"rarity": 1
+				},
+				{
+					"id": "vehicles_4",
+					"name": "Bicycle",
+					"glyph": "bike:2b2b3a",
+					"rarity": 1
+				},
+				{
+					"id": "vehicles_5",
+					"name": "Motorbike",
+					"glyph": "bike:c0392b",
+					"rarity": 2
+				},
+				{
+					"id": "vehicles_6",
+					"name": "Painted truck",
+					"glyph": "vehicle:ff9f1c",
+					"rarity": 2
+				},
+				{
+					"id": "vehicles_7",
+					"name": "Cable car",
+					"glyph": "cable:e8457a",
+					"rarity": 2
+				},
+				{
+					"id": "vehicles_8",
+					"name": "Night bus",
+					"glyph": "vehicle:5a45d8",
+					"rarity": 3
+				},
+				{
+					"id": "vehicles_9",
+					"name": "Taxi",
+					"glyph": "vehicle:f2c14e",
+					"rarity": 3
+				}
+			]
+		},
+		{
+			"id": "crafts",
+			"name": "Crafts",
+			"color": "a35cff",
+			"reward": {
+				"coins": 500,
+				"boosters": {
+					"helper": 2
+				}
+			},
+			"stickers": [
+				{
+					"id": "crafts_1",
+					"name": "Dhaka cloth",
+					"glyph": "cloth",
+					"rarity": 1
+				},
+				{
+					"id": "crafts_2",
+					"name": "Clay pot",
+					"glyph": "pot",
+					"rarity": 1
+				},
+				{
+					"id": "crafts_3",
+					"name": "Carved window",
+					"glyph": "window",
+					"rarity": 1
+				},
+				{
+					"id": "crafts_4",
+					"name": "Pashmina",
+					"glyph": "shawl",
+					"rarity": 1
+				},
+				{
+					"id": "crafts_5",
+					"name": "Lokta paper",
+					"glyph": "paper",
+					"rarity": 2
+				},
+				{
+					"id": "crafts_6",
+					"name": "Doko basket",
+					"glyph": "basket",
+					"rarity": 2
+				},
+				{
+					"id": "crafts_7",
+					"name": "Felt balls",
+					"glyph": "balls",
+					"rarity": 2
+				},
+				{
+					"id": "crafts_8",
+					"name": "Hand loom",
+					"glyph": "loom",
+					"rarity": 3
+				},
+				{
+					"id": "crafts_9",
+					"name": "Copper gagri",
+					"glyph": "jug",
+					"rarity": 3
+				}
+			]
+		},
+		{
+			"id": "shop",
+			"name": "Shop Treasures",
+			"color": "0f5e63",
+			"reward": {
+				"coins": 600,
+				"boosters": {
+					"open_jar": 2,
+					"peek": 2
+				}
+			},
+			"stickers": [
+				{
+					"id": "shop_1",
+					"name": "Candy jar",
+					"glyph": "jar",
+					"rarity": 1
+				},
+				{
+					"id": "shop_2",
+					"name": "Brass scale",
+					"glyph": "scale",
+					"rarity": 1
+				},
+				{
+					"id": "shop_3",
+					"name": "Cash box",
+					"glyph": "chest",
+					"rarity": 1
+				},
+				{
+					"id": "shop_4",
+					"name": "Sweets tin",
+					"glyph": "tin",
+					"rarity": 1
+				},
+				{
+					"id": "shop_5",
+					"name": "Paper bag",
+					"glyph": "bag",
+					"rarity": 2
+				},
+				{
+					"id": "shop_6",
+					"name": "Kettle",
+					"glyph": "kettle",
+					"rarity": 2
+				},
+				{
+					"id": "shop_7",
+					"name": "Abacus",
+					"glyph": "abacus",
+					"rarity": 2
+				},
+				{
+					"id": "shop_8",
+					"name": "Ledger",
+					"glyph": "book",
+					"rarity": 3
+				},
+				{
+					"id": "shop_9",
+					"name": "Lucky coin",
+					"glyph": "coin",
+					"rarity": 3
+				}
+			]
+		},
+		{
+			"id": "friends",
+			"name": "Friends of Chiya Tole",
+			"color": "ff6b5b",
+			"reward": {
+				"coins": 1000,
+				"unlimited_lives_min": 120,
+				"boosters": {
+					"undo": 3,
+					"shuffle": 3
+				}
+			},
+			"stickers": [
+				{
+					"id": "friends_1",
+					"name": "Maya",
+					"glyph": "char:maya",
+					"rarity": 1
+				},
+				{
+					"id": "friends_2",
+					"name": "Hajurama",
+					"glyph": "char:hajurama",
+					"rarity": 1
+				},
+				{
+					"id": "friends_3",
+					"name": "Bhai",
+					"glyph": "char:bhai",
+					"rarity": 1
+				},
+				{
+					"id": "friends_4",
+					"name": "Kanchha Dai",
+					"glyph": "char:kanchha",
+					"rarity": 2
+				},
+				{
+					"id": "friends_5",
+					"name": "Sunita Didi",
+					"glyph": "char:sunita",
+					"rarity": 2
+				},
+				{
+					"id": "friends_6",
+					"name": "Biralo",
+					"glyph": "char:biralo",
+					"rarity": 2
+				},
+				{
+					"id": "friends_7",
+					"name": "Biralo napping",
+					"glyph": "char:biralo",
+					"rarity": 3
+				},
+				{
+					"id": "friends_8",
+					"name": "Maya laughing",
+					"glyph": "char:maya",
+					"rarity": 3
+				},
+				{
+					"id": "friends_9",
+					"name": "Hajurama's smile",
+					"glyph": "char:hajurama",
+					"rarity": 3
+				}
+			]
+		}
+	]
+}

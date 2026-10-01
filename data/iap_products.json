@@ -73,6 +73,15 @@
 					"helper": 2
 				}
 			}
+		},
+		{
+			"id": "event_pass",
+			"name": "Event Pass",
+			"price_label": "$2.99",
+			"icon": "flag",
+			"contents": {
+				"event_pass": true
+			}
 		}
 	]
 }

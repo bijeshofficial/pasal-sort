@@ -265,6 +265,89 @@ func _run() -> void:
 		await _wait(0.3)
 		await _save("91_profile_achievements")
 
+	if which in ["all", "live"]:
+		_fresh(140, 900, 4)
+		_reno(2, 4)
+		var AL := root.get_node("AlbumManager")
+		for k in 6:
+			AL.open_pack("capture")
+		S.data["game"]["album"]["stars"] = 22
+		var EV := root.get_node("EventManager")
+		EV.roll()
+		EV.add_currency(14)
+		var RC := root.get_node("RaceManager")
+		RC.join()
+		root.get_node("TimeManager").advance(3600 * 3)
+		RC.block()["wins"] = 3
+		SM.hub_tab = "home"
+		await _scene("res://scenes/main/hub.tscn", 0.9)
+		await _save("92_home_live")
+		load("res://scripts/ui/live_popups.gd").open_album()
+		await _wait(0.5)
+		await _save("93_album")
+		SM.close_all_modals()
+		load("res://scripts/ui/live_popups.gd").open_set(String(AL.sets()[0]["id"]))
+		await _wait(0.5)
+		await _save("94_album_set")
+		SM.close_all_modals()
+		load("res://scripts/ui/live_popups.gd").open_pack_result(AL.open_pack("capture"))
+		await _wait(1.6)
+		await _save("95_pack")
+		SM.close_all_modals()
+		load("res://scripts/ui/live_popups.gd").open_event()
+		await _wait(0.5)
+		await _save("96_event")
+		SM.close_all_modals()
+		load("res://scripts/ui/live_popups.gd").open_race()
+		await _wait(0.5)
+		await _save("97_race")
+		SM.close_all_modals()
+		root.get_node("TimeManager").debug_offset = 0.0
+		var cat_level := 110
+		while cat_level < 400 and not LevelGenerator.generate(cat_level).has("cat"):
+			cat_level += 1
+		_fresh(cat_level)
+		for k in ["twist_cat", "twist_gift", "helper"]:
+			S.data["game"]["tutorial_steps"][k] = true
+		await _scene("res://scenes/gameplay/gameplay.tscn", 1.8)
+		await _save("98_cat_level")
+		var gift_level := 151
+		while gift_level < 400:
+			var gl := LevelGenerator.generate(gift_level)
+			var has_gift := false
+			for j in gl["jars"]:
+				if bool(j.get("gift", false)):
+					has_gift = true
+			if has_gift:
+				break
+			gift_level += 1
+		_fresh(gift_level)
+		for k in ["twist_cat", "twist_gift", "helper"]:
+			S.data["game"]["tutorial_steps"][k] = true
+		S.data["game"]["boosters"]["helper"] = 2
+		await _scene("res://scenes/gameplay/gameplay.tscn", 1.8)
+		await _save("99_gift_level")
+		_fresh(25)
+		await _scene("res://scenes/gameplay/gameplay.tscn", 1.8)
+		await _save("100_orders")
+		var ml := 60
+		while ml < 200 and int(LevelGenerator.generate(ml).get("move_limit", 0)) == 0:
+			ml += 1
+		_fresh(ml)
+		S.data["game"]["tutorial_steps"]["helper"] = true
+		S.data["game"]["boosters"]["helper"] = 2
+		await _scene("res://scenes/gameplay/gameplay.tscn", 1.8)
+		await _save("101_move_limit")
+		current_scene._pick_helper_type()
+		await _wait(0.5)
+		await _save("102_helper")
+		SM.close_all_modals()
+		_fresh(cat_level)
+		S.data["game"]["tutorial_steps"].erase("twist_cat")
+		await _scene("res://scenes/gameplay/gameplay.tscn", 2.0)
+		await _save("103_cat_card")
+		SM.close_all_modals()
+
 	if which in ["all", "twists"]:
 		for spec in [[15, "20_wrapped"], [30, "21_cloth"], [50, "22_lock"], [80, "23_tall"]]:
 			_fresh(int(spec[0]))

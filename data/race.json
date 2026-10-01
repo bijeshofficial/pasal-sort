@@ -1,0 +1,87 @@
+{
+	"_comment": "Bazaar Race: race 4 friendly shopkeeper characters (simulated, not real players) to 7 wins. Rival paces in minutes per win. Top 3 win rewards. A new race is available cooldown_hours after the last one ends; a race lasts at most duration_hours.",
+	"wins": 7,
+	"duration_hours": 24,
+	"cooldown_hours": 3,
+	"rivals": [
+		{
+			"id": "ramesh",
+			"name": "Ramesh Uncle",
+			"shop": "Ramesh Sweets",
+			"avatar": 5,
+			"pace": [
+				35,
+				80
+			]
+		},
+		{
+			"id": "pema",
+			"name": "Pema",
+			"shop": "Mountain Mart",
+			"avatar": 4,
+			"pace": [
+				25,
+				70
+			]
+		},
+		{
+			"id": "bikash",
+			"name": "Bikash",
+			"shop": "Bikash Bhandar",
+			"avatar": 6,
+			"pace": [
+				45,
+				110
+			]
+		},
+		{
+			"id": "laxmi",
+			"name": "Laxmi Aunty",
+			"shop": "Corner Kirana",
+			"avatar": 1,
+			"pace": [
+				30,
+				95
+			]
+		},
+		{
+			"id": "sanu",
+			"name": "Sanu",
+			"shop": "Tole Treats",
+			"avatar": 2,
+			"pace": [
+				40,
+				100
+			]
+		},
+		{
+			"id": "dawa",
+			"name": "Dawa",
+			"shop": "Trail Snacks",
+			"avatar": 3,
+			"pace": [
+				50,
+				120
+			]
+		}
+	],
+	"rewards": [
+		{
+			"coins": 300,
+			"boosters": {
+				"undo": 2,
+				"lucky": 1
+			},
+			"sticker_packs": 1
+		},
+		{
+			"coins": 150,
+			"boosters": {
+				"shuffle": 1
+			}
+		},
+		{
+			"coins": 80
+		}
+	]
+}

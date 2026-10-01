@@ -13,7 +13,7 @@ Read this first at the start of every session. Godot 4.7.2 at
 | 4 Renovation | stars, areas 1-10 data, Home pan/zoom, tasks, style picker, dialogue | done |
 | 5 Economy & shop | pre-level boosters, start card, Dami streak, iap_products, No Ads, starter pack | done |
 | 6 Daily loop | calendar, missions + chest, daily challenge, chests, achievements 30+ | done |
-| 7 Live features | album, weekly event, Bazaar Race, treasure streak, cat paw, gift box, orders, move limit, Haat Helper | todo |
+| 7 Live features | album, weekly event, Bazaar Race, treasure streak, cat paw, gift box, orders, move limit, Haat Helper | done |
 | 8 Polish | i18n en/ne, accessibility, analytics, debug menu, QA screenshots | todo |
 
 ## Decisions
@@ -52,14 +52,23 @@ Read this first at the start of every session. Godot 4.7.2 at
   every 10 levels, star chest per 15 stars spent), data in `data/daily.json`
   and `data/chests.json`. Game events go through `GameManager.emit_event`.
 - Achievements: 32 families with tiers (`data/achievements.json`).
+- Live: `AlbumManager` (`data/album.json`), `EventManager` (`data/events.json`,
+  weekly rotation, Event Pass is an IAP product), `RaceManager`
+  (`data/race.json`, rivals simulated from seeded timetables).
+- Twists: the cat's route is planned from a known solution (solvable by
+  construction) and stored with `solution_moves`; gift boxes are cosmetic for
+  the rules; orders and move limits come from `LevelGenerator.decorate`.
 
 ## Next step
 
-Phase 7: sticker album (8 sets x 9, rarity, duplicates -> sticker stars,
-sticker shop), weekly events from events.json with a 15-milestone track and
-mock pass, Bazaar Race vs 4 AI shopkeepers, remaining twists (cat paw, gift
-box), customer orders, move-limit levels (+5 moves offer), Haat Helper.
+Phase 8: localisation (CSV en/ne via TranslationServer, Devanagari font
+fallback), colour-blind markings + text size, AnalyticsManager (local JSON
+lines + debug summary), debug/cheat menu (5 taps on the version), Android
+export preset check, full screenshot QA pass of every screen.
 
 ## Known issues
 
-- None recorded yet.
+- Generation timing: worst case ~9k solver nodes per level (~1 s on an idle
+  desktop). Timings measured this session were inflated by heavy machine load.
+- Another session added store-screenshot tooling (docs/store, tools/store_shots.gd,
+  GameManager.capture_mode); it is left uncommitted for its owner.

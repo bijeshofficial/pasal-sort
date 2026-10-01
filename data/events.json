@@ -1,0 +1,554 @@
+{
+	"_comment": "Weekly events rotate every 7 days (Monday to Sunday, local time). Wins drop event currency (per_win + tier bonus). 15 milestones: a free track and a mock Event Pass track.",
+	"per_win": 1,
+	"hard_bonus": 1,
+	"super_bonus": 2,
+	"events": [
+		{
+			"id": "kite_week",
+			"name": "Kite Week",
+			"currency": "kites",
+			"icon": "kite",
+			"color": "2f9bff",
+			"text": "The sky over Chiya Tole fills with kites. Win levels to collect kites!",
+			"track": [
+				{
+					"target": 3,
+					"free": {
+						"coins": 40
+					},
+					"pass": {
+						"coins": 100
+					}
+				},
+				{
+					"target": 6,
+					"free": {
+						"boosters": {
+							"undo": 1
+						}
+					},
+					"pass": {
+						"boosters": {
+							"extra_jar": 1,
+							"lucky": 1
+						}
+					}
+				},
+				{
+					"target": 9,
+					"free": {
+						"coins": 80
+					},
+					"pass": {
+						"unlimited_lives_min": 30
+					}
+				},
+				{
+					"target": 13,
+					"free": {
+						"boosters": {
+							"shuffle": 1
+						}
+					},
+					"pass": {
+						"sticker_packs": 1,
+						"coins": 80
+					}
+				},
+				{
+					"target": 17,
+					"free": {
+						"sticker_packs": 1
+					},
+					"pass": {
+						"boosters": {
+							"helper": 1,
+							"open_jar": 1
+						}
+					}
+				},
+				{
+					"target": 21,
+					"free": {
+						"coins": 90
+					},
+					"pass": {
+						"coins": 200
+					}
+				},
+				{
+					"target": 26,
+					"free": {
+						"boosters": {
+							"undo": 1
+						}
+					},
+					"pass": {
+						"boosters": {
+							"extra_jar": 1,
+							"lucky": 1
+						}
+					}
+				},
+				{
+					"target": 31,
+					"free": {
+						"coins": 130
+					},
+					"pass": {
+						"unlimited_lives_min": 30
+					}
+				},
+				{
+					"target": 36,
+					"free": {
+						"boosters": {
+							"shuffle": 1
+						}
+					},
+					"pass": {
+						"sticker_packs": 1,
+						"coins": 80
+					}
+				},
+				{
+					"target": 42,
+					"free": {
+						"sticker_packs": 1
+					},
+					"pass": {
+						"boosters": {
+							"helper": 1,
+							"open_jar": 1
+						}
+					}
+				},
+				{
+					"target": 48,
+					"free": {
+						"coins": 140
+					},
+					"pass": {
+						"coins": 300
+					}
+				},
+				{
+					"target": 54,
+					"free": {
+						"boosters": {
+							"undo": 1
+						}
+					},
+					"pass": {
+						"boosters": {
+							"extra_jar": 1,
+							"lucky": 1
+						}
+					}
+				},
+				{
+					"target": 61,
+					"free": {
+						"coins": 180
+					},
+					"pass": {
+						"unlimited_lives_min": 30
+					}
+				},
+				{
+					"target": 68,
+					"free": {
+						"boosters": {
+							"shuffle": 1
+						}
+					},
+					"pass": {
+						"sticker_packs": 1,
+						"coins": 80
+					}
+				},
+				{
+					"target": 75,
+					"free": {
+						"coins": 500,
+						"sticker_packs": 2
+					},
+					"pass": {
+						"coins": 1000,
+						"unlimited_lives_min": 120,
+						"boosters": {
+							"undo": 3,
+							"shuffle": 3,
+							"extra_jar": 2
+						}
+					}
+				}
+			]
+		},
+		{
+			"id": "tihar_lights",
+			"name": "Tihar Lights",
+			"currency": "diyos",
+			"icon": "diyo",
+			"color": "ff9f1c",
+			"text": "Light up the street! Win levels to collect diyos.",
+			"track": [
+				{
+					"target": 3,
+					"free": {
+						"coins": 40
+					},
+					"pass": {
+						"coins": 100
+					}
+				},
+				{
+					"target": 6,
+					"free": {
+						"boosters": {
+							"undo": 1
+						}
+					},
+					"pass": {
+						"boosters": {
+							"extra_jar": 1,
+							"lucky": 1
+						}
+					}
+				},
+				{
+					"target": 9,
+					"free": {
+						"coins": 80
+					},
+					"pass": {
+						"unlimited_lives_min": 30
+					}
+				},
+				{
+					"target": 13,
+					"free": {
+						"boosters": {
+							"shuffle": 1
+						}
+					},
+					"pass": {
+						"sticker_packs": 1,
+						"coins": 80
+					}
+				},
+				{
+					"target": 17,
+					"free": {
+						"sticker_packs": 1
+					},
+					"pass": {
+						"boosters": {
+							"helper": 1,
+							"open_jar": 1
+						}
+					}
+				},
+				{
+					"target": 21,
+					"free": {
+						"coins": 90
+					},
+					"pass": {
+						"coins": 200
+					}
+				},
+				{
+					"target": 26,
+					"free": {
+						"boosters": {
+							"undo": 1
+						}
+					},
+					"pass": {
+						"boosters": {
+							"extra_jar": 1,
+							"lucky": 1
+						}
+					}
+				},
+				{
+					"target": 31,
+					"free": {
+						"coins": 130
+					},
+					"pass": {
+						"unlimited_lives_min": 30
+					}
+				},
+				{
+					"target": 36,
+					"free": {
+						"boosters": {
+							"shuffle": 1
+						}
+					},
+					"pass": {
+						"sticker_packs": 1,
+						"coins": 80
+					}
+				},
+				{
+					"target": 42,
+					"free": {
+						"sticker_packs": 1
+					},
+					"pass": {
+						"boosters": {
+							"helper": 1,
+							"open_jar": 1
+						}
+					}
+				},
+				{
+					"target": 48,
+					"free": {
+						"coins": 140
+					},
+					"pass": {
+						"coins": 300
+					}
+				},
+				{
+					"target": 54,
+					"free": {
+						"boosters": {
+							"undo": 1
+						}
+					},
+					"pass": {
+						"boosters": {
+							"extra_jar": 1,
+							"lucky": 1
+						}
+					}
+				},
+				{
+					"target": 61,
+					"free": {
+						"coins": 180
+					},
+					"pass": {
+						"unlimited_lives_min": 30
+					}
+				},
+				{
+					"target": 68,
+					"free": {
+						"boosters": {
+							"shuffle": 1
+						}
+					},
+					"pass": {
+						"sticker_packs": 1,
+						"coins": 80
+					}
+				},
+				{
+					"target": 75,
+					"free": {
+						"coins": 500,
+						"sticker_packs": 2
+					},
+					"pass": {
+						"coins": 1000,
+						"unlimited_lives_min": 120,
+						"boosters": {
+							"undo": 3,
+							"shuffle": 3,
+							"extra_jar": 2
+						}
+					}
+				}
+			]
+		},
+		{
+			"id": "momo_fest",
+			"name": "Momo Fest",
+			"currency": "momos",
+			"icon": "momo",
+			"color": "e8457a",
+			"text": "Sunita Didi's momo festival! Win levels to collect momos.",
+			"track": [
+				{
+					"target": 3,
+					"free": {
+						"coins": 40
+					},
+					"pass": {
+						"coins": 100
+					}
+				},
+				{
+					"target": 6,
+					"free": {
+						"boosters": {
+							"undo": 1
+						}
+					},
+					"pass": {
+						"boosters": {
+							"extra_jar": 1,
+							"lucky": 1
+						}
+					}
+				},
+				{
+					"target": 9,
+					"free": {
+						"coins": 80
+					},
+					"pass": {
+						"unlimited_lives_min": 30
+					}
+				},
+				{
+					"target": 13,
+					"free": {
+						"boosters": {
+							"shuffle": 1
+						}
+					},
+					"pass": {
+						"sticker_packs": 1,
+						"coins": 80
+					}
+				},
+				{
+					"target": 17,
+					"free": {
+						"sticker_packs": 1
+					},
+					"pass": {
+						"boosters": {
+							"helper": 1,
+							"open_jar": 1
+						}
+					}
+				},
+				{
+					"target": 21,
+					"free": {
+						"coins": 90
+					},
+					"pass": {
+						"coins": 200
+					}
+				},
+				{
+					"target": 26,
+					"free": {
+						"boosters": {
+							"undo": 1
+						}
+					},
+					"pass": {
+						"boosters": {
+							"extra_jar": 1,
+							"lucky": 1
+						}
+					}
+				},
+				{
+					"target": 31,
+					"free": {
+						"coins": 130
+					},
+					"pass": {
+						"unlimited_lives_min": 30
+					}
+				},
+				{
+					"target": 36,
+					"free": {
+						"boosters": {
+							"shuffle": 1
+						}
+					},
+					"pass": {
+						"sticker_packs": 1,
+						"coins": 80
+					}
+				},
+				{
+					"target": 42,
+					"free": {
+						"sticker_packs": 1
+					},
+					"pass": {
+						"boosters": {
+							"helper": 1,
+							"open_jar": 1
+						}
+					}
+				},
+				{
+					"target": 48,
+					"free": {
+						"coins": 140
+					},
+					"pass": {
+						"coins": 300
+					}
+				},
+				{
+					"target": 54,
+					"free": {
+						"boosters": {
+							"undo": 1
+						}
+					},
+					"pass": {
+						"boosters": {
+							"extra_jar": 1,
+							"lucky": 1
+						}
+					}
+				},
+				{
+					"target": 61,
+					"free": {
+						"coins": 180
+					},
+					"pass": {
+						"unlimited_lives_min": 30
+					}
+				},
+				{
+					"target": 68,
+					"free": {
+						"boosters": {
+							"shuffle": 1
+						}
+					},
+					"pass": {
+						"sticker_packs": 1,
+						"coins": 80
+					}
+				},
+				{
+					"target": 75,
+					"free": {
+						"coins": 500,
+						"sticker_packs": 2
+					},
+					"pass": {
+						"coins": 1000,
+						"unlimited_lives_min": 120,
+						"boosters": {
+							"undo": 3,
+							"shuffle": 3,
+							"extra_jar": 2
+						}
+					}
+				}
+			]
+		}
+	]
+}

@@ -64,6 +64,7 @@ func build() -> void:
 	for b in GameData.economy()["bundles"]:
 		grid.add_child(_bundle_card(b))
 	list.add_child(_lives_card())
+	list.add_child(_sticker_card())
 	for cat in GameData.cosmetic_categories():
 		_section(cat["name"])
 		var cg := GridContainer.new()
@@ -255,6 +256,29 @@ func _lives_card() -> Control:
 			VFXManager.toast("Lives refilled!")
 		else:
 			VFXManager.toast("Not enough coins"))
+	row.add_child(btn)
+	return card
+
+
+func _sticker_card() -> Control:
+	var card := _card()
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 18)
+	card.add_child(row)
+	row.add_child(UIKit.disk("sticker", 110, Color("ff6b9a"), UIKit.PINK_EDGE))
+	var col := VBoxContainer.new()
+	col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	col.add_child(UIKit.label(tr("Sticker pack"), 42, UIKit.INK, HORIZONTAL_ALIGNMENT_LEFT))
+	col.add_child(UIKit.label(tr("3 stickers for your Pasal Album"), 30, UIKit.INK_SOFT, HORIZONTAL_ALIGNMENT_LEFT, false))
+	row.add_child(col)
+	var btn := UIKit.button(str(AlbumManager.coin_pack_price()), "gold", "coin", 36, Vector2(230, 120))
+	btn.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	btn.pressed.connect(func() -> void:
+		var got := AlbumManager.buy_with_coins()
+		if got.is_empty():
+			VFXManager.toast(tr("Not enough coins"))
+		else:
+			LivePopups.open_pack_result(got))
 	row.add_child(btn)
 	return card
 

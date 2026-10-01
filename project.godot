@@ -44,6 +44,9 @@ DialogueManager="*res://scripts/meta/dialogue_manager.gd"
 StreakManager="*res://scripts/meta/streak_manager.gd"
 DailyManager="*res://scripts/meta/daily_manager.gd"
 ChestManager="*res://scripts/meta/chest_manager.gd"
+AlbumManager="*res://scripts/meta/album_manager.gd"
+EventManager="*res://scripts/meta/event_manager.gd"
+RaceManager="*res://scripts/meta/race_manager.gd"
 
 [display]
 

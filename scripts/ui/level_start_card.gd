@@ -101,6 +101,12 @@ func _streak_meter() -> Control:
 	var l := UIKit.label(text, 32, UIKit.INK_SOFT)
 	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	box.add_child(l)
+	var trunk := HBoxContainer.new()
+	trunk.alignment = BoxContainer.ALIGNMENT_CENTER
+	trunk.add_theme_constant_override("separation", 10)
+	trunk.add_child(UIKit.icon("chest", 48, Color("2f6f8f")))
+	trunk.add_child(UIKit.label(tr("Hajurama's Trunk: %d / %d wins in a row") % [StreakManager.treasure(), StreakManager.treasure_goal()], 30, UIKit.INK_SOFT))
+	box.add_child(trunk)
 	return box
 
 

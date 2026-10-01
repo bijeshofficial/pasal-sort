@@ -9,6 +9,7 @@ var color := UIKit.SECONDARY
 var _dot: Control
 var _label: Label
 var _timer: Label
+var _icon: IconView
 
 
 func setup(feature_id: String, icon: String, text: String, fill: Color) -> void:
@@ -20,11 +21,11 @@ func setup(feature_id: String, icon: String, text: String, fill: Color) -> void:
 	custom_minimum_size = Vector2(140, 172)
 	for st in ["normal", "hover", "pressed", "focus"]:
 		add_theme_stylebox_override(st, StyleBoxEmpty.new())
-	var ic := UIKit.icon(icon, 74, Color.WHITE)
-	ic.shadow = true
-	ic.position = Vector2(33, 26)
-	ic.size = Vector2(74, 74)
-	add_child(ic)
+	_icon = UIKit.icon(icon, 74, Color.WHITE)
+	_icon.shadow = true
+	_icon.position = Vector2(33, 26)
+	_icon.size = Vector2(74, 74)
+	add_child(_icon)
 	_label = UIKit.title(text, 30)
 	_label.position = Vector2(-20, 116)
 	_label.size = Vector2(180, 40)
@@ -47,6 +48,11 @@ func setup(feature_id: String, icon: String, text: String, fill: Color) -> void:
 
 func _draw() -> void:
 	DrawKit.glossy_circle(self, Vector2(70, 62), 58, color, color.darkened(0.35), 6.0, 9.0)
+
+
+func set_icon(icon: String) -> void:
+	icon_name = icon
+	_icon.icon = icon
 
 
 func set_dot(on: bool) -> void:

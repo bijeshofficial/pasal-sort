@@ -108,6 +108,9 @@ func grant(product_id: String) -> Array:
 		block()["no_ads"] = true
 		no_ads_changed.emit(true)
 	c.erase("no_ads")
+	if bool(c.get("event_pass", false)):
+		EventManager.buy_pass()
+	c.erase("event_pass")
 	var items := Rewards.grant(c, "iap_" + product_id)
 	SaveManager.save_game()
 	purchased.emit(product_id)

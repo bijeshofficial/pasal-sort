@@ -66,7 +66,10 @@ func _ready() -> void:
 	add_feature("areas", "map", "left", tr("Areas"), UIKit.SECONDARY)
 	add_feature("calendar", "calendar", "left", tr("Daily"), UIKit.GOLD)
 	add_feature("missions", "tasks", "left", tr("Missions"), UIKit.PRIMARY)
+	add_feature("album", "album", "left", tr("Album"), Color("ff6b9a"))
 	add_feature("challenge", "flag", "right", tr("Challenge"), UIKit.PURPLE)
+	add_feature("event", "kite", "right", tr("Event"), UIKit.SECONDARY)
+	add_feature("race", "race", "right", tr("Race"), Color("ff7a3d"))
 	add_feature("star_chest", "chest", "right", tr("Star chest"), UIKit.PINK)
 	# Bottom row: Tasks + PLAY.
 	_bottom = HBoxContainer.new()
@@ -98,6 +101,9 @@ func _ready() -> void:
 	resized.connect(_layout)
 	RenovationManager.task_completed.connect(_on_reno_changed)
 	DailyManager.changed.connect(refresh_features)
+	AlbumManager.changed.connect(refresh_features)
+	EventManager.changed.connect(refresh_features)
+	RaceManager.changed.connect(refresh_features)
 	RenovationManager.style_changed.connect(_on_reno_changed)
 	CurrencyManager.stars_changed.connect(_on_stars_changed)
 	_layout()
@@ -156,6 +162,12 @@ func _on_feature(id: String) -> void:
 			DailyPopups.open_challenge()
 		"star_chest":
 			DailyPopups.open_star_chest(refresh)
+		"album":
+			LivePopups.open_album(refresh)
+		"event":
+			LivePopups.open_event(refresh)
+		"race":
+			LivePopups.open_race(refresh)
 	feature_pressed.emit(id)
 
 
@@ -173,6 +185,27 @@ func refresh_features() -> void:
 		var n := ChestManager.star_chests_available()
 		features["star_chest"].visible = n > 0
 		features["star_chest"].set_dot(n > 0)
+	if features.has("album"):
+		features["album"].set_dot(AlbumManager.has_new() or AlbumManager.claimable_sets() > 0)
+	if features.has("event"):
+		var ev := EventManager.current()
+		features["event"].visible = not ev.is_empty()
+		if not ev.is_empty():
+			var f: FeatureButton = features["event"]
+			if f.icon_name != String(ev["icon"]):
+				f.set_icon(String(ev["icon"]))
+			f.set_dot(EventManager.claimable_count() > 0)
+			f.set_timer(TimeManager.short_duration(TimeManager.seconds_to_week_end()))
+	if features.has("race"):
+		var rf: FeatureButton = features["race"]
+		rf.set_dot(RaceManager.attention())
+		var st := String(RaceManager.block().get("state", "idle"))
+		if st == "running":
+			rf.set_timer("%d/%d" % [RaceManager.player_wins(), RaceManager.goal()])
+		elif not RaceManager.can_join() and st == "idle":
+			rf.set_timer(TimeManager.short_duration(RaceManager.seconds_until_open()))
+		else:
+			rf.set_timer("")
 
 
 func _process(_delta: float) -> void:

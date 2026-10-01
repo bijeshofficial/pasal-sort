@@ -936,6 +936,7 @@ func _win(delay: float) -> void:
 		_summary["dami"] = StreakManager.dami()
 		_summary["milestone"] = ChestManager.level_chest_due(level)
 		_summary["order_bonus"] = order_bonus
+		_summary["event"] = EventManager.on_win(String(_summary.get("tier", "normal")))
 		var tier := String(_summary.get("tier", "normal"))
 		GameManager.emit_event("win")
 		if tier == "hard" or tier == "super":

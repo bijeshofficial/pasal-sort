@@ -75,6 +75,26 @@ func _ready() -> void:
 	v.add_child(double_button)
 	if daily:
 		v.add_child(UIKit.label(tr("Challenge streak: %d days") % int(summary.get("streak", 1)), 40, UIKit.PINK_EDGE))
+	var extras := HBoxContainer.new()
+	extras.alignment = BoxContainer.ALIGNMENT_CENTER
+	extras.add_theme_constant_override("separation", 26)
+	if int(summary.get("event", 0)) > 0:
+		var er := HBoxContainer.new()
+		er.add_child(UIKit.icon(EventManager.currency_icon(), 64, UIKit.SECONDARY))
+		er.add_child(UIKit.label("+%d %s" % [int(summary["event"]), EventManager.currency_name()], 36, UIKit.SECONDARY_EDGE))
+		extras.add_child(er)
+	if int(summary.get("order_bonus", 0)) > 0:
+		var orr := HBoxContainer.new()
+		orr.add_child(UIKit.icon("order", 56, UIKit.PURPLE))
+		orr.add_child(UIKit.label(tr("Orders +%d coins") % int(summary["order_bonus"]), 32, UIKit.PURPLE_EDGE))
+		extras.add_child(orr)
+	if RaceManager.block().get("state", "") == "running":
+		var rr := HBoxContainer.new()
+		rr.add_child(UIKit.icon("race", 56, Color("ff7a3d")))
+		rr.add_child(UIKit.label(tr("Race %d/%d") % [RaceManager.player_wins(), RaceManager.goal()], 32, Color("cc4a10")))
+		extras.add_child(rr)
+	if extras.get_child_count() > 0:
+		v.add_child(extras)
 	continue_button = UIKit.button(tr("Renovate!") if renovate else (tr("HOME") if daily else tr("CONTINUE")), "primary", "brush" if renovate else ("home" if daily else "play"), 70, Vector2(0, 190))
 	continue_button.pressed.connect(func() -> void: continue_pressed.emit())
 	v.add_child(continue_button)
