@@ -77,3 +77,33 @@ static func draw_avatar(ci: CanvasItem, c: Vector2, r: float, idx: int) -> void:
 		var mc := Color("2b1d16") if idx == 0 else Color("d8d4cc")
 		ci.draw_colored_polygon(PackedVector2Array([head + Vector2(-2, 18) * u, head + Vector2(-26, 24) * u, head + Vector2(-24, 16) * u, head + Vector2(0, 14) * u, head + Vector2(24, 16) * u, head + Vector2(26, 24) * u, head + Vector2(2, 18) * u]), mc)
 	ci.draw_arc(head + Vector2(0, 22) * u, 12 * u, 0.4, PI - 0.4, 10, Color("7a2b22"), 4 * u, true)
+
+
+## Avatar frame (cosmetic): a ring in the frame's colours with a little
+## decoration (petals, dhaka diamonds, shine or mountain peaks).
+static func draw_frame(ci: CanvasItem, c: Vector2, r: float, item: Dictionary, t: float = 0.0) -> void:
+	var col := Color.html(String(item.get("color", "ffffff")))
+	var acc := Color.html(String(item.get("accent", "cbc2ff")))
+	var w := maxf(6.0, r * 0.12)
+	ci.draw_arc(c, r - w * 0.5, 0, TAU, 64, col.darkened(0.3), w + 4, true)
+	ci.draw_arc(c, r - w * 0.5, 0, TAU, 64, col, w, true)
+	match String(item.get("fx", "")):
+		"petals":
+			for k in 12:
+				var a := TAU * k / 12.0 + t * 0.3
+				ci.draw_circle(c + Vector2(cos(a), sin(a)) * (r - w * 0.5), w * 0.55, acc if k % 2 == 0 else col.lightened(0.2), true, -1.0, true)
+		"dhaka":
+			for k in 16:
+				var a := TAU * k / 16.0
+				var p := c + Vector2(cos(a), sin(a)) * (r - w * 0.5)
+				var s := w * 0.38
+				ci.draw_colored_polygon(PackedVector2Array([p + Vector2(0, -s), p + Vector2(s, 0), p + Vector2(0, s), p + Vector2(-s, 0)]), acc if k % 2 == 0 else Color("f2b632"))
+		"shine":
+			var a0 := fmod(t * 1.5, TAU)
+			ci.draw_arc(c, r - w * 0.5, a0, a0 + 0.6, 12, Color(1, 1, 1, 0.8), w * 0.5, true)
+		"peaks":
+			for k in 3:
+				var a := -PI * 0.5 + (k - 1) * 0.35
+				var p := c + Vector2(cos(a), sin(a)) * (r - w * 0.2)
+				ci.draw_colored_polygon(PackedVector2Array([p + Vector2(-w, w * 0.6), p + Vector2(0, -w * 1.2), p + Vector2(w, w * 0.6)]), col.darkened(0.15))
+				ci.draw_colored_polygon(PackedVector2Array([p + Vector2(-w * 0.4, -w * 0.3), p + Vector2(0, -w * 1.2), p + Vector2(w * 0.4, -w * 0.3)]), acc)

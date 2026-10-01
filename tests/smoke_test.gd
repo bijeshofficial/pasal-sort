@@ -65,6 +65,7 @@ func _main() -> void:
 	DM = root.get_node("DialogueManager")
 	RM = root.get_node("RenovationManager")
 	DM.instant = true
+	IAP.offer_shown_this_session = true
 
 	S.set_save_path(TEST_SAVE)
 	_remove_test_files()
@@ -488,6 +489,10 @@ func _test_give_up_and_leave() -> void:
 	g.do_move(mv[0], mv[1])
 	var lives0: int = LM.lives()
 	g.give_up()
+	var sc: Node = SM.find_modal("so_close")
+	_check(sc != null and LM.lives() == lives0 and g.state == ST_PLAYING, "give up first offers a second chance (So close!)")
+	if sc:
+		sc.press("give_up")
 	_check(LM.lives() == lives0 - 1 and g.state == ST_FAILED, "give up on level 15 costs 1 life")
 	_check(S.game()["in_progress_level"] == null, "give up clears the saved board")
 	_check(SM.find_modal("failed") != null, "failed popup offers Retry / Home")
@@ -528,7 +533,7 @@ func _test_give_up_and_leave() -> void:
 	g = await _open_level()
 	mv = g.board.useful_moves()[0]
 	g.do_move(mv[0], mv[1])
-	g.give_up()
+	g.confirm_fail()
 	_check(LM.lives() == 5, "give up on level 6 is free")
 	SM.close_all_modals()
 	# Out of lives: Play shows the popup instead.
@@ -760,6 +765,7 @@ func _test_shop_iap_achievements() -> void:
 
 func _test_save_load() -> void:
 	S.data = S.defaults()
+	S.data["coins"] = 0
 	CM.add_coins(345, false)
 	S.data["current_level"] = 88
 	BM.grant("shuffle", 4, false)
@@ -792,7 +798,7 @@ func _test_corrupt_and_migration() -> void:
 	f.store_string("{ not json")
 	f.close()
 	S.load_game()
-	_check(FileAccess.file_exists(S.corrupt_path()) and CM.get_coins() == 0 and PM.current_level() == 1, "corrupt save is backed up and defaults load")
+	_check(FileAccess.file_exists(S.corrupt_path()) and CM.get_coins() == 200 and PM.current_level() == 1, "corrupt save is backed up and defaults load (200 starting coins)")
 	var old := {"coins": 70, "lives": 2, "boosters": {"undo": 9}}
 	var m: Dictionary = S.migrate(old)
 	_check(int(m["version"]) == S.CURRENT_VERSION and int(m["game"]["lives"]) == 2 and int(m["game"]["boosters"]["undo"]) == 9, "v0 save migrates lives/boosters into the game block")

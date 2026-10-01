@@ -41,6 +41,7 @@ AdManager="*res://scripts/core/ad_manager.gd"
 IAPManager="*res://scripts/core/iap_manager.gd"
 RenovationManager="*res://scripts/meta/renovation_manager.gd"
 DialogueManager="*res://scripts/meta/dialogue_manager.gd"
+StreakManager="*res://scripts/meta/streak_manager.gd"
 
 [display]
 

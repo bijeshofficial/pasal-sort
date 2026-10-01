@@ -1,7 +1,8 @@
 class_name ShopPage
 extends Control
-## Shop tab: free daily gift, coin packs (mock IAP), booster bundles, lives
-## refill and cosmetics (jar skins, candy wrappers, shop themes).
+## Shop tab: free daily gift, starter pack and No Ads (mock IAP, one-time),
+## coin packs, booster chest, coin bundles, lives refill and cosmetics (jar
+## skins, candy wrappers, puzzle backgrounds, avatar frames).
 
 signal changed
 
@@ -43,13 +44,18 @@ func build() -> void:
 	rib.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	list.add_child(rib)
 	list.add_child(_daily_card())
-	_section("Coins")
+	if IAPManager.is_available("starter_pack"):
+		list.add_child(_offer_card("starter_pack", UIKit.PINK))
+	if IAPManager.is_available("no_ads"):
+		list.add_child(_offer_card("no_ads", UIKit.PURPLE))
+	_section(tr("Coins"))
 	var packs := HBoxContainer.new()
 	packs.add_theme_constant_override("separation", 18)
 	list.add_child(packs)
-	for p in GameData.economy()["coin_packs"]:
-		packs.add_child(_coin_pack_card(p))
-	_section("Boosters")
+	for id in ["coins_small", "coins_medium", "coins_large"]:
+		packs.add_child(_coin_pack_card(GameData.iap_product(id)))
+	list.add_child(_offer_card("booster_chest", UIKit.SECONDARY))
+	_section(tr("Boosters"))
 	var grid := GridContainer.new()
 	grid.columns = 2
 	grid.add_theme_constant_override("h_separation", 18)
@@ -67,7 +73,49 @@ func build() -> void:
 		list.add_child(cg)
 		for item in GameData.cosmetics(cat["id"]):
 			cg.add_child(_cosmetic_card(item))
+	var restore := UIKit.button(tr("Restore purchases"), "neutral", "", 34, Vector2(0, 110))
+	restore.pressed.connect(func() -> void:
+		IAPManager.restore_purchases(func(_ok: bool) -> void: VFXManager.toast(tr("Purchases restored"))))
+	list.add_child(UIKit.spacer(10))
+	list.add_child(restore)
 	_refresh_buttons()
+
+
+## Big IAP card: starter pack, No Ads, booster chest.
+func _offer_card(id: String, color: Color) -> Control:
+	var p := GameData.iap_product(id)
+	var card := _card(Color("fff6fb"))
+	card.add_theme_stylebox_override("panel", UIKit.card_box(Color("fff6fb"), 24, color))
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 20)
+	card.add_child(row)
+	row.add_child(UIKit.disk(String(p.get("icon", "gift")), 150, color, color.darkened(0.35)))
+	var col := VBoxContainer.new()
+	col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	col.add_child(UIKit.label(tr(String(p.get("name", id))), 46, UIKit.INK, HORIZONTAL_ALIGNMENT_LEFT))
+	var c: Dictionary = p.get("contents", {})
+	var text := Rewards.describe(c)
+	if bool(c.get("no_ads", false)):
+		text = tr("No ad breaks between levels. Rewarded ads stay optional.") + "\n" + text
+	if bool(p.get("one_time", false)):
+		text += "\n" + tr("One time only")
+	var sub := UIKit.label(text, 30, UIKit.INK_SOFT, HORIZONTAL_ALIGNMENT_LEFT, false)
+	sub.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	col.add_child(sub)
+	row.add_child(col)
+	var b := UIKit.button(String(p.get("price_label", "")), "primary", "", 38, Vector2(220, 130))
+	b.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	b.pressed.connect(func() -> void: buy_product(id))
+	row.add_child(b)
+	return card
+
+
+func buy_product(id: String) -> void:
+	IAPManager.buy(id, func(ok: bool) -> void:
+		if ok:
+			Popups.reward(tr("Test purchase"), IAPManager._describe(GameData.iap_product(id)), String(GameData.iap_product(id).get("icon", "gift")))
+			build.call_deferred()
+			changed.emit())
 
 
 func _section(title: String) -> void:
@@ -130,14 +178,15 @@ func _coin_pack_card(p: Dictionary) -> Control:
 	var art := CenterContainer.new()
 	art.add_child(UIKit.icon("coin_pile", 110))
 	v.add_child(art)
-	v.add_child(UIKit.title("+%d" % int(p["coins"]), 50, Color("ffd23f"), HORIZONTAL_ALIGNMENT_CENTER, Color("8a4100")))
-	var name_l := UIKit.label(p["name"], 28, UIKit.INK_SOFT, HORIZONTAL_ALIGNMENT_CENTER, false)
+	var coins := int(p.get("contents", {}).get("coins", 0))
+	v.add_child(UIKit.title("+%d" % coins, 50, Color("ffd23f"), HORIZONTAL_ALIGNMENT_CENTER, Color("8a4100")))
+	var name_l := UIKit.label(tr(String(p["name"])), 28, UIKit.INK_SOFT, HORIZONTAL_ALIGNMENT_CENTER, false)
 	v.add_child(name_l)
 	var b := UIKit.button(String(p.get("price_label", "")), "primary", "", 38, Vector2(0, 120))
 	b.pressed.connect(func() -> void:
 		IAPManager.buy(p["id"], func(ok: bool) -> void:
 			if ok:
-				Popups.reward("Test purchase", "+%d coins" % int(p["coins"]))))
+				Popups.reward(tr("Test purchase"), "+%d coins" % coins)))
 	v.add_child(b)
 	v.add_child(UIKit.label("test only", 24, UIKit.INK_SOFT, HORIZONTAL_ALIGNMENT_CENTER, false))
 	if p.has("ribbon"):
@@ -159,7 +208,7 @@ func _bundle_card(b: Dictionary) -> Control:
 	row.add_theme_constant_override("separation", 14)
 	card.add_child(row)
 	var grant: Dictionary = b["grant"]
-	var icon: String = "gift" if grant.size() > 1 else {"undo": "undo", "extra_jar": "jar_plus", "shuffle": "shuffle"}[grant.keys()[0]]
+	var icon: String = "gift" if grant.size() > 1 else BoosterManager.icon_for(String(grant.keys()[0]))
 	row.add_child(UIKit.disk(icon, 110, UIKit.SECONDARY, UIKit.SECONDARY_EDGE))
 	var col := VBoxContainer.new()
 	col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -234,6 +283,15 @@ func _cosmetic_card(item: Dictionary) -> Control:
 			bd.wainscot = 0.6
 			bd.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 			prev.add_child(bd)
+		"frame":
+			var av := AvatarView.new()
+			av.index = int(SaveManager.game()["profile"].get("avatar", 0))
+			av.frame = item["id"]
+			av.custom_minimum_size = Vector2(170, 170)
+			av.size = Vector2(170, 170)
+			av.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			prev.resized.connect(func() -> void: av.position = Vector2((prev.size.x - 170) * 0.5, 10))
+			prev.add_child(av)
 	var name_l := UIKit.label(item["name"], 28, UIKit.INK, HORIZONTAL_ALIGNMENT_CENTER, true)
 	name_l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	name_l.custom_minimum_size = Vector2(0, 76)

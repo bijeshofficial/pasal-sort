@@ -28,6 +28,7 @@ func _run() -> void:
 	S.set_save_path(SAVE)
 	if phase == "write":
 		S.data = S.defaults()
+		S.data["coins"] = 0
 		S.data["current_level"] = 24
 		for k in ["tap", "stack", "empty", "undo", "extra_jar", "shuffle", "twist_wrapped", "twist_cloth"]:
 			S.game()["tutorial_steps"][k] = true

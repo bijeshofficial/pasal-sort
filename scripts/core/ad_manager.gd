@@ -10,7 +10,7 @@ signal ad_finished(placement: String, rewarded: bool)
 ## Set > 0 to test failure paths (or launch with -- --ad-fail).
 @export var mock_fail_rate: float = 0.0
 @export var interstitial_every_n_runs: int = 3
-@export var interstitial_min_seconds: float = 90.0
+@export var interstitial_min_seconds: float = 120.0
 ## How long the mock overlay stays up.
 @export var mock_duration: float = 1.0
 ## No interstitial within this many seconds after a rewarded ad.
@@ -29,6 +29,9 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	if "--ad-fail" in OS.get_cmdline_user_args():
 		mock_fail_rate = 1.0
+	var cfg: Dictionary = GameData.economy().get("interstitial", {})
+	interstitial_every_n_runs = int(cfg.get("every_n_levels", interstitial_every_n_runs))
+	interstitial_min_seconds = float(cfg.get("min_seconds", interstitial_min_seconds))
 
 
 func is_showing() -> bool:
@@ -48,6 +51,8 @@ func show_rewarded(placement: String, on_done: Callable) -> void:
 	var ok := randf() >= mock_fail_rate
 	_last_rewarded_time = _now()
 	ad_finished.emit(placement, ok)
+	if get_tree().root.has_node("AnalyticsManager"):
+		get_tree().root.get_node("AnalyticsManager").log_event("ad_mock", {"placement": placement, "rewarded": ok})
 	on_done.call(ok)
 
 
@@ -71,7 +76,7 @@ func on_run_finished() -> void:
 ## Frequency cap: never on the first run of a session, never right after a
 ## rewarded ad, at most once every N runs and every X seconds.
 func can_show_interstitial() -> bool:
-	if _showing:
+	if _showing or IAPManager.has_no_ads():
 		return false
 	if _session_runs <= 1:
 		return false

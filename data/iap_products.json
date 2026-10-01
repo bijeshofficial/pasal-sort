@@ -1,0 +1,78 @@
+{
+	"_comment": "Mock store catalogue. contents use the Rewards bundle keys plus no_ads (bool). one_time products can be bought once. price_label is display only: nothing is ever charged.",
+	"products": [
+		{
+			"id": "coins_small",
+			"name": "Handful of coins",
+			"price_label": "$0.99",
+			"contents": {
+				"coins": 500
+			},
+			"icon": "coin_pile"
+		},
+		{
+			"id": "coins_medium",
+			"name": "Coin jar",
+			"price_label": "$2.99",
+			"contents": {
+				"coins": 1800
+			},
+			"icon": "coin_pile"
+		},
+		{
+			"id": "coins_large",
+			"name": "Coin sack",
+			"price_label": "$4.99",
+			"contents": {
+				"coins": 3500
+			},
+			"icon": "coin_pile",
+			"ribbon": "Best value"
+		},
+		{
+			"id": "starter_pack",
+			"name": "Starter pack",
+			"price_label": "$1.99",
+			"one_time": true,
+			"show_after_level": 10,
+			"icon": "gift",
+			"contents": {
+				"coins": 1000,
+				"boosters": {
+					"undo": 5,
+					"extra_jar": 3,
+					"shuffle": 3,
+					"open_jar": 2,
+					"peek": 2,
+					"lucky": 2
+				},
+				"unlimited_lives_min": 120
+			}
+		},
+		{
+			"id": "no_ads",
+			"name": "No Ads",
+			"price_label": "$2.99",
+			"one_time": true,
+			"icon": "ad",
+			"contents": {
+				"no_ads": true,
+				"coins": 300
+			}
+		},
+		{
+			"id": "booster_chest",
+			"name": "Booster chest",
+			"price_label": "$1.99",
+			"icon": "chest",
+			"contents": {
+				"boosters": {
+					"undo": 5,
+					"extra_jar": 3,
+					"shuffle": 3,
+					"helper": 2
+				}
+			}
+		}
+	]
+}

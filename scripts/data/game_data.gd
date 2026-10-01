@@ -11,6 +11,7 @@ const ECONOMY := "res://data/economy.json"
 const LEVELS := "res://data/levels_authored.json"
 const ACHIEVEMENTS := "res://data/achievements.json"
 const META := "res://data/meta.json"
+const IAP := "res://data/iap_products.json"
 const AREAS_DIR := "res://data/areas/"
 const STORY_DIR := "res://data/story/"
 
@@ -18,7 +19,7 @@ static var _cache: Dictionary = {}
 
 
 static func preload_all() -> void:
-	for p in [CANDIES, DIFFICULTY, ECONOMY, LEVELS, ACHIEVEMENTS, META]:
+	for p in [CANDIES, DIFFICULTY, ECONOMY, LEVELS, ACHIEVEMENTS, META, IAP]:
 		load_json(p)
 	area_count()
 	_story_lines()
@@ -122,8 +123,12 @@ static func bundle(id: String) -> Dictionary:
 	return {}
 
 
-static func coin_pack(id: String) -> Dictionary:
-	for p in economy().get("coin_packs", []):
+static func iap_products() -> Array:
+	return load_json(IAP).get("products", [])
+
+
+static func iap_product(id: String) -> Dictionary:
+	for p in iap_products():
 		if p["id"] == id:
 			return p
 	return {}

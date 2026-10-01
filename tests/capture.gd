@@ -57,6 +57,7 @@ func _run() -> void:
 	PM = root.get_node("ProgressionManager")
 	S.set_save_path("user://capture_save.json")
 	root.get_node("TimeManager").force_hour = 11
+	root.get_node("IAPManager").offer_shown_this_session = true
 	root.get_node("AudioManager").set_ad_mute(true)
 	root.get_node("AdManager").mock_duration = 0.05
 
@@ -184,6 +185,43 @@ func _run() -> void:
 		await _save("18_celebrate")
 		await _wait(1.4)
 		await _save("19_win_panel")
+		SM.close_all_modals()
+
+	if which in ["all", "econ"]:
+		_fresh(37, 900, 4)
+		_reno(1, 5)
+		S.data["game"]["streaks"]["dami"] = 2
+		S.data["game"]["stats"]["levels_completed"] = 36
+		S.data["game"]["boosters"]["open_jar"] = 2
+		S.data["game"]["boosters"]["peek"] = 0
+		S.data["game"]["boosters"]["lucky"] = 1
+		for k in ["grant_open_jar", "grant_peek", "grant_lucky"]:
+			S.data["game"]["tutorial_steps"][k] = true
+		SM.hub_tab = "home"
+		await _scene("res://scenes/main/hub.tscn", 0.8)
+		current_scene.home.play_button.pressed.emit()
+		await _wait(0.5)
+		var card = SM.find_modal("level_start")
+		if card:
+			card.toggle("lucky")
+		await _wait(0.4)
+		await _save("81_start_card")
+		SM.close_all_modals()
+		current_scene.select_tab(0)
+		await _wait(0.5)
+		await _save("82_shop_top")
+		current_scene.shop.scroll.scroll_vertical = 5200
+		await _wait(0.3)
+		await _save("83_shop_frames")
+		_fresh(42, 900)
+		await _scene("res://scenes/gameplay/gameplay.tscn", 1.5)
+		current_scene.give_up()
+		await _wait(0.5)
+		await _save("84_so_close")
+		SM.close_all_modals()
+		load("res://scripts/ui/chest_popup.gd").open("Hajurama's Trunk", {"coins": 400, "boosters": {"undo": 2, "lucky": 1}, "unlimited_lives_min": 30}, "capture", Callable(), "trunk")
+		await _wait(2.8)
+		await _save("85_trunk")
 		SM.close_all_modals()
 
 	if which in ["all", "twists"]:

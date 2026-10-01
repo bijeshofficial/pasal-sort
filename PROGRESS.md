@@ -11,7 +11,7 @@ Read this first at the start of every session. Godot 4.7.2 at
 | 2 Levels | authored 1-30, seeded generator + solver, ramp, sawtooth, twists 1-4, resume | done; level_report tool added |
 | 3 Hub & core meta | loading shutter, nav, top bar, lives, in-level boosters, tutorial, settings | done |
 | 4 Renovation | stars, areas 1-10 data, Home pan/zoom, tasks, style picker, dialogue | done |
-| 5 Economy & shop | pre-level boosters, start card, Dami streak, iap_products, No Ads, starter pack | todo |
+| 5 Economy & shop | pre-level boosters, start card, Dami streak, iap_products, No Ads, starter pack | done |
 | 6 Daily loop | calendar, missions + chest, daily challenge, chests, achievements 30+ | todo |
 | 7 Live features | album, weekly event, Bazaar Race, treasure streak, cat paw, gift box, orders, move limit, Haat Helper | todo |
 | 8 Polish | i18n en/ne, accessibility, analytics, debug menu, QA screenshots | todo |
@@ -41,12 +41,19 @@ Read this first at the start of every session. Godot 4.7.2 at
   coins; area complete -> BeforeAfter -> ChestPopup -> outro -> page turn.
 - Art review: `godot --path . --resolution 1080x1920 res://tools/art_sheet.tscn -- --out=DIR`.
 - Tests: `godot --headless --path . --script res://tests/run_all.gd [-- --quick]`.
+- Economy: `data/economy.json` (prices, starting inventory, streak rewards,
+  fail offers, interstitial caps) and `data/iap_products.json` (mock store).
+- Level start card (`scripts/ui/level_start_card.gd`) from level 12: goal,
+  Dami streak meter, max 2 pre-level boosters, used only when the level starts.
+- `StreakManager`: Dami streak (free pre-boosters) and the 7-win treasure
+  streak (Hajurama's Trunk). Give up -> "So close!" second chance once.
 
 ## Next step
 
-Phase 5: Level start card with pre-level boosters (Open Jar, Peek, Lucky
-Start) + Dami streak, iap_products.json, No Ads + starter pack, shop
-sections, jar skins Clay-look and Rainbow, interstitial "after level 20".
+Phase 6: daily reward calendar (7-day), daily missions + mission chest,
+daily challenge (date-seeded, calendar of completed days), level chest every
+10 levels (replace the milestone gift) and star chest every 15 stars spent,
+profile stats + 30+ tiered achievements, avatar frames on the profile.
 
 ## Known issues
 

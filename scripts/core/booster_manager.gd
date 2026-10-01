@@ -1,10 +1,24 @@
 extends Node
-## Booster inventory: Undo, Extra Jar and Shuffle.
+## Booster inventory. In-level: Undo, Extra Jar, Shuffle, Haat Helper.
+## Pre-level (picked on the level start card): Open Jar, Peek, Lucky Start.
 
 signal changed(id: String, count: int)
 
+## In-level boosters shown on the booster bar (the helper from level 60).
 const IDS := ["undo", "extra_jar", "shuffle"]
-const NAMES := {"undo": "Undo", "extra_jar": "Extra Jar", "shuffle": "Shuffle"}
+const IN_LEVEL := ["undo", "extra_jar", "shuffle", "helper"]
+const PRE_IDS := ["open_jar", "peek", "lucky"]
+const ALL := ["undo", "extra_jar", "shuffle", "helper", "open_jar", "peek", "lucky"]
+const NAMES := {"undo": "Undo", "extra_jar": "Extra Jar", "shuffle": "Shuffle", "helper": "Haat Helper", "open_jar": "Open Jar", "peek": "Peek", "lucky": "Lucky Start"}
+const DESCRIPTIONS := {
+	"undo": "Take back your last move.",
+	"extra_jar": "Add one empty jar to this level.",
+	"shuffle": "Mix up the unfinished jars into a new solvable board.",
+	"helper": "Pick a candy: the helper gathers it from the jar tops into an empty jar.",
+	"open_jar": "Start the level with one more empty jar.",
+	"peek": "Every wrapped candy starts unwrapped.",
+	"lucky": "The first 3 moves glow as hints.",
+}
 
 
 func count(id: String) -> int:
@@ -12,7 +26,7 @@ func count(id: String) -> int:
 
 
 func grant(id: String, n: int = 1, save: bool = true) -> void:
-	if not IDS.has(id) or n <= 0:
+	if not ALL.has(id) or n <= 0:
 		return
 	SaveManager.game()["boosters"][id] = count(id) + n
 	changed.emit(id, count(id))
@@ -54,7 +68,27 @@ func grant_tutorial(id: String) -> int:
 
 
 func display_name(id: String) -> String:
-	return NAMES.get(id, id)
+	return tr(NAMES.get(id, id))
+
+
+func description(id: String) -> String:
+	return tr(DESCRIPTIONS.get(id, ""))
+
+
+## The Haat Helper joins the booster bar from level 60.
+func helper_unlocked() -> bool:
+	return ProgressionManager.current_level() >= int(GameData.economy().get("helper_from", 60))
+
+
+func bar_ids() -> Array:
+	return IN_LEVEL if helper_unlocked() else IDS
+
+
+## Pre-level boosters appear on the start card from level 12.
+func pre_unlocked(level: int = -1) -> bool:
+	if level < 0:
+		level = ProgressionManager.current_level()
+	return level >= int(GameData.economy().get("pre_boosters_from", 12))
 
 
 func icon_for(id: String) -> String:

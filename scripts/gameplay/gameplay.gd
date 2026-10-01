@@ -42,6 +42,13 @@ var _t := 0.0
 var _stuck_shown := false
 var _summary: Dictionary = {}
 var _new_achievement := false
+## Pre-level boosters applied at the start (saved with the board).
+var pre_applied: Array = []
+var lucky_left := 0
+var second_chance_used := false
+var _lucky_move: Array = []
+var _lucky_t := 0.0
+var _trunk_ready := false
 
 
 func _ready() -> void:
@@ -76,8 +83,10 @@ func _ready() -> void:
 	_build_booster_bar(vp, insets)
 
 	var restored := _try_resume()
+	var pre := ProgressionManager.take_pre_boosters()
 	if not restored:
 		board = Board.from_level(level_data)
+		_apply_pre_boosters(pre)
 	var top := insets.x + 230.0
 	var bottom := insets.y + 330.0
 	var area := Rect2(24, top, vp.x - 48, vp.y - top - bottom)
@@ -102,8 +111,53 @@ func _on_intro_done() -> void:
 	_show_twist_cards(twists.duplicate(), func() -> void:
 		tutorial.start()
 		if resumed:
-			VFXManager.toast("Welcome back! Your jars are just as you left them.")
+			VFXManager.toast(tr("Welcome back! Your jars are just as you left them."))
+		elif not pre_applied.is_empty():
+			var names: PackedStringArray = []
+			for id in pre_applied:
+				names.append(BoosterManager.display_name(id))
+			VFXManager.toast(tr("Boosters on: %s") % ", ".join(names))
+		_lucky_hint()
 		_check_stuck())
+
+
+## Open Jar adds an empty jar, Peek unwraps every candy, Lucky Start
+## highlights the first 3 moves. Paid ones are used up only now.
+func _apply_pre_boosters(pre: Dictionary) -> void:
+	var ids: Array = []
+	for id in pre.get("paid", []):
+		if not ids.has(id) and BoosterManager.consume(id):
+			ids.append(id)
+			boosters_used = true
+	for id in pre.get("free", []):
+		if not ids.has(id):
+			ids.append(id)
+	for id in ids:
+		match id:
+			"open_jar":
+				board.add_jar()
+			"peek":
+				for i in board.jar_count():
+					var h: Array = board.hidden[i]
+					for k in h.size():
+						h[k] = false
+			"lucky":
+				lucky_left = 3
+	pre_applied = ids
+
+
+func _lucky_hint() -> void:
+	_lucky_move = []
+	if lucky_left <= 0 or state != State.PLAYING:
+		return
+	var mv := Solver.hint(board, int(GameData.difficulty()["hint"]["node_budget"]))
+	if mv.is_empty():
+		var all := board.useful_moves()
+		mv = all[0] if not all.is_empty() else []
+	if mv.size() >= 2:
+		_lucky_move = mv
+		_lucky_t = 0.0
+		view.pulse_hint(int(mv[0]), int(mv[1]))
 
 
 func _show_twist_cards(list: Array, done: Callable) -> void:
@@ -259,6 +313,11 @@ func do_move(a: int, b: int) -> void:
 		SaveManager.add_game_stat("jars_filled")
 	var dur := view.animate_move(a, b, result)
 	tutorial.on_move(a, b, before)
+	if lucky_left > 0:
+		lucky_left -= 1
+		_lucky_move = []
+		if lucky_left > 0:
+			_after(dur + 0.1, _lucky_hint)
 	_queue_save()
 	if result["won"]:
 		_win(dur)
@@ -395,29 +454,102 @@ func show_stuck() -> void:
 	})
 
 
+## "So close!": one second chance per level (an Extra Jar for coins or a
+## rewarded ad), otherwise give up for a life.
 func give_up() -> void:
-	if state == State.WON:
+	if state == State.WON or state == State.FAILED:
+		return
+	var can_jar := not extra_used and not second_chance_used
+	if not can_jar:
+		confirm_fail()
+		return
+	var cost := LivesManager.level_costs_life(level)
+	var price := int(GameData.economy().get("fail_offers", {}).get("extra_jar", 150))
+	Popups.show({
+		"id": "so_close",
+		"title": tr("So close!"),
+		"art": func(c: Control) -> void: CharacterArt.draw(c, "maya", Vector2(c.size.x * 0.5, c.size.y), 0.6, "worried", 0.0),
+		"art_size": 260,
+		"body": tr("One more jar might do it. Second chance?"),
+		"vertical": true,
+		"buttons": [
+			{"id": "coins", "text": tr("Extra Jar  %d") % price, "kind": "gold", "icon": "coin", "disabled": not CurrencyManager.can_afford(price), "cb": func() -> void:
+				if CurrencyManager.spend(price):
+					SaveManager.save_game()
+					_second_chance()},
+			{"id": "ad", "text": tr("Extra Jar  (Watch ad)"), "kind": "secondary", "icon": "ad", "cb": func() -> void:
+				AdManager.show_rewarded("second_chance", func(ok: bool) -> void:
+					if ok:
+						_second_chance()
+					else:
+						VFXManager.toast(tr("Ad not available right now"))
+						confirm_fail())},
+			{"id": "give_up", "text": tr("Give up  (-1 life)") if cost else tr("Start over"), "kind": "danger", "cb": confirm_fail},
+		],
+		"on_back": confirm_fail,
+	})
+
+
+func _second_chance() -> void:
+	second_chance_used = true
+	if state != State.PLAYING or extra_used:
+		return
+	_apply_extra_jar()
+	_stuck_shown = false
+	_queue_save()
+	VFXManager.toast(tr("Here's an extra jar. You can do it!"))
+
+
+func confirm_fail() -> void:
+	if state == State.WON or state == State.FAILED:
 		return
 	state = State.FAILED
 	var cost := LivesManager.level_costs_life(level)
 	if cost:
 		LivesManager.lose_life()
+	StreakManager.on_fail()
 	_clear_progress()
 	AudioManager.play("failure")
 	HapticsManager.heavy()
 	AdManager.on_run_finished()
-	Popups.show({
+	_log("level_fail", {"level": level, "reason": "give_up", "moves": moves})
+	var p := Popups.show({
 		"id": "failed",
-		"title": "Level failed",
+		"title": tr("Level failed"),
 		"art": "heart",
 		"art_color": UIKit.HEART,
-		"body": ("You lost a life. %d left." % LivesManager.lives()) if cost else "No lives lost on the early levels. Try again!",
+		"body": (tr("You lost a life. %d left.") % LivesManager.lives()) if cost else tr("No lives lost on the early levels. Try again!"),
 		"buttons": [
-			{"id": "home", "text": "Home", "kind": "neutral", "icon": "home", "cb": func() -> void: ScreenManager.go_hub("home")},
-			{"id": "retry", "text": "Retry", "kind": "primary", "icon": "retry", "cb": retry},
+			{"id": "home", "text": tr("Home"), "kind": "neutral", "icon": "home", "cb": func() -> void: ScreenManager.go_hub("home")},
+			{"id": "retry", "text": tr("Retry"), "kind": "primary", "icon": "retry", "cb": retry},
 		],
 		"on_back": func() -> void: ScreenManager.go_hub("home"),
 	})
+	if cost:
+		_break_heart(p)
+
+
+## The lost life: the heart wobbles, cracks and fades.
+func _break_heart(p: Control) -> void:
+	var vp := get_viewport_rect().size
+	var h := UIKit.icon("heart", 160, UIKit.HEART)
+	h.shadow = true
+	h.position = Vector2(vp.x * 0.5 - 80, vp.y * 0.28)
+	h.pivot_offset = Vector2(80, 80)
+	h.z_index = 10
+	p.add_child(h)
+	var tw := h.create_tween()
+	tw.tween_property(h, "rotation", 0.25, 0.08)
+	tw.tween_property(h, "rotation", -0.25, 0.12)
+	tw.tween_property(h, "rotation", 0.0, 0.08)
+	tw.tween_property(h, "scale", Vector2(1.3, 1.3), 0.15)
+	tw.parallel().tween_property(h, "modulate:a", 0.0, 0.45)
+	tw.parallel().tween_property(h, "position:y", h.position.y - 120, 0.45)
+
+
+func _log(event: String, data: Dictionary) -> void:
+	if get_tree().root.has_node("AnalyticsManager"):
+		get_tree().root.get_node("AnalyticsManager").log_event(event, data)
 
 
 func retry() -> void:
@@ -438,10 +570,12 @@ func leave_level(to: String) -> void:
 		else:
 			ScreenManager.go_hub("home")
 	if moves > 0 and LivesManager.level_costs_life(level):
-		Popups.confirm("Leave level?" if to == "home" else "Restart level?", "Leaving will cost 1 life.", "Leave" if to == "home" else "Restart", func() -> void:
+		Popups.confirm(tr("Leave level?") if to == "home" else tr("Restart level?"), tr("Leaving will cost 1 life."), tr("Leave") if to == "home" else tr("Restart"), func() -> void:
 			state = State.FAILED
 			LivesManager.lose_life()
+			StreakManager.on_fail()
 			AdManager.on_run_finished()
+			_log("level_fail", {"level": level, "reason": "leave", "moves": moves})
 			go.call(), "danger")
 	elif to == "restart":
 		# Restarting always asks, even when it's free.
@@ -494,6 +628,9 @@ func _win(delay: float) -> void:
 	_clear_hint()
 	var claimable_before := AchievementManager.claimable_count()
 	_summary = ProgressionManager.complete_level(level, boosters_used)
+	_trunk_ready = StreakManager.on_win()
+	_summary["dami"] = StreakManager.dami()
+	SaveManager.save_game()
 	AchievementManager.refresh()
 	_new_achievement = AchievementManager.claimable_count() > claimable_before
 	AdManager.on_run_finished()
@@ -528,9 +665,18 @@ func _show_win_panel() -> void:
 	panel.home_pressed.connect(_go_home)
 	ScreenManager.push_modal(panel)
 	if _new_achievement:
-		VFXManager.toast("Achievement unlocked! Claim it in your Profile.")
+		VFXManager.toast(tr("Achievement unlocked! Claim it in your Profile."))
 	if _summary.get("milestone", false):
 		_after(1.3, _milestone_gift)
+	elif _trunk_ready:
+		_after(1.3, _open_trunk)
+
+
+## Seven wins in a row: Hajurama's Trunk.
+func _open_trunk() -> void:
+	var contents := StreakManager.claim_trunk()
+	if not contents.is_empty():
+		ChestPopup.open(tr("Hajurama's Trunk"), contents, "treasure_streak", Callable(), "trunk")
 
 
 func _go_home() -> void:
@@ -599,8 +745,9 @@ func continue_next() -> void:
 	if not LivesManager.can_play(next):
 		Popups.lives(true, continue_next)
 		return
-	var go := func() -> void: ScreenManager.start_level()
-	if level > LivesManager.free_levels() and AdManager.can_show_interstitial():
+	var go := func() -> void: HomePage.start_next_level()
+	var from := int(GameData.economy().get("interstitial", {}).get("from_level", 20))
+	if level > from and AdManager.can_show_interstitial():
 		AdManager.show_interstitial(go)
 	else:
 		go.call()
@@ -617,6 +764,9 @@ func _try_resume() -> bool:
 	moves = int(ip.get("moves", 0))
 	extra_used = bool(ip.get("extra_used", false))
 	boosters_used = bool(ip.get("boosters_used", false))
+	pre_applied = ip.get("pre_applied", [])
+	lucky_left = int(ip.get("lucky_left", 0))
+	second_chance_used = bool(ip.get("second_chance_used", false))
 	resumed = moves > 0
 	return true
 
@@ -629,6 +779,9 @@ func _in_progress() -> Dictionary:
 		"moves": moves,
 		"extra_used": extra_used,
 		"boosters_used": boosters_used,
+		"pre_applied": pre_applied.duplicate(),
+		"lucky_left": lucky_left,
+		"second_chance_used": second_chance_used,
 	}
 
 
@@ -660,6 +813,11 @@ func _process(delta: float) -> void:
 		if _save_timer <= 0.0:
 			_save_progress()
 	_poll_hint()
+	if not _lucky_move.is_empty() and is_playing():
+		_lucky_t += delta
+		if _lucky_t >= 1.6:
+			_lucky_t = 0.0
+			view.pulse_hint(int(_lucky_move[0]), int(_lucky_move[1]))
 	if is_playing() and SaveManager.get_setting("hints") and not tutorial.is_active() and not _hint_shown:
 		_idle += delta
 		if _idle >= float(GameData.difficulty()["hint"]["idle_seconds"]):

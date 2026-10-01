@@ -10,6 +10,12 @@ signal cosmetic_changed(category: String, id: String)
 
 const CACHE_LIMIT := 6
 
+## Pre-level boosters picked on the start card for the next level:
+## paid ones are consumed when the level starts, free ones come from the
+## Dami streak.
+var pending_pre: Array = []
+var pending_free: Array = []
+
 var _cache: Dictionary = {}     # level -> Dictionary
 var _tasks: Dictionary = {}     # level -> WorkerThreadPool task id
 var _results: Dictionary = {}   # level -> Dictionary (written by workers)
@@ -111,6 +117,31 @@ func claim_milestone(level: int) -> Dictionary:
 	BoosterManager.grant(booster, 1)
 	SaveManager.save_game()
 	return {"coins": coins, "booster": booster}
+
+
+func set_pre_boosters(paid: Array, free: Array) -> void:
+	pending_pre = paid.duplicate()
+	pending_free = free.duplicate()
+
+
+## Returns and clears the boosters chosen for the level about to start.
+func take_pre_boosters() -> Dictionary:
+	var out := {"paid": pending_pre.duplicate(), "free": pending_free.duplicate()}
+	pending_pre.clear()
+	pending_free.clear()
+	return out
+
+
+## What the player must do: "sort" (default), "orders" (bonus) or "moves".
+func goal_for(level: int) -> Dictionary:
+	var lvl := get_level(level) if has_level(level) or not is_generating(level) else {}
+	if lvl.is_empty():
+		return {"type": "sort"}
+	if int(lvl.get("move_limit", 0)) > 0:
+		return {"type": "moves", "moves": int(lvl["move_limit"])}
+	if not (lvl.get("orders", []) as Array).is_empty():
+		return {"type": "orders", "orders": lvl["orders"]}
+	return {"type": "sort"}
 
 
 # --- Level data & background generation --------------------------------------

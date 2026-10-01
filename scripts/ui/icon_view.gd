@@ -266,13 +266,19 @@ func _shape(_c: Color, _a: Color) -> void:
 				var a := TAU * k / 24.0
 				eye.append(c + Vector2(cos(a) * 44, sin(a) * 26 * (1.0 if sin(a) > 0 else 1.0)) * u)
 			draw_colored_polygon(eye, _c)
-			draw_circle(c, 18 * u, _a, true, -1.0, true)
-			draw_circle(c, 9 * u, _c, true, -1.0, true)
+			draw_circle(c, 19 * u, Color("2b2b3a"), true, -1.0, true)
+			draw_circle(c, 9 * u, Color("5fb3ff"), true, -1.0, true)
+			draw_circle(c + Vector2(-6, -6) * u, 5 * u, Color.WHITE, true, -1.0, true)
 		"clover":
+			draw_line(c, p.call(70, 94), _c, 8 * u, true)
 			for k in 4:
 				var a := TAU * k / 4.0 + PI * 0.25
-				draw_circle(c + Vector2(cos(a), sin(a)) * 20 * u, 20 * u, _c, true, -1.0, true)
-			draw_line(c, p.call(66, 92), _c, 7 * u, true)
+				var lc := c + Vector2(cos(a), sin(a)) * 24 * u
+				# Heart-shaped leaf: two lobes pointing at the centre.
+				var side := Vector2(-sin(a), cos(a)) * 9 * u
+				draw_circle(lc + side, 13 * u, _c, true, -1.0, true)
+				draw_circle(lc - side, 13 * u, _c, true, -1.0, true)
+				draw_colored_polygon(PackedVector2Array([lc + side * 2.2, c, lc - side * 2.2]), _c)
 		"basket":
 			draw_colored_polygon(PackedVector2Array([p.call(10, 44), p.call(90, 44), p.call(78, 92), p.call(22, 92)]), _c)
 			draw_arc(p.call(50, 44), 30 * u, PI, TAU, 16, _c, 7 * u, true)

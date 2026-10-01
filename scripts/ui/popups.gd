@@ -91,12 +91,8 @@ static func lives(out_of_lives: bool = false, on_refilled: Callable = Callable()
 ## Booster at zero: buy with coins or watch an ad for one.
 static func buy_booster(id: String, on_got: Callable = Callable()) -> GamePopup:
 	var price := BoosterManager.price(id)
-	var icon: String = {"undo": "undo", "extra_jar": "jar_plus", "shuffle": "shuffle"}.get(id, "star")
-	var desc: String = {
-		"undo": "Take back your last move.",
-		"extra_jar": "Add one empty jar to this level.",
-		"shuffle": "Mix up the unfinished jars into a new solvable board.",
-	}.get(id, "")
+	var icon: String = BoosterManager.icon_for(id)
+	var desc: String = BoosterManager.description(id)
 	return show({
 		"id": "buy_booster",
 		"title": BoosterManager.display_name(id),

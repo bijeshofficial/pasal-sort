@@ -1,44 +1,340 @@
 {
+	"_comment": "All economy numbers. Pacing targets (check with the analytics log, Debug > Analytics): a player who never pays or watches ads should (1) never wait for lives more than ~1 in 5 sessions, (2) earn ~1 booster per 3 levels from chests, missions, streaks and events, (3) afford the next renovation task after every 1-2 wins (stars) and keep ~300-600 coins in hand from level 30 on. Offers: max 1 offer popup per session, never during a level.",
+	"starting_coins": 200,
 	"level_reward": 10,
 	"stars_per_win": 1,
-	"renovation": {"task_coins": 10},
+	"renovation": {
+		"task_coins": 10
+	},
 	"milestone_every": 10,
 	"milestone_coins": 100,
 	"daily_free_coins": 50,
-	"lives": {"max": 5, "regen_seconds": 1800, "refill_price": 300, "free_levels": 10},
-	"starting_boosters": {"undo": 3, "extra_jar": 1, "shuffle": 1},
-	"booster_prices": {"undo": 50, "shuffle": 100, "extra_jar": 150},
-	"tutorial_grants": {"undo": 3, "extra_jar": 2, "shuffle": 2},
-	"coin_packs": [
-		{"id": "coins_small", "name": "Handful of coins", "coins": 500, "price_label": "$0.99"},
-		{"id": "coins_medium", "name": "Coin jar", "coins": 1200, "price_label": "$1.99"},
-		{"id": "coins_large", "name": "Coin sack", "coins": 3000, "price_label": "$3.99", "ribbon": "Best value"}
-	],
+	"lives": {
+		"max": 5,
+		"regen_seconds": 1800,
+		"refill_price": 300,
+		"free_levels": 10
+	},
+	"starting_boosters": {
+		"undo": 3,
+		"extra_jar": 1,
+		"shuffle": 1,
+		"helper": 0,
+		"open_jar": 0,
+		"peek": 0,
+		"lucky": 0
+	},
+	"booster_prices": {
+		"undo": 60,
+		"extra_jar": 150,
+		"shuffle": 100,
+		"helper": 200,
+		"open_jar": 120,
+		"peek": 80,
+		"lucky": 80
+	},
+	"tutorial_grants": {
+		"undo": 3,
+		"extra_jar": 2,
+		"shuffle": 2,
+		"open_jar": 1,
+		"peek": 1,
+		"lucky": 1,
+		"helper": 1
+	},
+	"pre_boosters_from": 12,
+	"pre_boosters_max": 2,
+	"helper_from": 60,
+	"fail_offers": {
+		"moves": 200,
+		"moves_amount": 5,
+		"extra_jar": 150
+	},
+	"interstitial": {
+		"from_level": 20,
+		"every_n_levels": 3,
+		"min_seconds": 120
+	},
+	"dami_streak": {
+		"1": [
+			"peek"
+		],
+		"2": [
+			"peek",
+			"open_jar"
+		],
+		"3": [
+			"peek",
+			"open_jar",
+			"lucky"
+		]
+	},
+	"treasure_streak": {
+		"wins": 7,
+		"chest": {
+			"coins": 400,
+			"boosters": {
+				"undo": 2,
+				"extra_jar": 1,
+				"shuffle": 1,
+				"lucky": 1
+			},
+			"unlimited_lives_min": 30,
+			"sticker_packs": 1
+		}
+	},
 	"bundles": [
-		{"id": "bundle_undo", "name": "Undo x5", "price": 200, "grant": {"undo": 5}},
-		{"id": "bundle_shuffle", "name": "Shuffle x3", "price": 250, "grant": {"shuffle": 3}},
-		{"id": "bundle_extra", "name": "Extra Jar x3", "price": 380, "grant": {"extra_jar": 3}},
-		{"id": "bundle_mixed", "name": "Mixed bundle", "price": 400, "grant": {"undo": 3, "shuffle": 2, "extra_jar": 1}}
+		{
+			"id": "bundle_undo",
+			"name": "Undo x5",
+			"price": 250,
+			"grant": {
+				"undo": 5
+			}
+		},
+		{
+			"id": "bundle_shuffle",
+			"name": "Shuffle x3",
+			"price": 260,
+			"grant": {
+				"shuffle": 3
+			}
+		},
+		{
+			"id": "bundle_extra",
+			"name": "Extra Jar x3",
+			"price": 400,
+			"grant": {
+				"extra_jar": 3
+			}
+		},
+		{
+			"id": "bundle_pre",
+			"name": "Start kit",
+			"price": 250,
+			"grant": {
+				"open_jar": 1,
+				"peek": 1,
+				"lucky": 1
+			}
+		},
+		{
+			"id": "bundle_mixed",
+			"name": "Mixed bundle",
+			"price": 450,
+			"grant": {
+				"undo": 3,
+				"shuffle": 2,
+				"extra_jar": 1
+			}
+		},
+		{
+			"id": "bundle_helper",
+			"name": "Haat Helper x2",
+			"price": 360,
+			"grant": {
+				"helper": 2
+			}
+		}
 	],
 	"cosmetic_categories": [
-		{"id": "jar", "name": "Jar skins"},
-		{"id": "wrapper", "name": "Candy wrappers"},
-		{"id": "theme", "name": "Shop themes"}
+		{
+			"id": "jar",
+			"name": "Jar skins"
+		},
+		{
+			"id": "wrapper",
+			"name": "Candy wrappers"
+		},
+		{
+			"id": "theme",
+			"name": "Puzzle backgrounds"
+		},
+		{
+			"id": "frame",
+			"name": "Avatar frames"
+		}
 	],
 	"cosmetics": [
-		{"id": "jar_classic", "category": "jar", "name": "Classic Glass", "price": 0, "glass": "dcefee", "rim": "8fb9bd", "lid": "candy", "base": "b8d6d6"},
-		{"id": "jar_steel", "category": "jar", "name": "Steel-lid Jar", "price": 60, "glass": "e4ecee", "rim": "8c979f", "lid": "steel", "base": "b9c3c8"},
-		{"id": "jar_blue", "category": "jar", "name": "Blue-tint Glass", "price": 150, "glass": "a9d3f2", "rim": "5f97c2", "lid": "candy", "base": "86b4d8"},
-		{"id": "jar_festival", "category": "jar", "name": "Festival Glass", "price": 300, "glass": "fbe2b4", "rim": "d99a3c", "lid": "candy", "base": "e8c48a", "fx": "diyo"},
-		{"id": "jar_frost", "category": "jar", "name": "Himalayan Frost", "price": 450, "glass": "eef6ff", "rim": "a9c2dc", "lid": "candy", "base": "cfdff0", "fx": "frost"},
-		{"id": "jar_gold", "category": "jar", "name": "Gold Rim", "price": 700, "glass": "f1ead8", "rim": "cf9b26", "lid": "gold", "base": "dcc690", "rim_width": 1.8},
-		{"id": "wrap_classic", "category": "wrapper", "name": "Classic Twist", "price": 0, "style": "classic"},
-		{"id": "wrap_striped", "category": "wrapper", "name": "Striped Paper", "price": 120, "style": "striped"},
-		{"id": "wrap_foil", "category": "wrapper", "name": "Shiny Foil", "price": 350, "style": "foil"},
-		{"id": "theme_asan", "category": "theme", "name": "Asan Bazaar Morning", "price": 0},
-		{"id": "theme_thamel", "category": "theme", "name": "Thamel Evening Lights", "price": 200},
-		{"id": "theme_hill", "category": "theme", "name": "Hill-village Shop", "price": 350},
-		{"id": "theme_tihar", "category": "theme", "name": "Tihar Night", "price": 500},
-		{"id": "theme_snow", "category": "theme", "name": "Snowy Mountain Shop", "price": 800}
+		{
+			"id": "jar_classic",
+			"category": "jar",
+			"name": "Classic Glass",
+			"price": 0,
+			"glass": "dcefee",
+			"rim": "8fb9bd",
+			"lid": "candy",
+			"base": "b8d6d6"
+		},
+		{
+			"id": "jar_steel",
+			"category": "jar",
+			"name": "Steel-lid Jar",
+			"price": 60,
+			"glass": "e4ecee",
+			"rim": "8c979f",
+			"lid": "steel",
+			"base": "b9c3c8"
+		},
+		{
+			"id": "jar_blue",
+			"category": "jar",
+			"name": "Blue-tint Glass",
+			"price": 150,
+			"glass": "a9d3f2",
+			"rim": "5f97c2",
+			"lid": "candy",
+			"base": "86b4d8"
+		},
+		{
+			"id": "jar_festival",
+			"category": "jar",
+			"name": "Festival Glass",
+			"price": 300,
+			"glass": "fbe2b4",
+			"rim": "d99a3c",
+			"lid": "candy",
+			"base": "e8c48a",
+			"fx": "diyo"
+		},
+		{
+			"id": "jar_frost",
+			"category": "jar",
+			"name": "Himalayan Frost",
+			"price": 450,
+			"glass": "eef6ff",
+			"rim": "a9c2dc",
+			"lid": "candy",
+			"base": "cfdff0",
+			"fx": "frost"
+		},
+		{
+			"id": "jar_gold",
+			"category": "jar",
+			"name": "Gold Rim",
+			"price": 700,
+			"glass": "f1ead8",
+			"rim": "cf9b26",
+			"lid": "gold",
+			"base": "dcc690",
+			"rim_width": 1.8
+		},
+		{
+			"id": "wrap_classic",
+			"category": "wrapper",
+			"name": "Classic Twist",
+			"price": 0,
+			"style": "classic"
+		},
+		{
+			"id": "wrap_striped",
+			"category": "wrapper",
+			"name": "Striped Paper",
+			"price": 120,
+			"style": "striped"
+		},
+		{
+			"id": "wrap_foil",
+			"category": "wrapper",
+			"name": "Shiny Foil",
+			"price": 350,
+			"style": "foil"
+		},
+		{
+			"id": "theme_asan",
+			"category": "theme",
+			"name": "Asan Bazaar Morning",
+			"price": 0
+		},
+		{
+			"id": "theme_thamel",
+			"category": "theme",
+			"name": "Thamel Evening Lights",
+			"price": 200
+		},
+		{
+			"id": "theme_hill",
+			"category": "theme",
+			"name": "Hill-village Shop",
+			"price": 350
+		},
+		{
+			"id": "theme_tihar",
+			"category": "theme",
+			"name": "Tihar Night",
+			"price": 500
+		},
+		{
+			"id": "theme_snow",
+			"category": "theme",
+			"name": "Snowy Mountain Shop",
+			"price": 800
+		},
+		{
+			"id": "jar_clay",
+			"category": "jar",
+			"name": "Clay-look",
+			"price": 550,
+			"glass": "e7b48c",
+			"rim": "a65a32",
+			"lid": "candy",
+			"base": "c27a4f",
+			"fx": "clay"
+		},
+		{
+			"id": "jar_rainbow",
+			"category": "jar",
+			"name": "Rainbow",
+			"price": 900,
+			"glass": "f3eefe",
+			"rim": "9b7be0",
+			"lid": "candy",
+			"base": "d9cdf7",
+			"fx": "rainbow"
+		},
+		{
+			"id": "frame_plain",
+			"category": "frame",
+			"name": "Plain ring",
+			"price": 0,
+			"color": "ffffff",
+			"accent": "cbc2ff"
+		},
+		{
+			"id": "frame_marigold",
+			"category": "frame",
+			"name": "Marigold",
+			"price": 250,
+			"color": "ff9f1c",
+			"accent": "ffd23f",
+			"fx": "petals"
+		},
+		{
+			"id": "frame_dhaka",
+			"category": "frame",
+			"name": "Dhaka weave",
+			"price": 400,
+			"color": "c0392b",
+			"accent": "1f2a36",
+			"fx": "dhaka"
+		},
+		{
+			"id": "frame_gold",
+			"category": "frame",
+			"name": "Gold",
+			"price": 700,
+			"color": "f2b632",
+			"accent": "fff2a8",
+			"fx": "shine"
+		},
+		{
+			"id": "frame_mountain",
+			"category": "frame",
+			"name": "Himalaya",
+			"price": 900,
+			"color": "8aa0c8",
+			"accent": "ffffff",
+			"fx": "peaks"
+		}
 	]
 }

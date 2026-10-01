@@ -17,6 +17,8 @@ const CURRENT_VERSION := 2
 ## SaveManager only stitches the blocks together.
 const SYSTEM_BLOCKS := {
 	"renovation": "res://scripts/meta/renovation_manager.gd",
+	"purchases": "res://scripts/core/iap_manager.gd",
+	"streaks": "res://scripts/meta/streak_manager.gd",
 }
 
 var save_path := "user://save.json"
@@ -35,7 +37,7 @@ func defaults() -> Dictionary:
 		achievements[a["id"]] = {"progress": 0, "claimed": false}
 	var d := {
 		"version": CURRENT_VERSION,
-		"coins": 0,
+		"coins": int(econ.get("starting_coins", 0)),
 		"best_score": 0,
 		"current_level": 1,
 		"unlocked_items": [],

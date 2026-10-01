@@ -140,6 +140,18 @@ func _draw_front() -> void:
 				var p := Vector2(w * (-0.3 + 0.15 * i), -bh * (0.25 + 0.13 * float(i % 3)))
 				f.draw_circle(p, w * 0.035, Color(1.0, 0.72, 0.25, 0.55), true, -1.0, true)
 				f.draw_circle(p, w * 0.016, Color(1.0, 0.95, 0.75, 0.9), true, -1.0, true)
+		"clay":
+			# Terracotta glaze: warm bands and little stamped dots.
+			for i in 3:
+				var y := -bh * (0.2 + 0.3 * i)
+				f.draw_line(Vector2(-w * 0.44, y), Vector2(w * 0.44, y), Color(0.65, 0.3, 0.15, 0.35), w * 0.03)
+				for k in 5:
+					f.draw_circle(Vector2(-w * 0.3 + k * w * 0.15, y - w * 0.05), w * 0.015, Color(1.0, 0.9, 0.75, 0.6), true, -1.0, true)
+		"rainbow":
+			var cols := [Color("ff6b6b"), Color("ffb84d"), Color("ffe66d"), Color("6bd38c"), Color("5fb3ff"), Color("a78bfa")]
+			for i in cols.size():
+				var x := -w * 0.36 + i * w * 0.144
+				f.draw_line(Vector2(x, -w * 0.12), Vector2(x + w * 0.05, -bh + w * 0.15), Color(cols[i], 0.35), w * 0.05)
 		"frost":
 			for i in 14:
 				var ang := float(i) * 1.7

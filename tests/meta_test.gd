@@ -45,6 +45,7 @@ func _main() -> void:
 	S.load_game()
 	AD.mock_duration = 0.05
 	DM.instant = true
+	root.get_node("IAPManager").offer_shown_this_session = true
 
 	_test_area_data()
 	_test_story_data()
@@ -56,6 +57,11 @@ func _main() -> void:
 	_test_unlimited_lives()
 	await _test_first_renovation_end_to_end()
 	await _test_area_complete_flow()
+	_test_economy_numbers()
+	_test_streaks()
+	_test_iap()
+	await _test_start_card_and_pre_boosters()
+	await _test_second_chance()
 	_finish()
 
 
@@ -338,6 +344,143 @@ func _test_area_complete_flow() -> void:
 	await _until(func() -> bool: return RM.current_area() == 2 and not home.busy, 6.0)
 	_check(RM.current_area() == 2 and home.view.scene.area_index == 2, "the page turns to area 2 (%d)" % RM.current_area())
 	_check(DM.played.has("a1.outro"), "the chapter's story cutscene played")
+	SM.close_all_modals()
+
+
+# --- Phase 5: economy, streaks, shop ----------------------------------------
+
+func _test_economy_numbers() -> void:
+	var BM := root.get_node("BoosterManager")
+	_fresh(1)
+	_check(BM.price("undo") == 60 and BM.price("extra_jar") == 150 and BM.price("shuffle") == 100 and BM.price("helper") == 200, "in-level booster prices from economy.json")
+	_check(BM.price("open_jar") == 120 and BM.price("peek") == 80 and BM.price("lucky") == 80, "pre-level booster prices from economy.json")
+	_check(CM.get_coins() == 200 and BM.count("undo") == 3 and BM.count("extra_jar") == 1 and BM.count("shuffle") == 1, "starting inventory: 200 coins, 3 Undo, 1 Extra Jar, 1 Shuffle")
+	_check(not BM.pre_unlocked(11) and BM.pre_unlocked(12), "pre-level boosters start at level 12")
+
+
+func _test_streaks() -> void:
+	var ST := root.get_node("StreakManager")
+	_fresh(20)
+	_check(ST.dami() == 0 and ST.free_boosters().is_empty(), "no streak, no free boosters")
+	ST.on_win()
+	_check(ST.free_boosters() == ["peek"], "1 win: free Peek")
+	ST.on_win()
+	_check(ST.free_boosters() == ["peek", "open_jar"], "2 wins: + Open Jar")
+	ST.on_win()
+	ST.on_win()
+	_check(ST.free_boosters() == ["peek", "open_jar", "lucky"], "3+ wins: + Lucky Start")
+	ST.on_fail()
+	_check(ST.dami() == 0 and ST.treasure() == 0, "failing resets the streaks")
+	var ready := false
+	for k in 7:
+		ready = ST.on_win()
+	_check(ready and ST.trunk_is_ready(), "7 wins in a row: Hajurama's Trunk is ready")
+	var trunk: Dictionary = ST.claim_trunk()
+	_check(int(trunk.get("coins", 0)) > 0 and ST.claim_trunk().is_empty() and ST.treasure() == 0, "the trunk opens once and the treasure streak restarts")
+
+
+func _test_iap() -> void:
+	var IAP := root.get_node("IAPManager")
+	_fresh(5)
+	S.game()["stats"]["levels_completed"] = 4
+	_check(not IAP.is_available("starter_pack"), "no starter pack before level 10")
+	S.data["current_level"] = 12
+	_check(IAP.is_available("starter_pack") and IAP.pending_offer() == "" , "starter pack after level 10 (the offer popup already used this session)")
+	IAP.auto_confirm = true
+	var c0: int = CM.get_coins()
+	var got := [null]
+	IAP.buy("starter_pack", func(ok: bool) -> void: got[0] = ok)
+	_check(got[0] == true and CM.get_coins() == c0 + 1000 and root.get_node("BoosterManager").count("lucky") >= 2 and LM.unlimited_active(), "starter pack grants coins, boosters and unlimited lives")
+	_check(not IAP.is_available("starter_pack"), "the starter pack is one-time")
+	AD.reset_session_state()
+	for k in 5:
+		AD.on_run_finished()
+	_check(AD.can_show_interstitial(), "interstitials are allowed without No Ads")
+	IAP.buy("no_ads", func(_ok: bool) -> void: pass)
+	_check(IAP.has_no_ads() and not AD.can_show_interstitial(), "No Ads disables interstitials")
+	S.save_game()
+	S.data = {}
+	S.load_game()
+	_check(IAP.has_no_ads() and IAP.is_bought("starter_pack"), "purchases persist")
+	IAP.auto_confirm = false
+	AD.reset_session_state()
+	TM.debug_offset = 0.0
+
+
+func _test_start_card_and_pre_boosters() -> void:
+	var BM := root.get_node("BoosterManager")
+	_fresh(26)
+	S.game()["tutorial_steps"]["first_task"] = true
+	for k in ["twist_wrapped", "twist_cloth"]:
+		S.game()["tutorial_steps"][k] = true
+	S.game()["boosters"]["open_jar"] = 2
+	S.game()["boosters"]["peek"] = 1
+	S.game()["boosters"]["lucky"] = 1
+	for k in ["grant_open_jar", "grant_peek", "grant_lucky"]:
+		S.game()["tutorial_steps"][k] = true
+	SM.hub_tab = "home"
+	change_scene_to_file(HUB)
+	await _wait(0.8)
+	current_scene.home.play_button.pressed.emit()
+	await _wait(0.4)
+	var card: Node = SM.find_modal("level_start")
+	_check(card != null, "Play opens the level start card from level 12")
+	if card == null:
+		return
+	card.toggle("open_jar")
+	card.toggle("peek")
+	card.toggle("lucky")
+	_check(card.selected == ["open_jar", "peek"], "at most 2 pre-level boosters")
+	_check(BM.count("open_jar") == 2 and BM.count("peek") == 1, "picking a booster doesn't use it yet")
+	var jars_expected: int = (PM.get_level(26)["jars"] as Array).size() + 1
+	card.play_button.pressed.emit()
+	await _until(func() -> bool: return current_scene != null and current_scene.has_method("tap_jar") and current_scene.state == 1, 6.0)
+	var g := current_scene
+	_check(g.has_method("tap_jar") and BM.count("open_jar") == 1 and BM.count("peek") == 0, "boosters are used when the level starts")
+	_check(g.board.jar_count() == jars_expected, "Open Jar: one more empty jar (%d)" % g.board.jar_count())
+	var hidden := 0
+	for h in g.board.hidden:
+		for x in h:
+			if x:
+				hidden += 1
+	_check(hidden == 0, "Peek: every wrapped candy starts unwrapped")
+	_check(g.boosters_used, "paid pre-level boosters count as boosters used")
+	# Lucky Start from the Dami streak (free).
+	SM.close_all_modals()
+	S.game()["streaks"]["dami"] = 3
+	PM.set_pre_boosters([], root.get_node("StreakManager").free_boosters())
+	var l0: int = BM.count("lucky")
+	var old_id := g.get_instance_id()
+	change_scene_to_file("res://scenes/gameplay/gameplay.tscn")
+	await _until(func() -> bool: return current_scene != null and current_scene.get_instance_id() != old_id and current_scene.state == 1, 6.0)
+	g = current_scene
+	await _wait(0.3)
+	_check(g.lucky_left == 3 and g._lucky_move.size() == 2 and BM.count("lucky") == l0, "Dami streak 3: free Lucky Start highlights a move")
+	var mv: Array = g._lucky_move
+	g.do_move(int(mv[0]), int(mv[1]))
+	_check(g.lucky_left == 2, "each move uses one Lucky Start hint")
+	SM.close_all_modals()
+
+
+func _test_second_chance() -> void:
+	_fresh(30)
+	S.data["coins"] = 500
+	for k in ["twist_wrapped", "twist_cloth"]:
+		S.game()["tutorial_steps"][k] = true
+	change_scene_to_file("res://scenes/gameplay/gameplay.tscn")
+	await _wait(1.6)
+	var g := current_scene
+	var lives0: int = LM.lives()
+	var jars0: int = g.board.jar_count()
+	g.give_up()
+	var sc: Node = SM.find_modal("so_close")
+	_check(sc != null, "giving up shows So close! with a second chance")
+	if sc:
+		sc.press("coins")
+	await _wait(0.2)
+	_check(g.board.jar_count() == jars0 + 1 and CM.get_coins() == 350 and LM.lives() == lives0 and g.state == 1, "second chance: an Extra Jar for 150 coins, no life lost")
+	g.give_up()
+	_check(SM.find_modal("so_close") == null and g.state == 4 and LM.lives() == lives0 - 1, "the second chance is once per level")
 	SM.close_all_modals()
 
 

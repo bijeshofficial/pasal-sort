@@ -200,11 +200,20 @@ func _on_stars_changed(_total: int, _delta: int) -> void:
 func _on_play() -> void:
 	if busy:
 		return
+	start_next_level()
+
+
+## Home -> Play: the start card from level 12 (pre-level boosters), else
+## straight into the level.
+static func start_next_level() -> void:
 	var level := ProgressionManager.current_level()
 	if not LivesManager.can_play(level):
 		Popups.lives(true)
 		return
-	ScreenManager.start_level()
+	if BoosterManager.pre_unlocked(level):
+		LevelStartCard.open(level)
+	else:
+		ScreenManager.start_level()
 
 
 # --- Tasks -------------------------------------------------------------------
@@ -396,6 +405,33 @@ func on_shown() -> void:
 		return
 	if wants_first_task_tutorial():
 		_after(0.5, start_first_task_tutorial)
+		return
+	var offer := IAPManager.pending_offer()
+	if offer != "" and not is_tutorial_active():
+		IAPManager.mark_offer_shown()
+		_after(0.8, show_offer.bind(offer))
+
+
+## The once-per-session offer (starter pack after level 10).
+func show_offer(id: String) -> void:
+	if ScreenManager.has_modal() or busy:
+		return
+	var p := GameData.iap_product(id)
+	Popups.show({
+		"id": "offer",
+		"title": tr(String(p.get("name", ""))),
+		"art": String(p.get("icon", "gift")),
+		"art_color": UIKit.PINK,
+		"body": IAPManager._describe(p) + "\n" + tr("One time only"),
+		"closable": true,
+		"buttons": [
+			{"id": "buy", "text": String(p.get("price_label", "")), "kind": "primary", "cb": func() -> void:
+				IAPManager.buy(id, func(ok: bool) -> void:
+					if ok:
+						Popups.reward(tr("Thank you!"), IAPManager._describe(p), String(p.get("icon", "gift")))
+						refresh())},
+		],
+	})
 
 
 func wants_first_task_tutorial() -> bool:
