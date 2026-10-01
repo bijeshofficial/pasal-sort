@@ -135,6 +135,7 @@ func _on_intro_done() -> void:
 	if state != State.INTRO:
 		return
 	state = State.PLAYING
+	_log("level_start", {"level": level, "mode": mode, "tier": String(level_data.get("tier", "normal")), "resumed": resumed, "pre": pre_applied})
 	var twists: Array = level_data.get("twists", [])
 	_show_twist_cards(twists.duplicate(), func() -> void:
 		tutorial.start()
@@ -399,9 +400,9 @@ func tap_jar(i: int) -> void:
 		elif board.is_sealed(i):
 			_nope(i)
 			if board.is_cloth_on(i):
-				VFXManager.toast("Covered! Fill %d jars to lift the cloth." % board.cloth_after)
+				VFXManager.toast(tr("Covered! Fill %d jars to lift the cloth.") % board.cloth_after)
 			else:
-				VFXManager.toast("Locked! Fill a jar of %s to open it." % GameData.candy(int(board.locks[i]))["name"])
+				VFXManager.toast(tr("Locked! Fill a jar of %s to open it.") % GameData.candy(int(board.locks[i]))["name"])
 		elif board.is_done(i):
 			view.jars[i].bounce(1.04)
 		return
@@ -838,6 +839,18 @@ func _break_heart(p: Control) -> void:
 	tw.tween_property(h, "scale", Vector2(1.3, 1.3), 0.15)
 	tw.parallel().tween_property(h, "modulate:a", 0.0, 0.45)
 	tw.parallel().tween_property(h, "position:y", h.position.y - 120, 0.45)
+
+
+## Debug menu: highlight the solver's next move and say how long the
+## solution is.
+func debug_show_solution() -> void:
+	var r := Solver.solve(board, 80000, true)
+	var mv: Array = r["moves"]
+	if mv.is_empty():
+		VFXManager.toast(tr("No solution found (%d nodes)") % int(r["nodes"]))
+		return
+	view.pulse_hint(int(mv[0][0]), int(mv[0][1]))
+	VFXManager.toast(tr("Solution: %d moves. Next: %d -> %d") % [mv.size(), int(mv[0][0]) + 1, int(mv[0][1]) + 1])
 
 
 func _log(event: String, data: Dictionary) -> void:

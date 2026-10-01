@@ -71,6 +71,12 @@ static func font(heavy: bool = true) -> Font:
 	var f: Font
 	if heavy:
 		var ff: FontFile = load("res://assets/fonts/LilitaOne-Regular.ttf")
+		# Lilita One has no Devanagari: Nepali text falls back to Baloo 2.
+		var deva := FontVariation.new()
+		deva.base_font = load("res://assets/fonts/Baloo2-Variable.ttf")
+		deva.variation_opentype = {TextServerManager.get_primary_interface().name_to_tag("wght"): 800}
+		if ff.fallbacks.is_empty():
+			ff.fallbacks = [deva]
 		f = ff
 	else:
 		var fv := FontVariation.new()
@@ -81,7 +87,12 @@ static func font(heavy: bool = true) -> Font:
 	return f
 
 
+## Text size setting (Settings > Text size): 1.0 normal, 1.15 large.
+static var text_scale := 1.0
+
+
 static func label(text: String, size: int = 44, color: Color = INK, align: HorizontalAlignment = HORIZONTAL_ALIGNMENT_CENTER, heavy: bool = true) -> Label:
+	size = int(round(size * text_scale))
 	var l := Label.new()
 	l.text = text
 	l.add_theme_font_override("font", font(heavy))

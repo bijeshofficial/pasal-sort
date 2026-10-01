@@ -52,16 +52,16 @@ static func grant(bundle: Dictionary, source: String = "") -> Array:
 static func describe(bundle: Dictionary) -> String:
 	var parts: PackedStringArray = []
 	if int(bundle.get("coins", 0)) > 0:
-		parts.append("+%d coins" % int(bundle["coins"]))
+		parts.append(UIKit.t("+%d coins") % int(bundle["coins"]))
 	if int(bundle.get("stars", 0)) > 0:
-		parts.append("+%d stars" % int(bundle["stars"]))
+		parts.append(UIKit.t("+%d stars") % int(bundle["stars"]))
 	if int(bundle.get("lives", 0)) > 0:
-		parts.append("+%d lives" % int(bundle["lives"]))
+		parts.append(UIKit.t("+%d lives") % int(bundle["lives"]))
 	if int(bundle.get("unlimited_lives_min", 0)) > 0:
-		parts.append("%d min unlimited lives" % int(bundle["unlimited_lives_min"]))
+		parts.append(UIKit.t("%d min unlimited lives") % int(bundle["unlimited_lives_min"]))
 	var b: Dictionary = bundle.get("boosters", {})
 	for id in b:
 		parts.append("+%d %s" % [int(b[id]), BoosterManager.display_name(String(id))])
 	if int(bundle.get("sticker_packs", 0)) > 0:
-		parts.append("%d sticker pack%s" % [int(bundle["sticker_packs"]), "s" if int(bundle["sticker_packs"]) > 1 else ""])
+		parts.append(UIKit.t("%d sticker packs") % int(bundle["sticker_packs"]) if int(bundle["sticker_packs"]) > 1 else UIKit.t("1 sticker pack"))
 	return ", ".join(parts)

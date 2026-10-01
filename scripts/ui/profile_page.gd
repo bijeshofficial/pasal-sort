@@ -188,14 +188,14 @@ func _stats() -> Control:
 	var secs := SaveManager.stat("play_time_sec")
 	var play := "%dh %02dm" % [secs / 3600, (secs / 60) % 60] if secs >= 3600 else "%dm" % (secs / 60)
 	var rows := [
-		["Levels completed", str(SaveManager.game_stat("levels_completed")), "flag", UIKit.SECONDARY],
-		["Jars filled", str(SaveManager.game_stat("jars_filled")), "jar", UIKit.PRIMARY],
-		["Candies moved", str(SaveManager.game_stat("candies_moved")), "candy", UIKit.PINK],
-		["Boosters used", str(SaveManager.game_stat("boosters_used")), "shuffle", UIKit.PURPLE],
-		["Best streak", str(int(SaveManager.game().get("streaks", {}).get("best_dami", 0))), "fire", Color("ff7a1a")],
-		["Daily challenges", str(SaveManager.game_stat("daily_challenges")), "calendar", UIKit.GOLD],
-		["Tasks done", str(SaveManager.game_stat("tasks_completed")), "brush", UIKit.SECONDARY],
-		["Play time", play, "clock", UIKit.INK_SOFT],
+		[tr("Levels completed"), str(SaveManager.game_stat("levels_completed")), "flag", UIKit.SECONDARY],
+		[tr("Jars filled"), str(SaveManager.game_stat("jars_filled")), "jar", UIKit.PRIMARY],
+		[tr("Candies moved"), str(SaveManager.game_stat("candies_moved")), "candy", UIKit.PINK],
+		[tr("Boosters used"), str(SaveManager.game_stat("boosters_used")), "shuffle", UIKit.PURPLE],
+		[tr("Best streak"), str(int(SaveManager.game().get("streaks", {}).get("best_dami", 0))), "fire", Color("ff7a1a")],
+		[tr("Daily challenges"), str(SaveManager.game_stat("daily_challenges")), "calendar", UIKit.GOLD],
+		[tr("Tasks done"), str(SaveManager.game_stat("tasks_completed")), "brush", UIKit.SECONDARY],
+		[tr("Play time"), play, "clock", UIKit.INK_SOFT],
 	]
 	for r in rows:
 		var c := _card(UIKit.PAPER)
@@ -209,7 +209,7 @@ func _stats() -> Control:
 		v.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		v.alignment = BoxContainer.ALIGNMENT_CENTER
 		v.add_child(UIKit.label(r[1], 46, UIKit.INK, HORIZONTAL_ALIGNMENT_LEFT))
-		var cap := UIKit.label(tr(String(r[0])), 26, UIKit.INK_SOFT, HORIZONTAL_ALIGNMENT_LEFT, false)
+		var cap := UIKit.label(String(r[0]), 26, UIKit.INK_SOFT, HORIZONTAL_ALIGNMENT_LEFT, false)
 		cap.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		v.add_child(cap)
 		h.add_child(v)

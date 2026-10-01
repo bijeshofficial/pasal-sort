@@ -18,6 +18,9 @@ var _play_time_accum := 0.0
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	GameData.preload_all()
+	apply_accessibility()
+	SaveManager.loaded.connect(apply_accessibility)
+	SaveManager.setting_changed.connect(_on_setting_changed)
 	if "--safe-debug" in OS.get_cmdline_user_args():
 		debug_safe_insets = Vector2(110, 70)
 
@@ -74,6 +77,20 @@ func quit_game() -> void:
 	app_paused.emit()
 	SaveManager.save_game()
 	get_tree().quit()
+
+
+## Language, colour-blind markings and text size from the settings.
+func apply_accessibility() -> void:
+	if SaveManager.data.is_empty():
+		return
+	TranslationServer.set_locale(String(SaveManager.setting_value("language", "en")))
+	CandyArt.colorblind = bool(SaveManager.setting_value("colorblind", false))
+	UIKit.text_scale = clampf(float(SaveManager.setting_value("text_scale", 1.0)), 0.8, 1.3)
+
+
+func _on_setting_changed(key: String, _value: Variant) -> void:
+	if key in ["language", "colorblind", "text_scale"]:
+		apply_accessibility()
 
 
 func emit_event(id: String, amount: int = 1) -> void:

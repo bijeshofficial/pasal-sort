@@ -141,7 +141,7 @@ func _daily_card() -> Control:
 	var col := VBoxContainer.new()
 	col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	col.add_child(UIKit.label("Daily free coins", 44, UIKit.INK, HORIZONTAL_ALIGNMENT_LEFT))
-	var sub := UIKit.label("Watch a short ad for %d coins. Once a day." % int(GameData.economy()["daily_free_coins"]), 32, UIKit.INK_SOFT, HORIZONTAL_ALIGNMENT_LEFT, false)
+	var sub := UIKit.label(tr("Watch a short ad for %d coins. Once a day.") % int(GameData.economy()["daily_free_coins"]), 32, UIKit.INK_SOFT, HORIZONTAL_ALIGNMENT_LEFT, false)
 	sub.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	col.add_child(sub)
 	row.add_child(col)
@@ -231,7 +231,7 @@ func buy_bundle(id: String) -> bool:
 		BoosterManager.grant(k, int(b["grant"][k]), false)
 	SaveManager.save_game()
 	AudioManager.play("reward")
-	VFXManager.toast("%s added" % b["name"])
+	VFXManager.toast(tr("%s added") % tr(String(b["name"])))
 	return true
 
 
@@ -244,7 +244,7 @@ func _lives_card() -> Control:
 	var col := VBoxContainer.new()
 	col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	col.add_child(UIKit.label("Refill lives", 42, UIKit.INK, HORIZONTAL_ALIGNMENT_LEFT))
-	col.add_child(UIKit.label("Back to %d lives right away" % LivesManager.max_lives(), 30, UIKit.INK_SOFT, HORIZONTAL_ALIGNMENT_LEFT, false))
+	col.add_child(UIKit.label(tr("Back to %d lives right away") % LivesManager.max_lives(), 30, UIKit.INK_SOFT, HORIZONTAL_ALIGNMENT_LEFT, false))
 	row.add_child(col)
 	var btn := UIKit.button(str(LivesManager.refill_price()), "gold", "coin", 36, Vector2(230, 120))
 	btn.size_flags_vertical = Control.SIZE_SHRINK_CENTER
@@ -336,7 +336,7 @@ func press_cosmetic(id: String) -> void:
 		Popups.confirm("Buy %s?" % item["name"], "%d coins" % int(item["price"]), "Buy", func() -> void:
 			if ProgressionManager.buy_cosmetic(id):
 				AudioManager.play("reward")
-				VFXManager.toast("%s unlocked!" % item["name"])
+				VFXManager.toast(tr("%s unlocked!") % tr(String(item["name"])))
 				_refresh_buttons()
 				changed.emit())
 		return

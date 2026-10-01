@@ -65,17 +65,17 @@ func start() -> void:
 		"undo":
 			var n := BoosterManager.grant_tutorial("undo")
 			if n > 0:
-				VFXManager.toast("%d free Undos!" % n)
+				VFXManager.toast(tr("%d free Undos!") % n)
 		"extra_jar":
 			var n := BoosterManager.grant_tutorial("extra_jar")
 			if n > 0:
-				VFXManager.toast("%d free Extra Jars!" % n)
+				VFXManager.toast(tr("%d free Extra Jars!") % n)
 			say("Need space? Add a jar.")
 			game.booster_buttons["extra_jar"].start_pulse()
 		"shuffle":
 			var n := BoosterManager.grant_tutorial("shuffle")
 			if n > 0:
-				VFXManager.toast("%d free Shuffles!" % n)
+				VFXManager.toast(tr("%d free Shuffles!") % n)
 			say("All mixed up? Try a Shuffle.")
 			game.booster_buttons["shuffle"].start_pulse()
 		"helper":

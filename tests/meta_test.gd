@@ -74,6 +74,7 @@ func _main() -> void:
 	_test_race()
 	await _test_cat_level_play()
 	await _test_orders_and_move_limit()
+	await _test_polish()
 	_finish()
 
 
@@ -812,6 +813,51 @@ func _test_orders_and_move_limit() -> void:
 	g.out_of_moves()
 	_check(SM.find_modal("out_of_moves") == null and g.state == 4, "the +5 moves offer is once per level")
 	SM.close_all_modals()
+
+
+# --- Phase 8: polish -----------------------------------------------------------
+
+func _test_polish() -> void:
+	_fresh(12)
+	# Language: Nepali translations load and the UI font can draw Devanagari.
+	S.set_setting("language", "ne")
+	_check(TranslationServer.get_locale().begins_with("ne"), "Language setting switches the locale")
+	_check(tr("Shop") != "Shop" and tr("Tasks") != "Tasks", "UI strings have Nepali translations (%s, %s)" % [tr("Shop"), tr("Tasks")])
+	_check(tr("Level %d") % 5 != "Level 5" and (tr("Level %d") % 5).contains("5"), "format strings keep their placeholders in Nepali")
+	var ui_kit = load("res://scripts/ui/ui_kit.gd")
+	var heavy: Font = ui_kit.font(true)
+	_check(not heavy.fallbacks.is_empty() and (heavy.fallbacks[0] as Font).has_char("न".unicode_at(0)), "the display font falls back to Baloo 2 for Devanagari")
+	S.set_setting("language", "en")
+	_check(tr("Shop") == "Shop", "back to English")
+	# Accessibility.
+	S.set_setting("colorblind", true)
+	_check(load("res://scripts/visuals/candy_art.gd").colorblind, "colour-blind markings switch on")
+	S.set_setting("colorblind", false)
+	S.set_setting("text_scale", 1.15)
+	_check(is_equal_approx(ui_kit.text_scale, 1.15) and (ui_kit.label("x", 40) as Label).get_theme_font_size("font_size") == 46, "Large text scales labels")
+	S.set_setting("text_scale", 1.0)
+	# Analytics: a level start and a win are logged.
+	var AN := root.get_node("AnalyticsManager")
+	AN.clear()
+	change_scene_to_file("res://scenes/gameplay/gameplay.tscn")
+	await _until(func() -> bool: return current_scene != null and current_scene.has_method("tap_jar") and current_scene.state == 1, 8.0)
+	var g := current_scene
+	for mv in Solver.solve(g.board, 80000)["moves"]:
+		g.do_move(int(mv[0]), int(mv[1]))
+	await _wait(0.5)
+	var sm: Dictionary = AN.summary()
+	_check(int(sm["counts"].get("level_start", 0)) >= 1 and int(sm["wins"]) >= 1 and float(sm["avg_moves"]) > 0.0, "analytics logs level_start and level_win with moves")
+	var personal := false
+	for r in AN.read():
+		if r.has("name") or JSON.stringify(r).contains("Player"):
+			personal = true
+	_check(not personal, "analytics never logs the player's name")
+	SM.close_all_modals()
+	# Debug menu, theme, export settings.
+	_check(load("res://scripts/ui/debug_menu.gd").open() != null, "the debug menu opens in debug builds")
+	SM.close_all_modals()
+	_check(String(ProjectSettings.get_setting("gui/theme/custom", "")) == "res://assets/ui/game_theme.tres" and ResourceLoader.exists("res://assets/ui/game_theme.tres"), "a project-wide game theme is set")
+	_check(int(ProjectSettings.get_setting("display/window/handheld/orientation", 0)) == 1 and String(ProjectSettings.get_setting("display/window/stretch/aspect", "")) == "expand", "portrait, stretch aspect expand")
 
 
 # --- Helpers -----------------------------------------------------------------

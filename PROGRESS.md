@@ -14,7 +14,7 @@ Read this first at the start of every session. Godot 4.7.2 at
 | 5 Economy & shop | pre-level boosters, start card, Dami streak, iap_products, No Ads, starter pack | done |
 | 6 Daily loop | calendar, missions + chest, daily challenge, chests, achievements 30+ | done |
 | 7 Live features | album, weekly event, Bazaar Race, treasure streak, cat paw, gift box, orders, move limit, Haat Helper | done |
-| 8 Polish | i18n en/ne, accessibility, analytics, debug menu, QA screenshots | todo |
+| 8 Polish | i18n en/ne, accessibility, analytics, debug menu, QA screenshots | done |
 
 ## Decisions
 
@@ -52,6 +52,17 @@ Read this first at the start of every session. Godot 4.7.2 at
   every 10 levels, star chest per 15 stars spent), data in `data/daily.json`
   and `data/chests.json`. Game events go through `GameManager.emit_event`.
 - Achievements: 32 families with tiers (`data/achievements.json`).
+- i18n: `data/i18n/strings.csv` (keys, en, ne, _review). Regenerate after
+  adding strings: `python3 tools/i18n_extract.py [--merge DIR_OF_JSON]`, then
+  `godot --headless --path . --import`. Static code translates with
+  `UIKit.t()`. Lilita One falls back to Baloo 2 for Devanagari.
+- Settings: language, colour-blind pips on candies, text size (rebuilds the
+  screen), credits, privacy, double-confirm reset. 5 taps on the version
+  opens `DebugMenu` (debug builds): level jump, currencies, clock, area,
+  tutorials, level report, solver solution, analytics summary.
+- `AnalyticsManager`: JSON lines in user://analytics.log, no personal data.
+- Theme: `assets/ui/game_theme.tres` (built by tools/build_theme.gd) is the
+  project-wide fallback; UIKit styles everything in code.
 - Live: `AlbumManager` (`data/album.json`), `EventManager` (`data/events.json`,
   weekly rotation, Event Pass is an IAP product), `RaceManager`
   (`data/race.json`, rivals simulated from seeded timetables).
@@ -61,14 +72,22 @@ Read this first at the start of every session. Godot 4.7.2 at
 
 ## Next step
 
-Phase 8: localisation (CSV en/ne via TranslationServer, Devanagari font
-fallback), colour-blind markings + text size, AnalyticsManager (local JSON
-lines + debug summary), debug/cheat menu (5 taps on the version), Android
-export preset check, full screenshot QA pass of every screen.
+All 8 phases are built. Most valuable next steps:
+1. Native-speaker review of the Nepali story lines (marked `_review` in
+   data/i18n/strings.csv) and a pass over UI wording.
+2. Real art: drop PNGs into assets/art/areas/<area>/<object>_<variant>.png
+   and replace CharacterArt/RenoArt placeholders; record real audio.
+3. Device testing on Android (performance of the full-screen Home scene,
+   safe areas, back button), then real ad/IAP/notification adapters.
+4. Polish areas 4-10 (they reuse generic drawers and have 1-line stories).
 
 ## Known issues
 
-- Generation timing: worst case ~9k solver nodes per level (~1 s on an idle
-  desktop). Timings measured this session were inflated by heavy machine load.
+- Generation: levels 31-400 generate in ~17 s total on an idle M3 (worst
+  case ~9k solver nodes per level).
+- Nepali story lines are machine-drafted and need native review.
+- Android export not built here (no SDK/keystore configured in this session);
+  package id is com.neuronnest.pasalsort (chosen earlier instead of the
+  brief's com.example placeholder).
 - Another session added store-screenshot tooling (docs/store, tools/store_shots.gd,
   GameManager.capture_mode); it is left uncommitted for its owner.

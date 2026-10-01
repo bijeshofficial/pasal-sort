@@ -191,7 +191,7 @@ static func _mission_row(i: int, m: Dictionary, on_claim: Callable) -> Control:
 		if fw > 2:
 			DrawKit.gradient_fill(bar, DrawKit.rounded_rect(Rect2(Vector2(3, 3), Vector2(maxf(fw, 26) - 6, bar.size.y - 6)), 12, 4), UIKit.PRIMARY.lightened(0.3), UIKit.PRIMARY))
 	col.add_child(bar)
-	col.add_child(UIKit.label("%d / %d   +%d coins, +%d points" % [prog, target, int(d.get("coins", 20)), int(d.get("points", 10))], 26, UIKit.INK_SOFT, HORIZONTAL_ALIGNMENT_LEFT, false))
+	col.add_child(UIKit.label(_t("%d / %d   +%d coins, +%d points") % [prog, target, int(d.get("coins", 20)), int(d.get("points", 10))], 26, UIKit.INK_SOFT, HORIZONTAL_ALIGNMENT_LEFT, false))
 	row.add_child(col)
 	var b: GameButton
 	if claimed:

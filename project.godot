@@ -47,6 +47,7 @@ ChestManager="*res://scripts/meta/chest_manager.gd"
 AlbumManager="*res://scripts/meta/album_manager.gd"
 EventManager="*res://scripts/meta/event_manager.gd"
 RaceManager="*res://scripts/meta/race_manager.gd"
+AnalyticsManager="*res://scripts/core/analytics_manager.gd"
 
 [display]
 
@@ -68,3 +69,12 @@ renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
 textures/vram_compression/import_etc2_astc=true
 environment/defaults/default_clear_color=Color(0.984, 0.953, 0.898, 1)
+
+[internationalization]
+
+locale/translations=PackedStringArray("res://data/i18n/strings.en.translation", "res://data/i18n/strings.ne.translation")
+locale/fallback="en"
+
+[gui]
+
+theme/custom="res://assets/ui/game_theme.tres"

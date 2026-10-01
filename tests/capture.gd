@@ -5,6 +5,7 @@ extends SceneTree
 
 var out_dir := "user://captures"
 var which := "all"
+var lang := "en"
 var S: Node
 var SM: Node
 var PM: Node
@@ -16,6 +17,8 @@ func _initialize() -> void:
 			out_dir = a.substr(6)
 		elif a.begins_with("--set="):
 			which = a.substr(6)
+		elif a.begins_with("--lang="):
+			lang = a.substr(7)
 	DirAccess.make_dir_recursive_absolute(out_dir)
 	_run.call_deferred()
 
@@ -25,6 +28,8 @@ func _fresh(level: int, coins: int = 640, stars: int = 3) -> void:
 	S.data["coins"] = coins
 	S.data["current_level"] = level
 	S.data["game"]["stars"] = stars
+	S.data["settings"]["language"] = lang
+	root.get_node("GameManager").apply_accessibility()
 	S.data["game"]["tutorial_steps"] = {"tap": true, "stack": true, "empty": true, "undo": true, "extra_jar": true, "shuffle": true,
 		"twist_wrapped": true, "twist_cloth": true, "twist_lock": true, "twist_tall": true, "first_task": true, "story_intro": true}
 	for i in range(1, 11):

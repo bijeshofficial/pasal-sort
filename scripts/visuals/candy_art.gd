@@ -13,6 +13,9 @@ const GOLD_FOIL := Color("f0cf6a")
 const GOLD_FOIL_EDGE := Color("a97d17")
 
 static var _shapes: Dictionary = {}
+## Colour-blind mode: an extra inner marking per candy type (1-6 pips, with
+## a bar under them for types 7-12), so nothing relies on colour alone.
+static var colorblind := false
 
 
 static func shape(name: String) -> PackedVector2Array:
@@ -138,6 +141,22 @@ static func draw_candy(ci: CanvasItem, c: Vector2, d: float, type: int, style: S
 	ci.draw_circle(c + Vector2(-0.15, -0.02) * d, d * 0.024, Color(1, 1, 1, 0.8), true, -1.0, true)
 	ci.draw_circle(c + Vector2(0.12, 0.12) * d, d * 0.014, Color(1, 1, 1, 0.45), true, -1.0, true)
 	DrawKit.aa_rim(ci, _xf(parts["ink"], c, d), edge, 1.4)
+	if colorblind:
+		_draw_marking(ci, c, d, type)
+
+
+static func _draw_marking(ci: CanvasItem, c: Vector2, d: float, type: int) -> void:
+	var pips := type % 6 + 1
+	var bar := type >= 6
+	var r := d * 0.045
+	var w := pips * r * 2.6 + r
+	var box := Rect2(c.x - w * 0.5, c.y + d * 0.04, w, r * (4.4 if bar else 3.0))
+	ci.draw_colored_polygon(DrawKit.rounded_rect(box, r * 1.4, 4), Color(1, 1, 1, 0.92))
+	DrawKit.outline(ci, DrawKit.rounded_rect(box, r * 1.4, 4), Color("2b1d16"), maxf(1.0, d * 0.012))
+	for k in pips:
+		ci.draw_circle(Vector2(box.position.x + r * 1.8 + k * r * 2.6, box.position.y + r * 1.5), r * 0.8, Color("2b1d16"), true, -1.0, true)
+	if bar:
+		ci.draw_line(Vector2(box.position.x + r, box.end.y - r * 1.1), Vector2(box.end.x - r, box.end.y - r * 1.1), Color("2b1d16"), r * 0.9)
 
 
 ## Lit (top) and shaded (bottom) tones that keep the candy saturated.

@@ -49,7 +49,8 @@ func defaults() -> Dictionary:
 		"selected_items": {},
 		"upgrades": {},
 		"tutorial_done": false,
-		"settings": {"sound": true, "music": true, "haptics": true, "hints": true, "sfx_volume": 1.0, "music_volume": 0.7},
+		"settings": {"sound": true, "music": true, "haptics": true, "hints": true, "sfx_volume": 1.0, "music_volume": 0.7,
+			"language": "en", "colorblind": false, "text_scale": 1.0},
 		"statistics": {
 			"games_played": 0,
 			"total_coins_earned": 0,
@@ -178,6 +179,11 @@ func reset_progress() -> void:
 
 func get_setting(key: String) -> bool:
 	return bool(data["settings"].get(key, true))
+
+
+## Any setting value (language, text_scale...).
+func setting_value(key: String, fallback: Variant = null) -> Variant:
+	return data.get("settings", {}).get(key, fallback)
 
 
 ## Volume settings, 0..1.
