@@ -26,12 +26,12 @@
 		"easy": {"label": "", "coin_mult": 1.0, "candidates": 3, "pick": "min"},
 		"normal": {"label": "", "coin_mult": 1.0, "candidates": 3, "pick": "median"},
 		"hard": {"label": "HARD", "coin_mult": 1.5, "candidates": 4, "pick": "max"},
-		"super": {"label": "SUPER HARD", "coin_mult": 2.0, "candidates": 6, "pick": "max"}
+		"super": {"label": "SUPER HARD", "coin_mult": 2.5, "candidates": 6, "pick": "max"}
 	},
 	"twists": {
 		"wrapped": {"from": 15, "title": "Wrapped candies", "text": "Some candies hide in paper wrappers. A wrapper opens when its candy reaches the top.", "hidden_ratio": 0.45},
-		"cloth": {"from": 30, "title": "Dhaka-cloth jar", "text": "This jar is covered with a woven cloth. Fill any 2 jars and the cloth slides off.", "unlock_after": 2},
-		"lock": {"from": 50, "title": "Padlocked jar", "text": "A brass padlock! Fill a jar of the candy on its badge to unlock it."},
+		"cloth": {"from": 35, "title": "Dhaka-cloth jar", "text": "This jar is covered with a woven cloth. Fill any 2 jars and the cloth slides off.", "unlock_after": 2},
+		"lock": {"from": 55, "title": "Padlocked jar", "text": "A brass padlock! Fill a jar of the candy on its badge to unlock it."},
 		"tall": {"from": 80, "title": "Tall jar", "text": "A tall jar holds 2 extra candies. Handy storage space!", "extra": 2}
 	},
 	"twist_chance": 0.45,

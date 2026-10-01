@@ -20,13 +20,34 @@ func _initialize() -> void:
 	_run.call_deferred()
 
 
-func _fresh(level: int, coins: int = 640) -> void:
+func _fresh(level: int, coins: int = 640, stars: int = 3) -> void:
 	S.data = S.defaults()
 	S.data["coins"] = coins
 	S.data["current_level"] = level
+	S.data["game"]["stars"] = stars
 	S.data["game"]["tutorial_steps"] = {"tap": true, "stack": true, "empty": true, "undo": true, "extra_jar": true, "shuffle": true,
-		"twist_wrapped": true, "twist_cloth": true, "twist_lock": true, "twist_tall": true}
-	PM.unlock_decorations()
+		"twist_wrapped": true, "twist_cloth": true, "twist_lock": true, "twist_tall": true, "first_task": true, "story_intro": true}
+	for i in range(1, 11):
+		S.data["game"]["tutorial_steps"]["arrive_%d" % i] = true
+
+
+## Marks the first `n` tasks of `area` done (style 0, 1, 2, ...).
+func _reno(area: int, n: int) -> void:
+	var rm := root.get_node("RenovationManager")
+	S.data["game"]["renovation"]["area"] = area
+	var st: Dictionary = rm.area_state(area)
+	var k := 0
+	for t in rm.tasks(area):
+		if k >= n:
+			break
+		st["tasks"][t["id"]] = k % 3
+		k += 1
+	for a in range(1, area):
+		var prev: Dictionary = rm.area_state(a)
+		for t in rm.tasks(a):
+			prev["tasks"][t["id"]] = 0
+		prev["complete"] = true
+		prev["chest_claimed"] = true
 
 
 func _run() -> void:
@@ -35,6 +56,7 @@ func _run() -> void:
 	SM = root.get_node("ScreenManager")
 	PM = root.get_node("ProgressionManager")
 	S.set_save_path("user://capture_save.json")
+	root.get_node("TimeManager").force_hour = 11
 	root.get_node("AudioManager").set_ad_mute(true)
 	root.get_node("AdManager").mock_duration = 0.05
 
@@ -49,7 +71,7 @@ func _run() -> void:
 
 	if which in ["all", "hub"]:
 		_fresh(37)
-		S.data["game"]["decorations_revealed"] = S.data["game"]["pasal_decorations"].duplicate()
+		_reno(1, 6)
 		SM.hub_tab = "home"
 		await _scene("res://scenes/main/hub.tscn", 0.8)
 		await _save("02_home")
@@ -67,10 +89,68 @@ func _run() -> void:
 		await _wait(0.5)
 		await _save("06_profile")
 		_fresh(160, 5000)
-		S.data["game"]["decorations_revealed"] = S.data["game"]["pasal_decorations"].duplicate()
+		_reno(2, 9)
 		SM.hub_tab = "home"
 		await _scene("res://scenes/main/hub.tscn", 0.8)
-		await _save("07_home_decorated")
+		await _save("07_home_area2")
+
+	if which in ["all", "reno"]:
+		_fresh(12, 900, 6)
+		_reno(1, 3)
+		SM.hub_tab = "home"
+		await _scene("res://scenes/main/hub.tscn", 0.9)
+		await _save("70_home_area1")
+		var home = current_scene.home
+		home.open_tasks()
+		await _wait(0.6)
+		await _save("71_tasks_panel")
+		SM.close_all_modals()
+		home.do_task("hang_lights")
+		await _wait(1.25)
+		await _save("72_stars_landing")
+		await _wait(1.0)
+		await _save("73_style_picker")
+		var picker = SM.find_modal("style_picker")
+		if picker:
+			picker.pick(1)
+			await _wait(0.5)
+			await _save("74_style_preview")
+			picker._choose()
+		await _wait(0.8)
+		await _save("75_dialogue")
+		var dm := root.get_node("DialogueManager")
+		while dm.is_playing():
+			dm.current_box().advance()
+			dm.current_box().advance()
+			await _wait(0.1)
+		await _wait(0.6)
+		home.open_gallery()
+		await _wait(0.5)
+		await _save("76_areas_gallery")
+		SM.close_all_modals()
+		var ba = load("res://scripts/ui/before_after.gd").new()
+		ba.setup(1)
+		SM.push_modal(ba)
+		await _wait(1.6)
+		await _save("77_before_after")
+		SM.close_all_modals()
+		load("res://scripts/ui/chest_popup.gd").open("Chapter 1 chest", {"coins": 300, "boosters": {"undo": 2, "shuffle": 1}, "unlimited_lives_min": 30}, "capture")
+		await _wait(2.8)
+		await _save("78_chest")
+		SM.close_all_modals()
+		_fresh(300, 900, 4)
+		_reno(3, 5)
+		SM.hub_tab = "home"
+		await _scene("res://scenes/main/hub.tscn", 0.9)
+		await _save("79_home_area3")
+		root.get_node("TimeManager").force_hour = 21
+		_fresh(300, 900, 4)
+		_reno(2, 12)
+		S.data["game"]["renovation"]["areas"]["2"]["chest_claimed"] = true
+		S.data["game"]["tutorial_steps"]["outro_2"] = true
+		await _scene("res://scenes/main/hub.tscn", 1.2)
+		await _save("80_home_area2_night")
+		root.get_node("TimeManager").force_hour = 11
 
 	if which in ["all", "play"]:
 		for spec in [[1, "10_level1"], [2, "11_level2"], [7, "12_level7"], [25, "13_level25"], [60, "14_level60"], [200, "15_level200"]]:
@@ -175,11 +255,11 @@ func _run() -> void:
 		await _wait(0.5)
 		await _save("52_avatars")
 		SM.close_all_modals()
-		_fresh(20)
+		_fresh(4)
+		S.data["game"]["tutorial_steps"].erase("first_task")
 		SM.hub_tab = "home"
-		await _scene("res://scenes/main/hub.tscn", 0.9)
-		await _save("53_home_reveal")
-		SM.push_modal(load("res://scenes/ui/popup.tscn").instantiate())
+		await _scene("res://scenes/main/hub.tscn", 1.4)
+		await _save("53_first_task_tutorial")
 		SM.close_all_modals()
 	if which in ["all", "candies"]:
 		# All 12 candies large on the game backdrop (plus wrapped and selected).

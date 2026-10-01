@@ -1,0 +1,59 @@
+{
+	"lines": {
+		"a3.arrive": [
+			{"who": "bhai", "mood": "worried", "text": "Didi... you go first."},
+			{"who": "maya", "mood": "surprised", "text": "It's just dust, Bhai. And boxes. And... a lot of boxes."},
+			{"who": "kanchha", "mood": "happy", "text": "Leave the heavy stuff to me! I lift weights. Well, I lifted one, once."}
+		],
+		"a3.cobwebs": [
+			{"who": "biralo", "mood": "happy", "text": "Mrrp!"},
+			{"who": "maya", "mood": "laugh", "text": "Look who's brave now that the webs are gone."}
+		],
+		"a3.storage_floor": [
+			{"who": "kanchha", "mood": "neutral", "text": "A dry floor keeps the rice dry. Simple science, nani."}
+		],
+		"a3.rack": [
+			{"who": "maya", "mood": "happy", "text": "A place for everything, and everything in its place."},
+			{"who": "hajurama", "mood": "laugh", "text": "You sound just like me fifty years ago!"}
+		],
+		"a3.sacks": [
+			{"who": "biralo", "mood": "grumpy", "text": "..."},
+			{"who": "maya", "mood": "laugh", "text": "Sorry, Biralo. The rice is not a bed either."}
+		],
+		"a3.ladder": [
+			{"who": "bhai", "mood": "laugh", "text": "I can reach the top shelf! I can see the WHOLE room!"},
+			{"who": "maya", "mood": "worried", "text": "Hold on with both hands, Bhai!"}
+		],
+		"a3.small_window": [
+			{"who": "maya", "mood": "happy", "text": "Fresh air! And a little bit of sky."}
+		],
+		"a3.curtain": [
+			{"who": "hajurama", "mood": "happy", "text": "I was saving this cloth for something special. This is special."}
+		],
+		"a3.fan": [
+			{"who": "kanchha", "mood": "surprised", "text": "Whoa, whoa! Too fast! ...Okay, a little slower. Perfect."}
+		],
+		"a3.cabinet": [
+			{"who": "maya", "mood": "surprised", "text": "Hajurama, there are recipes in this drawer! Sel roti, laddu, everything!"},
+			{"who": "hajurama", "mood": "happy", "text": "So that's where they went. Now you'll have to learn them, nani."}
+		],
+		"a3.bulb": [
+			{"who": "kanchha", "mood": "laugh", "text": "Let there be light! And let it not flicker, please."}
+		],
+		"a3.crates": [
+			{"who": "bhai", "mood": "surprised", "text": "The ticking crate! It's... a clock?"},
+			{"who": "hajurama", "mood": "worried", "text": "Hajurba's clock. I thought it was lost."}
+		],
+		"a3.wall_clock": [
+			{"who": "hajurama", "mood": "happy", "text": "Tick, tock. Just like he's still here, keeping us on time."},
+			{"who": "maya", "mood": "happy", "text": "He is, Hajurama. In every corner of this shop."}
+		],
+		"a3.outro": [
+			{"who": "maya", "mood": "happy", "text": "The whole ground floor is done. The counter, the front, the storage room."},
+			{"who": "hajurama", "mood": "neutral", "text": "And upstairs? Our kitchen still has the stove from my wedding."},
+			{"who": "sunita", "mood": "laugh", "text": "That stove has made a thousand cups of tea. It deserves a rest!"},
+			{"who": "bhai", "mood": "laugh", "text": "Upstairs next! Can my room be blue?"},
+			{"who": "maya", "mood": "laugh", "text": "One room at a time, Bhai. First, the kitchen!"}
+		]
+	}
+}

@@ -1,0 +1,106 @@
+{
+	"id": "storage_room",
+	"name": "Storage Room",
+	"subtitle": "Behind the shop",
+	"backdrop": "interior",
+	"world": [1800, 1500],
+	"focus": [900, 780],
+	"sun": [910, 330],
+	"story_prefix": "a3",
+	"chest": {"coins": 500, "boosters": {"undo": 3, "extra_jar": 1, "shuffle": 2}, "unlimited_lives_min": 60},
+	"intro_story": "a3.arrive",
+	"outro_story": "a3.outro",
+	"cast": [
+		{"id": "kanchha", "pos": [1110, 1240], "unit": 0.8, "z": 1},
+		{"id": "biralo", "pos": [330, 1080], "unit": 0.42, "z": 4, "home": "sacks", "away_pos": [1460, 1440]}
+	],
+	"objects": [
+		{"id": "wall", "kind": "wall", "rect": [0, 0, 1800, 1060], "z": -10},
+		{"id": "floor", "kind": "floor", "rect": [0, 1040, 1800, 460], "z": -9},
+		{"id": "beams", "kind": "beams", "rect": [0, 0, 1800, 64], "z": -1, "style": {"base": "5a3b22", "accent": "8b5a2b", "pattern": "plain"}},
+		{"id": "small_window", "kind": "window", "rect": [760, 200, 300, 300], "z": -6},
+		{"id": "curtain", "kind": "curtain", "rect": [720, 170, 380, 360], "z": -5},
+		{"id": "wall_clock", "kind": "wall_clock", "rect": [1230, 210, 200, 200], "z": -5},
+		{"id": "rack", "kind": "rack", "rect": [60, 250, 560, 830], "z": -4},
+		{"id": "cabinet", "kind": "cabinet", "rect": [1200, 520, 380, 560], "z": -4},
+		{"id": "ladder", "kind": "ladder", "rect": [960, 420, 200, 720], "z": -2},
+		{"id": "fan", "kind": "ceiling_fan", "rect": [560, 20, 560, 150], "z": 0},
+		{"id": "bulb", "kind": "pendant_lamp", "rect": [1300, 30, 170, 300], "z": 0},
+		{"id": "sacks", "kind": "sacks", "rect": [90, 1000, 520, 300], "z": 2},
+		{"id": "crates", "kind": "crates", "rect": [1450, 980, 330, 300], "z": 3}
+	],
+	"tasks": [
+		{"id": "cobwebs", "name": "Clear the cobwebs", "desc": "Webs in every corner. Biralo refuses to go in.", "cost": 2, "objects": ["wall"], "requires": [],
+			"styles": [
+				{"id": "plaster", "name": "Clean plaster", "base": "e9dcc3", "accent": "a88b62", "trim": "7a5a3a", "pattern": "plaster"},
+				{"id": "brick", "name": "Whitewashed brick", "base": "efe7da", "accent": "c9b9a3", "trim": "5a6b7a", "pattern": "brick"},
+				{"id": "planks", "name": "Wood panelling", "base": "a8774a", "accent": "e0a458", "trim": "5a3b22", "pattern": "planks"}
+			]},
+		{"id": "storage_floor", "name": "Lay a new floor", "desc": "Packed earth and puddles. Rice sacks hate puddles.", "cost": 2, "objects": ["floor"], "requires": [],
+			"styles": [
+				{"id": "planks", "name": "Wooden planks", "base": "9b6a3d", "accent": "e0a458", "pattern": "planks"},
+				{"id": "stone", "name": "Stone tiles", "base": "a89f91", "accent": "7d7466", "pattern": "tiles"},
+				{"id": "checks", "name": "Red and cream", "base": "efe2c8", "accent": "b5523b", "pattern": "checks"}
+			]},
+		{"id": "rack", "name": "Build tall shelves", "desc": "Boxes are piled to the ceiling. Time to get organised.", "cost": 3, "objects": ["rack"], "requires": [],
+			"styles": [
+				{"id": "wood", "name": "Sturdy wood", "base": "8b5a2b", "accent": "e0a458", "pattern": "carved"},
+				{"id": "steel", "name": "Steel racking", "base": "8c979f", "accent": "51606e", "pattern": "steel"},
+				{"id": "bamboo", "name": "Bamboo", "base": "c9a65b", "accent": "7a6a2b", "pattern": "bamboo"}
+			]},
+		{"id": "sacks", "name": "Stack the rice sacks", "desc": "One sack split open. Biralo is very interested.", "cost": 2, "objects": ["sacks"], "requires": ["rack"],
+			"styles": [
+				{"id": "jute", "name": "Jute sacks", "base": "c9a66b", "accent": "8b5a2b", "pattern": "plain"},
+				{"id": "stamped", "name": "Stamped sacks", "base": "efe2c8", "accent": "c0392b", "pattern": "stripes"},
+				{"id": "dhaka", "name": "Dhaka covers", "base": "c99a5b", "accent": "c0392b", "pattern": "dhaka"}
+			]},
+		{"id": "ladder", "name": "Fix the ladder", "desc": "Two rungs missing. Nobody can reach the top shelf.", "cost": 2, "objects": ["ladder"], "requires": [],
+			"styles": [
+				{"id": "wood", "name": "Wooden ladder", "base": "8b5a2b", "accent": "c99a5b", "pattern": "plain"},
+				{"id": "red", "name": "Painted red", "base": "c0392b", "accent": "f2b632", "pattern": "plain"},
+				{"id": "steel", "name": "Aluminium", "base": "b8c4cc", "accent": "8c979f", "pattern": "plain"}
+			]},
+		{"id": "small_window", "name": "Unstick the window", "desc": "Painted shut years ago. It's very stuffy in here.", "cost": 2, "objects": ["small_window"], "requires": [],
+			"styles": [
+				{"id": "carved", "name": "Carved frame", "base": "7a4a22", "accent": "e0a458", "pattern": "carved"},
+				{"id": "green", "name": "Green frame", "base": "2e7d5b", "accent": "fff3dc", "pattern": "painted"},
+				{"id": "steel", "name": "Steel frame", "base": "9aa5b1", "accent": "51606e", "pattern": "steel"}
+			]},
+		{"id": "curtain", "name": "Sew a curtain", "desc": "Hajurama has fabric saved for exactly this.", "cost": 1, "objects": ["curtain"], "requires": ["small_window"],
+			"styles": [
+				{"id": "dhaka", "name": "Dhaka weave", "base": "c0392b", "accent": "1f2a36", "pattern": "dhaka"},
+				{"id": "floral", "name": "Flowered cotton", "base": "f4c66b", "accent": "e85d75", "pattern": "floral"},
+				{"id": "stripes", "name": "Blue stripes", "base": "3a86c8", "accent": "fff3dc", "pattern": "stripes"}
+			]},
+		{"id": "fan", "name": "Fix the ceiling fan", "desc": "One blade hangs down like a sad leaf.", "cost": 2, "objects": ["fan"], "requires": [],
+			"styles": [
+				{"id": "wood", "name": "Wooden blades", "base": "8b5a2b", "accent": "f2b632", "pattern": "plain"},
+				{"id": "white", "name": "White blades", "base": "f4efe6", "accent": "3a86c8", "pattern": "plain"},
+				{"id": "brass", "name": "Brass", "base": "d6a53a", "accent": "8b5a2b", "pattern": "plain"}
+			]},
+		{"id": "cabinet", "name": "Build an organiser", "desc": "A drawer for every spice, string and spare key.", "cost": 3, "objects": ["cabinet"], "requires": ["rack"],
+			"styles": [
+				{"id": "carved", "name": "Carved drawers", "base": "8b5a2b", "accent": "e0a458", "pattern": "carved"},
+				{"id": "painted", "name": "Painted mint", "base": "4fb08a", "accent": "fff3dc", "pattern": "painted"},
+				{"id": "steel", "name": "Steel cabinet", "base": "8c979f", "accent": "f2b632", "pattern": "steel"}
+			]},
+		{"id": "bulb", "name": "Change the bulb", "desc": "Still the same bulb from 1998. Probably.", "cost": 1, "objects": ["bulb"], "requires": [],
+			"styles": [
+				{"id": "enamel", "name": "Green enamel", "base": "2e8b57", "accent": "fff3dc", "pattern": "plain"},
+				{"id": "brass", "name": "Brass shade", "base": "d6a53a", "accent": "8b5a2b", "pattern": "gold"},
+				{"id": "paper", "name": "Paper shade", "base": "fff1d6", "accent": "e85d75", "pattern": "floral"}
+			]},
+		{"id": "crates", "name": "Sort the crates", "desc": "Mystery crates. One of them is ticking. (It's the old clock.)", "cost": 2, "objects": ["crates"], "requires": [],
+			"styles": [
+				{"id": "wood", "name": "Wooden crates", "base": "b07a4a", "accent": "f2b632", "pattern": "planks"},
+				{"id": "painted", "name": "Painted crates", "base": "e07a5f", "accent": "fff3dc", "pattern": "painted"},
+				{"id": "tin", "name": "Tin boxes", "base": "8c979f", "accent": "f2b632", "pattern": "steel"}
+			]},
+		{"id": "wall_clock", "name": "Hang Hajurba's clock", "desc": "Found in a crate. It still keeps perfect time.", "cost": 2, "objects": ["wall_clock"], "requires": ["crates"],
+			"styles": [
+				{"id": "carved", "name": "Carved wood", "base": "7a4a22", "accent": "f2b632", "pattern": "carved"},
+				{"id": "brass", "name": "Polished brass", "base": "d6a53a", "accent": "fff2a8", "pattern": "gold"},
+				{"id": "blue", "name": "Painted blue", "base": "3a86c8", "accent": "fff3dc", "pattern": "painted"}
+			]}
+	]
+}

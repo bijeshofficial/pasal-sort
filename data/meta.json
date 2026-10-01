@@ -1,18 +1,4 @@
 {
-	"decorations": [
-		{"id": "fairy_lights", "name": "String of fairy lights", "level": 10},
-		{"id": "marigold", "name": "Potted marigold", "level": 20},
-		{"id": "radio", "name": "Old radio", "level": 30},
-		{"id": "cat", "name": "Sleepy counter cat", "level": 40},
-		{"id": "shelf", "name": "New shelf", "level": 50},
-		{"id": "sign", "name": "Hand-painted sign", "level": 60},
-		{"id": "bunting", "name": "Paper bunting", "level": 70},
-		{"id": "kettle", "name": "Tea kettle", "level": 80},
-		{"id": "scale", "name": "Brass weighing scale", "level": 90},
-		{"id": "lantern", "name": "Paper lantern", "level": 100},
-		{"id": "awning", "name": "Striped awning", "level": 120},
-		{"id": "bicycle", "name": "Delivery bicycle", "level": 150}
-	],
 	"avatars": [
 		{"id": "topi", "name": "Dhaka topi"},
 		{"id": "kurta", "name": "Kurta"},
@@ -29,7 +15,8 @@
 		"Tip: Undo takes back as many moves as you like.",
 		"Tip: stuck? An Extra Jar gives you breathing room.",
 		"Tip: there is no timer. Take your time.",
-		"Tip: every 10 levels your pasal gets a new decoration.",
+		"Tip: every win earns a star. Spend stars to fix up the shop!",
+		"Tip: tap anything you renovated to change its style for free.",
 		"Tip: wrapped candies open when they reach the top."
 	],
 	"cheers": ["DAMI!", "SABASH!", "RAMRO!", "WAAH!"]

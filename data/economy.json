@@ -1,5 +1,7 @@
 {
 	"level_reward": 10,
+	"stars_per_win": 1,
+	"renovation": {"task_coins": 10},
 	"milestone_every": 10,
 	"milestone_coins": 100,
 	"daily_free_coins": 50,

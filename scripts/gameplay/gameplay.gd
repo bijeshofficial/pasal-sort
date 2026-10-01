@@ -8,7 +8,7 @@ enum State { INTRO, PLAYING, BUSY, WON, FAILED }
 
 const BoardViewScript := preload("res://scripts/gameplay/board_view.gd")
 const WinPanelScript := preload("res://scripts/ui/win_panel.gd")
-const ShopkeeperScene := preload("res://scenes/components/shopkeeper_visual.tscn")
+const CharacterScene := preload("res://scenes/components/character_visual.tscn")
 const SAVE_DELAY := 0.4
 
 var level := 1
@@ -373,6 +373,7 @@ func _apply_shuffle() -> bool:
 
 func show_stuck() -> void:
 	_stuck_shown = true
+	_maya_worry()
 	var free := free_fixes()
 	var tag := func(id: String) -> String:
 		return "free" if free else (str(BoosterManager.count(id)) if BoosterManager.count(id) > 0 else "+")
@@ -507,13 +508,22 @@ func _celebrate() -> void:
 	VFXManager.shake(8.0, 0.25)
 	AudioManager.play("level_complete")
 	HapticsManager.heavy()
-	_shopkeeper_cheer(vp)
-	_after(maxf(t, 1.2), _show_win_panel)
+	_maya_cheer(vp)
+	_after(maxf(t, 1.2), _after_celebration)
+
+
+## Level 1: Hajurama introduces the story before the first win screen.
+func _after_celebration() -> void:
+	if level == 1 and not ProgressionManager.tutorial_done("story_intro"):
+		ProgressionManager.mark_tutorial("story_intro")
+		DialogueManager.play("intro", _show_win_panel)
+	else:
+		_show_win_panel()
 
 
 func _show_win_panel() -> void:
 	var panel: WinPanel = WinPanelScript.new()
-	panel.setup(level, _summary)
+	panel.setup(level, _summary, renovate_first())
 	panel.continue_pressed.connect(continue_next)
 	panel.home_pressed.connect(_go_home)
 	ScreenManager.push_modal(panel)
@@ -527,8 +537,15 @@ func _go_home() -> void:
 	ScreenManager.go_hub("home")
 
 
-func _shopkeeper_cheer(vp: Vector2) -> void:
-	var sk: ShopkeeperVisual = ShopkeeperScene.instantiate()
+## True when the win screen should send the player to the first renovation.
+func renovate_first() -> bool:
+	return not ProgressionManager.tutorial_done("first_task") and ProgressionManager.highest_completed() >= 3 \
+		and RenovationManager.current_area() == 1 and RenovationManager.can_do(1, "clean_counter")
+
+
+func _maya_cheer(vp: Vector2) -> void:
+	var sk: CharacterVisual = CharacterScene.instantiate()
+	sk.id = "maya"
 	sk.unit = 0.9
 	sk.position = Vector2(vp.x * 0.5, vp.y + 420)
 	hud.add_child(sk)
@@ -540,6 +557,22 @@ func _shopkeeper_cheer(vp: Vector2) -> void:
 		sk.cheer(2.0)
 		AudioManager.play("cheer")
 		VFXManager.popup_text(hud, text, Vector2(vp.x * 0.5, sk.position.y - 440), UIKit.GOLD, 110, 60, 1.4))
+
+
+## Maya peeks up from the bottom looking worried while the Stuck popup is open.
+func _maya_worry() -> void:
+	var vp := get_viewport_rect().size
+	var sk: CharacterVisual = CharacterScene.instantiate()
+	sk.id = "maya"
+	sk.unit = 0.8
+	sk.position = Vector2(vp.x * 0.82, vp.y + 400)
+	VFXManager.fx_layer().add_child(sk)
+	sk.worry(4.0)
+	var tw := sk.create_tween()
+	tw.tween_property(sk, "position:y", vp.y - GameManager.get_safe_insets().y + 60, 0.35).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tw.tween_interval(3.0)
+	tw.tween_property(sk, "position:y", vp.y + 400, 0.3)
+	tw.tween_callback(sk.queue_free)
 
 
 func _milestone_gift() -> void:
@@ -558,6 +591,10 @@ func _milestone_gift() -> void:
 
 
 func continue_next() -> void:
+	# After level 3 the first renovation task is taught on Home.
+	if renovate_first():
+		_go_home()
+		return
 	var next := ProgressionManager.current_level()
 	if not LivesManager.can_play(next):
 		Popups.lives(true, continue_next)

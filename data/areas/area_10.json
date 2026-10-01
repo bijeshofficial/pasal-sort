@@ -1,0 +1,526 @@
+{
+	"id": "mountain_branch",
+	"name": "Mountain Branch",
+	"subtitle": "A shop on the trekking trail",
+	"backdrop": "mountain",
+	"world": [
+		1800,
+		1500
+	],
+	"focus": [
+		900,
+		820
+	],
+	"story_prefix": "a10",
+	"chest": {
+		"coins": 1500,
+		"boosters": {
+			"undo": 5,
+			"extra_jar": 4,
+			"shuffle": 4
+		},
+		"sticker_packs": 3,
+		"unlimited_lives_min": 180
+	},
+	"intro_story": "a10.arrive",
+	"outro_story": "a10.outro",
+	"cast": [
+		{
+			"id": "kanchha",
+			"pos": [
+				1320,
+				1120
+			],
+			"unit": 0.72,
+			"z": 2
+		},
+		{
+			"id": "biralo",
+			"pos": [
+				760,
+				1250
+			],
+			"unit": 0.4,
+			"z": 7,
+			"home": "steps",
+			"away_pos": [
+				1600,
+				1420
+			]
+		}
+	],
+	"objects": [
+		{
+			"id": "ground",
+			"kind": "street",
+			"rect": [
+				0,
+				1150,
+				1800,
+				350
+			],
+			"z": -9
+		},
+		{
+			"id": "hut",
+			"kind": "hut",
+			"rect": [
+				460,
+				320,
+				880,
+				860
+			],
+			"z": -6
+		},
+		{
+			"id": "sign",
+			"kind": "sign_board",
+			"rect": [
+				540,
+				280,
+				720,
+				120
+			],
+			"z": -4
+		},
+		{
+			"id": "steps",
+			"kind": "steps",
+			"rect": [
+				640,
+				1150,
+				520,
+				110
+			],
+			"z": 0
+		},
+		{
+			"id": "fence",
+			"kind": "fence",
+			"rect": [
+				0,
+				1040,
+				460,
+				180
+			],
+			"z": -2
+		},
+		{
+			"id": "fence_r",
+			"kind": "fence",
+			"rect": [
+				1340,
+				1040,
+				460,
+				180
+			],
+			"z": -2
+		},
+		{
+			"id": "bench",
+			"kind": "bench",
+			"rect": [
+				1380,
+				1000,
+				360,
+				200
+			],
+			"z": 3
+		},
+		{
+			"id": "lamp",
+			"kind": "street_lamp",
+			"rect": [
+				300,
+				420,
+				160,
+				780
+			],
+			"z": -1
+		},
+		{
+			"id": "crates",
+			"kind": "crates",
+			"rect": [
+				60,
+				1000,
+				340,
+				300
+			],
+			"z": 4
+		},
+		{
+			"id": "pots",
+			"kind": "plant_pot",
+			"rect": [
+				1180,
+				1040,
+				160,
+				220
+			],
+			"z": 5
+		},
+		{
+			"id": "umbrella",
+			"kind": "umbrella",
+			"rect": [
+				1440,
+				700,
+				320,
+				480
+			],
+			"z": 1
+		},
+		{
+			"id": "bunting",
+			"kind": "bunting",
+			"rect": [
+				0,
+				120,
+				1800,
+				200
+			],
+			"z": -7
+		}
+	],
+	"tasks": [
+		{
+			"id": "hut",
+			"name": "Rebuild the stone shop",
+			"desc": "Thick walls for cold nights.",
+			"cost": 5,
+			"objects": [
+				"hut"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "stone",
+					"name": "Stone and slate",
+					"base": "a89f91",
+					"accent": "7a4a22",
+					"pattern": "brick",
+					"trim": "5a6b7a"
+				},
+				{
+					"id": "wood",
+					"name": "Timber",
+					"base": "8b5a2b",
+					"accent": "e0a458",
+					"pattern": "planks",
+					"trim": "5a3b22"
+				},
+				{
+					"id": "white",
+					"name": "Whitewashed",
+					"base": "f4efe6",
+					"accent": "2f7fc1",
+					"pattern": "plaster",
+					"trim": "b5523b"
+				}
+			]
+		},
+		{
+			"id": "sign",
+			"name": "Carve the sign",
+			"desc": "Hand-carved, mountain style.",
+			"cost": 5,
+			"objects": [
+				"sign"
+			],
+			"requires": [
+				"hut"
+			],
+			"styles": [
+				{
+					"id": "red",
+					"name": "Red and gold",
+					"base": "c0392b",
+					"accent": "ffd166",
+					"pattern": "gold"
+				},
+				{
+					"id": "carved",
+					"name": "Carved wood",
+					"base": "8b5a2b",
+					"accent": "ffd166",
+					"pattern": "carved"
+				},
+				{
+					"id": "blue",
+					"name": "Sky blue",
+					"base": "3a86c8",
+					"accent": "fff3dc",
+					"pattern": "painted"
+				}
+			]
+		},
+		{
+			"id": "steps",
+			"name": "Lay stone steps",
+			"desc": "Trekkers have tired legs.",
+			"cost": 3,
+			"objects": [
+				"steps"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "stone",
+					"name": "Stone slabs",
+					"base": "a89f91",
+					"accent": "6f665a",
+					"pattern": "tiles"
+				},
+				{
+					"id": "terracotta",
+					"name": "Terracotta",
+					"base": "c8693f",
+					"accent": "e0a458",
+					"pattern": "tiles"
+				},
+				{
+					"id": "painted",
+					"name": "Painted red",
+					"base": "b5523b",
+					"accent": "fff3dc",
+					"pattern": "painted"
+				}
+			]
+		},
+		{
+			"id": "fences",
+			"name": "Mend the fences",
+			"desc": "Yaks wander through. Often.",
+			"cost": 4,
+			"objects": [
+				"fence",
+				"fence_r"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "wood",
+					"name": "Wooden fence",
+					"base": "8b5a2b",
+					"accent": "e0a458",
+					"pattern": "plain"
+				},
+				{
+					"id": "white",
+					"name": "White fence",
+					"base": "f4efe6",
+					"accent": "3a86c8",
+					"pattern": "painted"
+				},
+				{
+					"id": "bamboo",
+					"name": "Bamboo fence",
+					"base": "c9a65b",
+					"accent": "7a6a2b",
+					"pattern": "plain"
+				}
+			]
+		},
+		{
+			"id": "bench",
+			"name": "Build a trekkers' bench",
+			"desc": "Rest, snack, and keep going.",
+			"cost": 4,
+			"objects": [
+				"bench"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "wood",
+					"name": "Carved wood",
+					"base": "8b5a2b",
+					"accent": "e0a458",
+					"pattern": "carved"
+				},
+				{
+					"id": "painted",
+					"name": "Painted blue",
+					"base": "2f7fc1",
+					"accent": "ffd166",
+					"pattern": "painted"
+				},
+				{
+					"id": "steel",
+					"name": "Park steel",
+					"base": "7f8c99",
+					"accent": "51606e",
+					"pattern": "steel"
+				}
+			]
+		},
+		{
+			"id": "lamp",
+			"name": "Put up a trail lamp",
+			"desc": "Light for late arrivals.",
+			"cost": 4,
+			"objects": [
+				"lamp"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "iron",
+					"name": "Black iron",
+					"base": "2b2b3a",
+					"accent": "f2b632",
+					"pattern": "plain"
+				},
+				{
+					"id": "brass",
+					"name": "Brass lantern",
+					"base": "b8862b",
+					"accent": "fff2a8",
+					"pattern": "gold"
+				},
+				{
+					"id": "green",
+					"name": "Old-town green",
+					"base": "2e7d5b",
+					"accent": "fff3dc",
+					"pattern": "painted"
+				}
+			]
+		},
+		{
+			"id": "crates",
+			"name": "Stack supply crates",
+			"desc": "Snacks for the whole season.",
+			"cost": 4,
+			"objects": [
+				"crates"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "wood",
+					"name": "Wooden crates",
+					"base": "b07a4a",
+					"accent": "f2b632",
+					"pattern": "planks"
+				},
+				{
+					"id": "painted",
+					"name": "Painted crates",
+					"base": "e07a5f",
+					"accent": "fff3dc",
+					"pattern": "painted"
+				},
+				{
+					"id": "tin",
+					"name": "Tin boxes",
+					"base": "8c979f",
+					"accent": "f2b632",
+					"pattern": "steel"
+				}
+			]
+		},
+		{
+			"id": "pots",
+			"name": "Plant hardy flowers",
+			"desc": "Mountain flowers that love the cold.",
+			"cost": 3,
+			"objects": [
+				"pots"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "clay",
+					"name": "Clay pots",
+					"base": "b5623b",
+					"accent": "e0a458",
+					"pattern": "carved"
+				},
+				{
+					"id": "blue",
+					"name": "Blue glazed",
+					"base": "2f7fc1",
+					"accent": "ffd166",
+					"pattern": "painted"
+				},
+				{
+					"id": "tin",
+					"name": "Recycled tins",
+					"base": "a3acb1",
+					"accent": "e04f5f",
+					"pattern": "steel"
+				}
+			]
+		},
+		{
+			"id": "umbrella",
+			"name": "Open a shelter umbrella",
+			"desc": "Shelter from sudden showers.",
+			"cost": 4,
+			"objects": [
+				"umbrella"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "marigold",
+					"name": "Marigold",
+					"base": "ff9f1c",
+					"accent": "fff3dc",
+					"pattern": "plain"
+				},
+				{
+					"id": "teal",
+					"name": "Teal",
+					"base": "0f5e63",
+					"accent": "fff3dc",
+					"pattern": "plain"
+				},
+				{
+					"id": "rainbow",
+					"name": "Rainbow",
+					"base": "e04f5f",
+					"accent": "2f7fc1",
+					"pattern": "plain"
+				}
+			]
+		},
+		{
+			"id": "bunting",
+			"name": "Hang colourful bunting",
+			"desc": "So trekkers can spot us from the trail.",
+			"cost": 4,
+			"objects": [
+				"bunting"
+			],
+			"requires": [
+				"hut"
+			],
+			"styles": [
+				{
+					"id": "bright",
+					"name": "Bright paper",
+					"base": "ff6b5b",
+					"accent": "f2b632",
+					"pattern": "plain"
+				},
+				{
+					"id": "marigold",
+					"name": "Marigold",
+					"base": "ff9f1c",
+					"accent": "fff3dc",
+					"pattern": "plain"
+				},
+				{
+					"id": "blue",
+					"name": "Blue and white",
+					"base": "2f7fc1",
+					"accent": "fff3dc",
+					"pattern": "plain"
+				}
+			]
+		}
+	]
+}

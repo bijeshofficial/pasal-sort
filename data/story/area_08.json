@@ -1,0 +1,120 @@
+{
+	"lines": {
+		"a8.facade": [
+			{
+				"who": "hajurama",
+				"mood": "happy",
+				"text": "Just like the Tihar nights of my childhood."
+			}
+		],
+		"a8.banner": [
+			{
+				"who": "bhai",
+				"mood": "laugh",
+				"text": "I wrote 'Happy Tihar' in my best letters!"
+			}
+		],
+		"a8.lanterns": [
+			{
+				"who": "maya",
+				"mood": "happy",
+				"text": "They glow like little moons."
+			}
+		],
+		"a8.lights": [
+			{
+				"who": "kanchha",
+				"mood": "laugh",
+				"text": "Two thousand bulbs and not one fuse blown!"
+			}
+		],
+		"a8.steps": [
+			{
+				"who": "biralo",
+				"mood": "neutral",
+				"text": "Mrrp."
+			}
+		],
+		"a8.pots": [
+			{
+				"who": "sunita",
+				"mood": "happy",
+				"text": "Marigolds on every step. Beautiful!"
+			}
+		],
+		"a8.street_lamps": [
+			{
+				"who": "kanchha",
+				"mood": "surprised",
+				"text": "Both lamps at once! Did everyone see that?"
+			}
+		],
+		"a8.bunting": [
+			{
+				"who": "sunita",
+				"mood": "laugh",
+				"text": "Now my stall is part of the festival too!"
+			}
+		],
+		"a8.street": [
+			{
+				"who": "maya",
+				"mood": "neutral",
+				"text": "Every corner swept. Chiya Tole sparkles."
+			}
+		],
+		"a8.door": [
+			{
+				"who": "hajurama",
+				"mood": "happy",
+				"text": "Open doors, open hearts. That's Tihar."
+			}
+		],
+		"a8.food_stall": [
+			{
+				"who": "bhai",
+				"mood": "laugh",
+				"text": "Free sweets?! I'm a child! I count!"
+			}
+		],
+		"a8.arrive": [
+			{
+				"who": "bhai",
+				"mood": "surprised",
+				"text": "Didi, it's so dark! How will anyone find our shop?"
+			},
+			{
+				"who": "maya",
+				"mood": "happy",
+				"text": "With lights, Bhai. Lots and lots of lights."
+			}
+		],
+		"a8.outro": [
+			{
+				"who": "hajurama",
+				"mood": "happy",
+				"text": "The brightest street in all of Kathmandu tonight."
+			},
+			{
+				"who": "sunita",
+				"mood": "laugh",
+				"text": "Customers came from three toles away!"
+			},
+			{
+				"who": "kanchha",
+				"mood": "neutral",
+				"text": "People keep asking if you'll open another shop, Maya."
+			},
+			{
+				"who": "maya",
+				"mood": "surprised",
+				"text": "Another shop? Maybe... by the lake?"
+			},
+			{
+				"who": "hajurama",
+				"mood": "laugh",
+				"text": "Your Hajurba always dreamed of a shop by the water."
+			}
+		]
+	}
+}

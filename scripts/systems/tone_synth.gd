@@ -178,6 +178,14 @@ static func build_sfx() -> Dictionary:
 	s["heart"] = plinks([784.0, 1046.5, 1318.5], 0.07, 0.16)
 	s["cheer"] = plinks([784.0, 987.8, 1174.7, 1568.0], 0.07, 0.17)
 	s["pop"] = bubble(500.0, 900.0, 0.08, 0.15)
+	# Renovation and meta.
+	s["star"] = mix(marimba(1568.0, 0.25, 0.11), marimba(2349.3, 0.3, 0.08), 0.05)
+	s["poof"] = mix(noise(0.35, 0.09, 0.9, 7.0, 41), bubble(300.0, 160.0, 0.12, 0.12))
+	s["renovate"] = mix(s["poof"], plinks([659.3, 784.0, 1046.5, 1318.5], 0.07, 0.15, 0.5), 0.12)
+	s["chest_open"] = mix(noise(0.18, 0.08, 0.6, 18.0, 44), plinks([523.3, 784.0, 1046.5, 1568.0, 2093.0], 0.06, 0.15, 0.5), 0.1)
+	s["page_turn"] = noise(0.32, 0.07, 0.85, 5.0, 52)
+	s["area_complete"] = plinks([523.3, 659.3, 784.0, 1046.5, 1318.5, 1046.5, 1318.5, 1568.0, 2093.0], 0.1, 0.16, 0.7)
+	s["tick"] = marimba(2093.0, 0.08, 0.06, 30.0)
 	var streams := {}
 	for k in s.keys():
 		streams[k] = to_stream(s[k])

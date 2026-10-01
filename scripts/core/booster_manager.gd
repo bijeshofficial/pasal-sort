@@ -55,3 +55,7 @@ func grant_tutorial(id: String) -> int:
 
 func display_name(id: String) -> String:
 	return NAMES.get(id, id)
+
+
+func icon_for(id: String) -> String:
+	return {"undo": "undo", "extra_jar": "jar_plus", "shuffle": "shuffle", "helper": "basket", "open_jar": "jar", "peek": "eye", "lucky": "clover"}.get(id, "star")

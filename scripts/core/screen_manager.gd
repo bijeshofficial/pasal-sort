@@ -74,6 +74,34 @@ func change_screen(path: String, wait_level: int = 0) -> void:
 	_busy = false
 
 
+## Storybook page-turn: the current frame is captured and curls away to
+## reveal what `swap` builds underneath. `done` runs when the page is gone.
+func page_turn(swap: Callable, done: Callable = Callable()) -> void:
+	if _busy:
+		return
+	_busy = true
+	var page := PageTurnView.new()
+	# Headless runs never draw a frame, so there is nothing to capture.
+	if DisplayServer.get_name() != "headless":
+		await RenderingServer.frame_post_draw
+		var img := get_viewport().get_texture().get_image()
+		if img and not img.is_empty():
+			page.texture = ImageTexture.create_from_image(img)
+	page.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_shutter.get_parent().add_child(page)
+	if swap.is_valid():
+		swap.call()
+	AudioManager.play("page_turn")
+	var tw := page.create_tween()
+	tw.tween_interval(0.05)
+	tw.tween_property(page, "progress", 1.0, 0.75).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	await tw.finished
+	page.queue_free()
+	_busy = false
+	if done.is_valid():
+		done.call()
+
+
 func go_hub(tab: String = "home") -> void:
 	hub_tab = tab
 	change_screen(HUB)

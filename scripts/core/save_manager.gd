@@ -9,7 +9,15 @@ signal loaded
 signal progress_reset
 signal setting_changed(key: String, value: Variant)
 
-const CURRENT_VERSION := 1
+const CURRENT_VERSION := 2
+
+## Meta systems own their block of game data: each script has
+## `static func save_defaults() -> Dictionary` and
+## `static func migrate_block(block: Dictionary, from_version: int) -> Dictionary`.
+## SaveManager only stitches the blocks together.
+const SYSTEM_BLOCKS := {
+	"renovation": "res://scripts/meta/renovation_manager.gd",
+}
 
 var save_path := "user://save.json"
 var data: Dictionary = {}
@@ -25,7 +33,7 @@ func defaults() -> Dictionary:
 	var achievements := {}
 	for a in GameData.achievements():
 		achievements[a["id"]] = {"progress": 0, "claimed": false}
-	return {
+	var d := {
 		"version": CURRENT_VERSION,
 		"coins": 0,
 		"best_score": 0,
@@ -44,6 +52,9 @@ func defaults() -> Dictionary:
 		"game": {
 			"lives": int(econ["lives"]["max"]),
 			"last_life_time": 0,
+			"unlimited_lives_until": 0,
+			"stars": 0,
+			"time": {"max_seen": 0},
 			"boosters": (econ["starting_boosters"] as Dictionary).duplicate(),
 			"tutorial_steps": {},
 			"achievements": achievements,
@@ -58,14 +69,16 @@ func defaults() -> Dictionary:
 				"no_booster_wins": 0,
 				"hard_completed": 0,
 				"super_completed": 0,
+				"stars_earned": 0,
 			},
-			"pasal_decorations": [],
-			"decorations_revealed": [],
 			"daily_free_claimed_date": "",
 			"milestones_claimed": [],
 			"in_progress_level": null,
 		},
 	}
+	for key in SYSTEM_BLOCKS:
+		d["game"][key] = load(SYSTEM_BLOCKS[key]).save_defaults()
+	return d
 
 
 func set_save_path(path: String) -> void:
@@ -130,6 +143,20 @@ func migrate(d: Dictionary) -> Dictionary:
 					if d.has(key):
 						d["game"][key] = d[key]
 						d.erase(key)
+			1:
+				# v2: the renovation meta replaces "a decoration every 10 levels".
+				# Every past win would have earned a star, so grant them now.
+				var g: Dictionary = d.get("game", {})
+				var done := int(g.get("stats", {}).get("levels_completed", 0))
+				done = maxi(done, int(d.get("current_level", 1)) - 1)
+				g["stars"] = int(g.get("stars", 0)) + done
+				g.erase("pasal_decorations")
+				g.erase("decorations_revealed")
+				d["game"] = g
+		for key in SYSTEM_BLOCKS:
+			var g2: Dictionary = d.get("game", {})
+			if typeof(g2.get(key)) == TYPE_DICTIONARY:
+				g2[key] = load(SYSTEM_BLOCKS[key]).migrate_block(g2[key], v)
 		v += 1
 		d["version"] = v
 	return d

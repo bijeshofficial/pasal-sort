@@ -1,0 +1,580 @@
+{
+	"id": "festival_night",
+	"name": "Festival Night",
+	"subtitle": "Tihar on Chiya Tole",
+	"backdrop": "night",
+	"world": [
+		1800,
+		1500
+	],
+	"focus": [
+		900,
+		820
+	],
+	"story_prefix": "a8",
+	"chest": {
+		"coins": 900,
+		"boosters": {
+			"undo": 3,
+			"extra_jar": 2,
+			"shuffle": 2
+		},
+		"sticker_packs": 2,
+		"unlimited_lives_min": 120
+	},
+	"intro_story": "a8.arrive",
+	"outro_story": "a8.outro",
+	"cast": [
+		{
+			"id": "maya",
+			"pos": [
+				900,
+				1150
+			],
+			"unit": 0.8,
+			"z": -4
+		},
+		{
+			"id": "bhai",
+			"pos": [
+				360,
+				1240
+			],
+			"unit": 0.66,
+			"z": 3
+		},
+		{
+			"id": "biralo",
+			"pos": [
+				1170,
+				1160
+			],
+			"unit": 0.4,
+			"z": 1,
+			"home": "steps",
+			"away_pos": [
+				1620,
+				1440
+			]
+		}
+	],
+	"objects": [
+		{
+			"id": "street",
+			"kind": "street",
+			"rect": [
+				0,
+				1120,
+				1800,
+				380
+			],
+			"z": -9
+		},
+		{
+			"id": "facade",
+			"kind": "facade",
+			"rect": [
+				260,
+				110,
+				1280,
+				1010
+			],
+			"z": -8
+		},
+		{
+			"id": "door",
+			"kind": "door",
+			"rect": [
+				1360,
+				640,
+				140,
+				480
+			],
+			"z": -7
+		},
+		{
+			"id": "banner",
+			"kind": "sign_board",
+			"rect": [
+				430,
+				440,
+				940,
+				140
+			],
+			"z": -3
+		},
+		{
+			"id": "lanterns",
+			"kind": "lantern",
+			"rect": [
+				180,
+				180,
+				1440,
+				220
+			],
+			"z": -2
+		},
+		{
+			"id": "lights",
+			"kind": "string_lights",
+			"rect": [
+				260,
+				620,
+				1280,
+				120
+			],
+			"z": -1
+		},
+		{
+			"id": "steps",
+			"kind": "steps",
+			"rect": [
+				500,
+				1110,
+				800,
+				120
+			],
+			"z": 0
+		},
+		{
+			"id": "pots",
+			"kind": "plant_pot",
+			"rect": [
+				320,
+				950,
+				170,
+				230
+			],
+			"z": 1
+		},
+		{
+			"id": "pots_r",
+			"kind": "plant_pot",
+			"rect": [
+				1180,
+				960,
+				170,
+				220
+			],
+			"z": 1
+		},
+		{
+			"id": "lamp_l",
+			"kind": "street_lamp",
+			"rect": [
+				40,
+				380,
+				170,
+				820
+			],
+			"z": 2
+		},
+		{
+			"id": "lamp_r",
+			"kind": "street_lamp",
+			"rect": [
+				1590,
+				380,
+				170,
+				820
+			],
+			"z": 2
+		},
+		{
+			"id": "bunting",
+			"kind": "bunting",
+			"rect": [
+				0,
+				40,
+				1800,
+				180
+			],
+			"z": -6
+		},
+		{
+			"id": "food_stall",
+			"kind": "tea_stall",
+			"rect": [
+				1180,
+				860,
+				560,
+				480
+			],
+			"z": 4
+		}
+	],
+	"tasks": [
+		{
+			"id": "facade",
+			"name": "Decorate the house front",
+			"desc": "Fresh paint for the festival.",
+			"cost": 4,
+			"objects": [
+				"facade"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "brick",
+					"name": "Red brick",
+					"base": "b5523b",
+					"accent": "e8d5b5",
+					"pattern": "brick",
+					"trim": "6b3b22"
+				},
+				{
+					"id": "yellow",
+					"name": "Sunny yellow",
+					"base": "f2c14e",
+					"accent": "e07a3a",
+					"pattern": "plaster",
+					"trim": "7a4a22"
+				},
+				{
+					"id": "teal",
+					"name": "Teal with flowers",
+					"base": "2a9d8f",
+					"accent": "fff3dc",
+					"pattern": "floral",
+					"trim": "0f5e63"
+				}
+			]
+		},
+		{
+			"id": "banner",
+			"name": "Hang a festival banner",
+			"desc": "Happy Tihar from the pasal!",
+			"cost": 3,
+			"objects": [
+				"banner"
+			],
+			"requires": [
+				"facade"
+			],
+			"styles": [
+				{
+					"id": "red",
+					"name": "Red and gold",
+					"base": "c0392b",
+					"accent": "ffd166",
+					"pattern": "gold"
+				},
+				{
+					"id": "carved",
+					"name": "Carved wood",
+					"base": "8b5a2b",
+					"accent": "ffd166",
+					"pattern": "carved"
+				},
+				{
+					"id": "blue",
+					"name": "Sky blue",
+					"base": "3a86c8",
+					"accent": "fff3dc",
+					"pattern": "painted"
+				}
+			]
+		},
+		{
+			"id": "lanterns",
+			"name": "Hang paper lanterns",
+			"desc": "A row of glowing lanterns.",
+			"cost": 4,
+			"objects": [
+				"lanterns"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "paper",
+					"name": "Paper lanterns",
+					"base": "ff6b5b",
+					"accent": "f2b632",
+					"pattern": "plain"
+				},
+				{
+					"id": "gold",
+					"name": "Golden",
+					"base": "f2b632",
+					"accent": "ff9f1c",
+					"pattern": "plain"
+				},
+				{
+					"id": "pastel",
+					"name": "Pastel",
+					"base": "8fd3ff",
+					"accent": "ffb3c8",
+					"pattern": "plain"
+				}
+			]
+		},
+		{
+			"id": "lights",
+			"name": "Wrap the shop in lights",
+			"desc": "Every edge, every window.",
+			"cost": 3,
+			"objects": [
+				"lights"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "warm",
+					"name": "Warm bulbs",
+					"base": "ffd166",
+					"accent": "ff9f1c",
+					"pattern": "plain"
+				},
+				{
+					"id": "festive",
+					"name": "Festive colours",
+					"base": "ff6b8b",
+					"accent": "8fd3ff",
+					"pattern": "plain"
+				},
+				{
+					"id": "white",
+					"name": "Fairy white",
+					"base": "fff8e6",
+					"accent": "fff2a8",
+					"pattern": "plain"
+				}
+			]
+		},
+		{
+			"id": "steps",
+			"name": "Polish the steps",
+			"desc": "Guests will be coming all night.",
+			"cost": 3,
+			"objects": [
+				"steps"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "stone",
+					"name": "Stone slabs",
+					"base": "a89f91",
+					"accent": "6f665a",
+					"pattern": "tiles"
+				},
+				{
+					"id": "terracotta",
+					"name": "Terracotta",
+					"base": "c8693f",
+					"accent": "e0a458",
+					"pattern": "tiles"
+				},
+				{
+					"id": "painted",
+					"name": "Painted red",
+					"base": "b5523b",
+					"accent": "fff3dc",
+					"pattern": "painted"
+				}
+			]
+		},
+		{
+			"id": "pots",
+			"name": "Fill pots with marigolds",
+			"desc": "Orange and gold everywhere.",
+			"cost": 3,
+			"objects": [
+				"pots",
+				"pots_r"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "clay",
+					"name": "Clay pots",
+					"base": "b5623b",
+					"accent": "e0a458",
+					"pattern": "carved"
+				},
+				{
+					"id": "blue",
+					"name": "Blue glazed",
+					"base": "2f7fc1",
+					"accent": "ffd166",
+					"pattern": "painted"
+				},
+				{
+					"id": "tin",
+					"name": "Recycled tins",
+					"base": "a3acb1",
+					"accent": "e04f5f",
+					"pattern": "steel"
+				}
+			]
+		},
+		{
+			"id": "street_lamps",
+			"name": "Light the street lamps",
+			"desc": "Both ends of the street.",
+			"cost": 4,
+			"objects": [
+				"lamp_l",
+				"lamp_r"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "iron",
+					"name": "Black iron",
+					"base": "2b2b3a",
+					"accent": "f2b632",
+					"pattern": "plain"
+				},
+				{
+					"id": "brass",
+					"name": "Brass lantern",
+					"base": "b8862b",
+					"accent": "fff2a8",
+					"pattern": "gold"
+				},
+				{
+					"id": "green",
+					"name": "Old-town green",
+					"base": "2e7d5b",
+					"accent": "fff3dc",
+					"pattern": "painted"
+				}
+			]
+		},
+		{
+			"id": "bunting",
+			"name": "String bunting across the street",
+			"desc": "From our roof to Sunita Didi's.",
+			"cost": 3,
+			"objects": [
+				"bunting"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "bright",
+					"name": "Bright paper",
+					"base": "ff6b5b",
+					"accent": "f2b632",
+					"pattern": "plain"
+				},
+				{
+					"id": "marigold",
+					"name": "Marigold",
+					"base": "ff9f1c",
+					"accent": "fff3dc",
+					"pattern": "plain"
+				},
+				{
+					"id": "blue",
+					"name": "Blue and white",
+					"base": "2f7fc1",
+					"accent": "fff3dc",
+					"pattern": "plain"
+				}
+			]
+		},
+		{
+			"id": "street",
+			"name": "Clean the whole street",
+			"desc": "Spotless for the festival.",
+			"cost": 3,
+			"objects": [
+				"street"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "stone",
+					"name": "Stone paving",
+					"base": "a89f91",
+					"accent": "7d7466",
+					"pattern": "tiles"
+				},
+				{
+					"id": "brick",
+					"name": "Brick paving",
+					"base": "b5623b",
+					"accent": "d98a5b",
+					"pattern": "brick"
+				},
+				{
+					"id": "checks",
+					"name": "Patterned tiles",
+					"base": "e8dcc0",
+					"accent": "c8693f",
+					"pattern": "checks"
+				}
+			]
+		},
+		{
+			"id": "door",
+			"name": "Paint the front door",
+			"desc": "A welcoming door for guests.",
+			"cost": 3,
+			"objects": [
+				"door"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "carved",
+					"name": "Carved door",
+					"base": "7a4a22",
+					"accent": "f2b632",
+					"pattern": "carved"
+				},
+				{
+					"id": "blue",
+					"name": "Blue door",
+					"base": "2f7fc1",
+					"accent": "ffd166",
+					"pattern": "painted"
+				},
+				{
+					"id": "red",
+					"name": "Red door",
+					"base": "c0392b",
+					"accent": "f2b632",
+					"pattern": "painted"
+				}
+			]
+		},
+		{
+			"id": "food_stall",
+			"name": "Set up a sweets stall",
+			"desc": "Free sweets for every child in the tole.",
+			"cost": 4,
+			"objects": [
+				"food_stall"
+			],
+			"requires": [
+				"street"
+			],
+			"styles": [
+				{
+					"id": "wood",
+					"name": "Wooden stall",
+					"base": "8b5a2b",
+					"accent": "c0392b",
+					"pattern": "carved"
+				},
+				{
+					"id": "blue",
+					"name": "Blue stall",
+					"base": "2f7fc1",
+					"accent": "ffd166",
+					"pattern": "painted"
+				},
+				{
+					"id": "tin",
+					"name": "Tin stall",
+					"base": "9aa5b1",
+					"accent": "e04f5f",
+					"pattern": "steel"
+				}
+			]
+		}
+	]
+}

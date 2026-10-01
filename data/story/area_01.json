@@ -1,0 +1,71 @@
+{
+	"_comment": "Story lines: id -> list of {who, mood, text}. who: maya, hajurama, bhai, kanchha, sunita, biralo. mood: neutral, happy, laugh, surprised, worried, grumpy. All text goes through the translation system (data/i18n).",
+	"lines": {
+		"intro": [
+			{"who": "hajurama", "mood": "happy", "text": "Maya nani! You came home! Look at you, all grown up."},
+			{"who": "maya", "mood": "worried", "text": "Hajurama... the shop. The jars are all mixed up, and everything is so dusty."},
+			{"who": "hajurama", "mood": "neutral", "text": "Ke garne, babu. My knees aren't what they were. The old pasal needs young hands."},
+			{"who": "maya", "mood": "happy", "text": "Then it has mine. Every jar I sort, the shop gets a little brighter. Promise!"}
+		],
+		"a1.arrive": [
+			{"who": "maya", "mood": "neutral", "text": "Right. One star, one fix. Where do I start?"}
+		],
+		"a1.clean_counter": [
+			{"who": "maya", "mood": "laugh", "text": "Ramro! I can see the wood again!"},
+			{"who": "hajurama", "mood": "happy", "text": "Your Hajurba built that counter. He'd be proud, nani."}
+		],
+		"a1.sweep_floor": [
+			{"who": "bhai", "mood": "surprised", "text": "Whoa, Didi! The floor isn't sticky anymore!"},
+			{"who": "maya", "mood": "grumpy", "text": "Because someone stopped dropping toffees on it. Right, Bhai?"}
+		],
+		"a1.fix_shelf": [
+			{"who": "maya", "mood": "happy", "text": "Every jar back in its place. Twelve flavours, all in a row."},
+			{"who": "biralo", "mood": "neutral", "text": "Mrrp."},
+			{"who": "maya", "mood": "worried", "text": "Biralo, that is not a bed. Get out of the Lapsi jar."}
+		],
+		"a1.hang_lights": [
+			{"who": "kanchha", "mood": "laugh", "text": "Kanchha Dai at your service! Wires, bulbs, anything electric."},
+			{"who": "kanchha", "mood": "surprised", "text": "...Why is the switch on the ceiling? Never mind. Fixed!"}
+		],
+		"a1.counter_jars": [
+			{"who": "maya", "mood": "happy", "text": "Customers will see the sweets the moment they walk in."}
+		],
+		"a1.cash_box": [
+			{"who": "hajurama", "mood": "laugh", "text": "Oho, my lucky cash box! Thirty years and it still rattles."},
+			{"who": "maya", "mood": "surprised", "text": "Hajurama, there's a coin in here from before I was born!"}
+		],
+		"a1.paint_walls": [
+			{"who": "sunita", "mood": "surprised", "text": "Maya! I could smell the paint from my tea stall. It looks wonderful!"},
+			{"who": "maya", "mood": "happy", "text": "Thanks, Sunita Didi. Come by for sweets later!"}
+		],
+		"a1.fix_window": [
+			{"who": "maya", "mood": "surprised", "text": "The mountains! I forgot you could see them from in here."},
+			{"who": "hajurama", "mood": "happy", "text": "On clear mornings they shine like sugar, babu."}
+		],
+		"a1.garland": [
+			{"who": "bhai", "mood": "laugh", "text": "I picked the flowers! Well, most of them. Biralo ate one."}
+		],
+		"a1.wall_sign": [
+			{"who": "hajurama", "mood": "happy", "text": "My old sign! I painted those letters myself, before your mother was born."},
+			{"who": "maya", "mood": "happy", "text": "Then it goes right where everyone can see it."}
+		],
+		"a1.cat_basket": [
+			{"who": "biralo", "mood": "happy", "text": "Purrrrr."},
+			{"who": "maya", "mood": "laugh", "text": "I think that's a yes."}
+		],
+		"a1.stool": [
+			{"who": "sunita", "mood": "laugh", "text": "Finally, somewhere to sit while I tell you the news!"},
+			{"who": "maya", "mood": "worried", "text": "Didi, it's only been fixed for one minute..."}
+		],
+		"a1.brass_scale": [
+			{"who": "hajurama", "mood": "neutral", "text": "A fair scale makes a happy customer. Remember that, nani."}
+		],
+		"a1.outro": [
+			{"who": "hajurama", "mood": "surprised", "text": "Is this... my shop? It looks like the day we opened."},
+			{"who": "maya", "mood": "happy", "text": "Better, Hajurama. The jars are sorted and the lights are on."},
+			{"who": "bhai", "mood": "laugh", "text": "Can we open the front now? The shutter is SO rusty."},
+			{"who": "kanchha", "mood": "happy", "text": "Rusty shutters are my specialty! Mostly."},
+			{"who": "maya", "mood": "laugh", "text": "Then let's go outside. Chiya Tole needs to know we're open!"}
+		]
+	}
+}

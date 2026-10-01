@@ -1,0 +1,610 @@
+{
+	"id": "family_kitchen",
+	"name": "Family Kitchen",
+	"subtitle": "Upstairs, where the tea is",
+	"backdrop": "interior",
+	"world": [
+		1800,
+		1500
+	],
+	"focus": [
+		900,
+		820
+	],
+	"story_prefix": "a4",
+	"chest": {
+		"coins": 500,
+		"boosters": {
+			"undo": 2,
+			"extra_jar": 2
+		},
+		"sticker_packs": 1,
+		"unlimited_lives_min": 60
+	},
+	"intro_story": "a4.arrive",
+	"outro_story": "a4.outro",
+	"cast": [
+		{
+			"id": "hajurama",
+			"pos": [
+				1420,
+				1000
+			],
+			"unit": 0.75,
+			"z": 2
+		},
+		{
+			"id": "biralo",
+			"pos": [
+				760,
+				1300
+			],
+			"unit": 0.42,
+			"z": 6,
+			"home": "rug",
+			"away_pos": [
+				1600,
+				1420
+			]
+		}
+	],
+	"objects": [
+		{
+			"id": "wall",
+			"kind": "wall",
+			"rect": [
+				0,
+				0,
+				1800,
+				1060
+			],
+			"z": -10
+		},
+		{
+			"id": "floor",
+			"kind": "floor",
+			"rect": [
+				0,
+				1040,
+				1800,
+				460
+			],
+			"z": -9
+		},
+		{
+			"id": "beams",
+			"kind": "beams",
+			"rect": [
+				0,
+				0,
+				1800,
+				64
+			],
+			"z": -1,
+			"style": {
+				"base": "6b4423",
+				"accent": "a0703f",
+				"pattern": "plain"
+			}
+		},
+		{
+			"id": "window",
+			"kind": "window",
+			"rect": [
+				1250,
+				190,
+				380,
+				380
+			],
+			"z": -6
+		},
+		{
+			"id": "curtain",
+			"kind": "curtain",
+			"rect": [
+				1210,
+				160,
+				460,
+				440
+			],
+			"z": -5
+		},
+		{
+			"id": "spice_shelf",
+			"kind": "shelf",
+			"rect": [
+				520,
+				230,
+				600,
+				330
+			],
+			"z": -6
+		},
+		{
+			"id": "cupboard",
+			"kind": "cabinet",
+			"rect": [
+				100,
+				420,
+				380,
+				640
+			],
+			"z": -4
+		},
+		{
+			"id": "frames",
+			"kind": "frames",
+			"rect": [
+				1260,
+				620,
+				360,
+				200
+			],
+			"z": -5
+		},
+		{
+			"id": "stove",
+			"kind": "stove",
+			"rect": [
+				620,
+				720,
+				460,
+				400
+			],
+			"z": -3
+		},
+		{
+			"id": "lamp",
+			"kind": "pendant_lamp",
+			"rect": [
+				860,
+				30,
+				180,
+				280
+			],
+			"z": 0
+		},
+		{
+			"id": "table",
+			"kind": "table",
+			"rect": [
+				1150,
+				900,
+				560,
+				300
+			],
+			"z": 3
+		},
+		{
+			"id": "chair",
+			"kind": "chair",
+			"rect": [
+				1020,
+				960,
+				170,
+				260
+			],
+			"z": 4
+		},
+		{
+			"id": "rug",
+			"kind": "rug",
+			"rect": [
+				500,
+				1220,
+				700,
+				200
+			],
+			"z": -8
+		}
+	],
+	"tasks": [
+		{
+			"id": "kitchen_walls",
+			"name": "Paint the kitchen",
+			"desc": "Smoke-stained from years of cooking.",
+			"cost": 2,
+			"objects": [
+				"wall"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "plaster",
+					"name": "Warm plaster",
+					"base": "f4d9a8",
+					"accent": "d98a2b",
+					"pattern": "plaster",
+					"trim": "8b5a2b"
+				},
+				{
+					"id": "brick",
+					"name": "Exposed brick",
+					"base": "b5523b",
+					"accent": "e8d5b5",
+					"pattern": "brick",
+					"trim": "0f5e63"
+				},
+				{
+					"id": "floral",
+					"name": "Flowered paper",
+					"base": "fff1d6",
+					"accent": "e8a0a0",
+					"pattern": "floral",
+					"trim": "a86b3c"
+				}
+			]
+		},
+		{
+			"id": "kitchen_floor",
+			"name": "Tile the floor",
+			"desc": "Cracked tiles and a wobbly corner.",
+			"cost": 2,
+			"objects": [
+				"floor"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "tiles",
+					"name": "Terracotta tiles",
+					"base": "c8693f",
+					"accent": "e0a458",
+					"pattern": "tiles"
+				},
+				{
+					"id": "planks",
+					"name": "Wooden planks",
+					"base": "a86b3c",
+					"accent": "f0c68a",
+					"pattern": "planks"
+				},
+				{
+					"id": "checks",
+					"name": "Black and white",
+					"base": "f2ece0",
+					"accent": "3a3a3a",
+					"pattern": "checks"
+				}
+			]
+		},
+		{
+			"id": "stove",
+			"name": "Replace the old stove",
+			"desc": "It's from Hajurama's wedding. Really.",
+			"cost": 3,
+			"objects": [
+				"stove"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "clay",
+					"name": "Clay stove",
+					"base": "b5623b",
+					"accent": "ff6b3b",
+					"pattern": "plain"
+				},
+				{
+					"id": "steel",
+					"name": "Steel range",
+					"base": "9aa5b1",
+					"accent": "ff6b3b",
+					"pattern": "steel"
+				},
+				{
+					"id": "tiled",
+					"name": "Tiled hearth",
+					"base": "e8dcc0",
+					"accent": "2f7fc1",
+					"pattern": "tiles"
+				}
+			]
+		},
+		{
+			"id": "cupboard",
+			"name": "Fix the cupboard",
+			"desc": "The doors fall off if you breathe on them.",
+			"cost": 3,
+			"objects": [
+				"cupboard"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "carved",
+					"name": "Carved wood",
+					"base": "8b5a2b",
+					"accent": "e0a458",
+					"pattern": "carved"
+				},
+				{
+					"id": "mint",
+					"name": "Painted mint",
+					"base": "4fb08a",
+					"accent": "fff3dc",
+					"pattern": "painted"
+				},
+				{
+					"id": "steel",
+					"name": "Steel",
+					"base": "8c979f",
+					"accent": "f2b632",
+					"pattern": "steel"
+				}
+			]
+		},
+		{
+			"id": "spice_shelf",
+			"name": "Build a spice shelf",
+			"desc": "Turmeric, cumin, chili... all in one jumbled tin.",
+			"cost": 2,
+			"objects": [
+				"spice_shelf"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "carved",
+					"name": "Carved wood",
+					"base": "8b5a2b",
+					"accent": "e0a458",
+					"pattern": "carved"
+				},
+				{
+					"id": "blue",
+					"name": "Painted blue",
+					"base": "2f7fc1",
+					"accent": "ffd166",
+					"pattern": "painted"
+				},
+				{
+					"id": "bamboo",
+					"name": "Bamboo",
+					"base": "c9a65b",
+					"accent": "7a6a2b",
+					"pattern": "bamboo"
+				}
+			]
+		},
+		{
+			"id": "window",
+			"name": "Open up the window",
+			"desc": "Steam needs somewhere to go.",
+			"cost": 2,
+			"objects": [
+				"window"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "carved",
+					"name": "Carved lattice",
+					"base": "7a4a22",
+					"accent": "e0a458",
+					"pattern": "carved"
+				},
+				{
+					"id": "blue",
+					"name": "Blue frame",
+					"base": "2f7fc1",
+					"accent": "ffd166",
+					"pattern": "painted"
+				},
+				{
+					"id": "steel",
+					"name": "Steel frame",
+					"base": "9aa5b1",
+					"accent": "51606e",
+					"pattern": "steel"
+				}
+			]
+		},
+		{
+			"id": "curtain",
+			"name": "Hang kitchen curtains",
+			"desc": "Something cheerful to keep the sun out at noon.",
+			"cost": 1,
+			"objects": [
+				"curtain"
+			],
+			"requires": [
+				"window"
+			],
+			"styles": [
+				{
+					"id": "dhaka",
+					"name": "Dhaka weave",
+					"base": "c0392b",
+					"accent": "1f2a36",
+					"pattern": "dhaka"
+				},
+				{
+					"id": "floral",
+					"name": "Flowered cotton",
+					"base": "f4c66b",
+					"accent": "e85d75",
+					"pattern": "floral"
+				},
+				{
+					"id": "stripes",
+					"name": "Blue stripes",
+					"base": "3a86c8",
+					"accent": "fff3dc",
+					"pattern": "stripes"
+				}
+			]
+		},
+		{
+			"id": "table",
+			"name": "Restore the family table",
+			"desc": "Where everyone eats, argues and laughs.",
+			"cost": 3,
+			"objects": [
+				"table"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "wood",
+					"name": "Solid wood",
+					"base": "8b5a2b",
+					"accent": "c0392b",
+					"pattern": "carved"
+				},
+				{
+					"id": "painted",
+					"name": "Painted yellow",
+					"base": "f2b632",
+					"accent": "2f7fc1",
+					"pattern": "painted"
+				},
+				{
+					"id": "cloth",
+					"name": "Dhaka cloth",
+					"base": "c0392b",
+					"accent": "1f2a36",
+					"pattern": "dhaka"
+				}
+			]
+		},
+		{
+			"id": "chair",
+			"name": "Fix the chairs",
+			"desc": "Every chair has its own wobble.",
+			"cost": 2,
+			"objects": [
+				"chair"
+			],
+			"requires": [
+				"table"
+			],
+			"styles": [
+				{
+					"id": "wood",
+					"name": "Wooden",
+					"base": "8b5a2b",
+					"accent": "e0a458",
+					"pattern": "carved"
+				},
+				{
+					"id": "red",
+					"name": "Painted red",
+					"base": "c0392b",
+					"accent": "fff3dc",
+					"pattern": "painted"
+				},
+				{
+					"id": "cane",
+					"name": "Cane",
+					"base": "c9a65b",
+					"accent": "7a6a2b",
+					"pattern": "bamboo"
+				}
+			]
+		},
+		{
+			"id": "lamp",
+			"name": "Hang a kitchen lamp",
+			"desc": "Cooking in the dark is how Bhai got salt in his tea.",
+			"cost": 2,
+			"objects": [
+				"lamp"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "brass",
+					"name": "Brass shade",
+					"base": "d6a53a",
+					"accent": "8b5a2b",
+					"pattern": "gold"
+				},
+				{
+					"id": "paper",
+					"name": "Paper lantern",
+					"base": "ff6b5b",
+					"accent": "fff3dc",
+					"pattern": "dhaka"
+				},
+				{
+					"id": "enamel",
+					"name": "Green enamel",
+					"base": "2e8b57",
+					"accent": "fff3dc",
+					"pattern": "plain"
+				}
+			]
+		},
+		{
+			"id": "frames",
+			"name": "Hang family photos",
+			"desc": "Hajurama has a box of old photos.",
+			"cost": 2,
+			"objects": [
+				"frames"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "wood",
+					"name": "Wooden frames",
+					"base": "8b5a2b",
+					"accent": "c0392b",
+					"pattern": "plain"
+				},
+				{
+					"id": "gold",
+					"name": "Gold frames",
+					"base": "d6a53a",
+					"accent": "2f7fc1",
+					"pattern": "plain"
+				},
+				{
+					"id": "blue",
+					"name": "Blue frames",
+					"base": "2f7fc1",
+					"accent": "f2b632",
+					"pattern": "plain"
+				}
+			]
+		},
+		{
+			"id": "rug",
+			"name": "Lay a kitchen rug",
+			"desc": "Warm feet in winter.",
+			"cost": 2,
+			"objects": [
+				"rug"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "dhaka",
+					"name": "Dhaka rug",
+					"base": "c0392b",
+					"accent": "1f2a36",
+					"pattern": "dhaka"
+				},
+				{
+					"id": "stripes",
+					"name": "Striped rug",
+					"base": "2a9d8f",
+					"accent": "fff3dc",
+					"pattern": "stripes"
+				},
+				{
+					"id": "floral",
+					"name": "Flower rug",
+					"base": "f4c66b",
+					"accent": "e85d75",
+					"pattern": "floral"
+				}
+			]
+		}
+	],
+	"sun": [
+		1440,
+		380
+	]
+}

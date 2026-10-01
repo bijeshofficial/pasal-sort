@@ -1,0 +1,122 @@
+{
+	"lines": {
+		"a4.kitchen_walls": [
+			{
+				"who": "sunita",
+				"mood": "laugh",
+				"text": "It's so bright! I'll need my sunglasses for tea."
+			}
+		],
+		"a4.kitchen_floor": [
+			{
+				"who": "maya",
+				"mood": "happy",
+				"text": "No more wobbly corner. Hajurama can stop warning everyone."
+			}
+		],
+		"a4.stove": [
+			{
+				"who": "hajurama",
+				"mood": "surprised",
+				"text": "A new stove! My sel roti will be even better now."
+			}
+		],
+		"a4.cupboard": [
+			{
+				"who": "bhai",
+				"mood": "laugh",
+				"text": "The door didn't fall on me! It works!"
+			}
+		],
+		"a4.spice_shelf": [
+			{
+				"who": "hajurama",
+				"mood": "happy",
+				"text": "Every spice in its own jar. Like your candies, nani!"
+			}
+		],
+		"a4.window": [
+			{
+				"who": "maya",
+				"mood": "happy",
+				"text": "You can see the shop sign from up here!"
+			}
+		],
+		"a4.curtain": [
+			{
+				"who": "sunita",
+				"mood": "happy",
+				"text": "Pretty! Where did you get that cloth?"
+			}
+		],
+		"a4.table": [
+			{
+				"who": "bhai",
+				"mood": "happy",
+				"text": "Dinner at a real table! No more eating on the stairs."
+			}
+		],
+		"a4.chair": [
+			{
+				"who": "kanchha",
+				"mood": "laugh",
+				"text": "Glue, nails and a little prayer... I mean, patience!"
+			}
+		],
+		"a4.lamp": [
+			{
+				"who": "bhai",
+				"mood": "grumpy",
+				"text": "It was ONE time, Didi."
+			}
+		],
+		"a4.frames": [
+			{
+				"who": "hajurama",
+				"mood": "happy",
+				"text": "There's your mother at your age. Same smile."
+			}
+		],
+		"a4.rug": [
+			{
+				"who": "biralo",
+				"mood": "happy",
+				"text": "Purrr."
+			}
+		],
+		"a4.arrive": [
+			{
+				"who": "hajurama",
+				"mood": "happy",
+				"text": "Welcome upstairs, nani. Mind the third step, it squeaks."
+			},
+			{
+				"who": "maya",
+				"mood": "surprised",
+				"text": "Hajurama, is that stove... held together with string?"
+			}
+		],
+		"a4.outro": [
+			{
+				"who": "hajurama",
+				"mood": "laugh",
+				"text": "Now this is a kitchen worth cooking in!"
+			},
+			{
+				"who": "sunita",
+				"mood": "happy",
+				"text": "I'm coming for dinner. Every night."
+			},
+			{
+				"who": "bhai",
+				"mood": "neutral",
+				"text": "Didi, the living room still smells like old socks."
+			},
+			{
+				"who": "maya",
+				"mood": "laugh",
+				"text": "Then that's next. Windows open, Bhai!"
+			}
+		]
+	}
+}

@@ -6,7 +6,8 @@ extends Node
 ## Hook ids: button_click, gameplay_interaction (select), success, perfect,
 ## failure, combo, reward, level_complete, coin_pickup, plus game sounds:
 ## select, deselect, clack, nope, lid_pop, shuffle, extra_jar, undo, shutter,
-## reveal, unlock, cloth, heart, cheer, pop.
+## reveal, unlock, cloth, heart, cheer, pop, star, poof, renovate,
+## chest_open, page_turn, area_complete, tick.
 
 const SFX_BUS := "SFX"
 const MUSIC_BUS := "Music"

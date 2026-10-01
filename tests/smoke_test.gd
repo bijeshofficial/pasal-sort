@@ -33,6 +33,8 @@ var GM: Node
 var IAP: Node
 var VFX: Node
 var POOL: Node
+var DM: Node
+var RM: Node
 
 
 func _initialize() -> void:
@@ -60,6 +62,9 @@ func _main() -> void:
 	IAP = root.get_node("IAPManager")
 	VFX = root.get_node("VFXManager")
 	POOL = root.get_node("PoolManager")
+	DM = root.get_node("DialogueManager")
+	RM = root.get_node("RenovationManager")
+	DM.instant = true
 
 	S.set_save_path(TEST_SAVE)
 	_remove_test_files()
@@ -184,7 +189,7 @@ func _test_solver_and_levels() -> void:
 	for mv in l1["forced"]:
 		b1.apply_move(mv[0], mv[1])
 	_check(b1.is_won(), "level 1 forced tutorial sequence solves it in 3 moves")
-	_check(LevelGenerator.generate(15)["twists"] == ["wrapped"] and LevelGenerator.generate(30)["twists"] == ["cloth"], "wrapped candies at 15, dhaka cloth at 30")
+	_check(LevelGenerator.generate(15)["twists"] == ["wrapped"] and LevelGenerator.generate(35)["twists"] == ["cloth"] and LevelGenerator.generate(55)["twists"] == ["lock"], "wrapped candies at 15, dhaka cloth at 35, padlock at 55")
 	_check(LevelGenerator.tier_for(5) == "hard" and LevelGenerator.tier_for(10) == "super" and LevelGenerator.tier_for(11) == "easy", "sawtooth: every 5th HARD, every 10th SUPER HARD, then easier")
 	var hint := Solver.hint(Board.from_level(LevelGenerator.generate(12)))
 	_check(hint.size() >= 2 and Board.from_level(LevelGenerator.generate(12)).can_move(hint[0], hint[1]), "solver hint is a legal move")
@@ -279,7 +284,7 @@ func _fresh(level: int) -> void:
 	S.data = S.defaults()
 	S.data["current_level"] = level
 	if level > 1:
-		for k in ["tap", "stack", "empty", "undo", "extra_jar", "shuffle", "twist_wrapped", "twist_cloth", "twist_lock", "twist_tall"]:
+		for k in ["tap", "stack", "empty", "undo", "extra_jar", "shuffle", "twist_wrapped", "twist_cloth", "twist_lock", "twist_tall", "story_intro", "first_task"]:
 			S.game()["tutorial_steps"][k] = true
 	LM.time_offset = 0.0
 
@@ -342,12 +347,14 @@ func _test_level1_by_taps() -> void:
 	_check(g.board.is_won() and g.state == ST_WON, "level 1 solved by simulated taps")
 	_check(PM.current_level() == 2, "win advances to level 2")
 	_check(CM.get_coins() == coins_before + 10, "level reward: 10 coins (%d)" % (CM.get_coins() - coins_before))
+	_check(CM.get_stars() == 1, "every win earns a star")
 	_check(LM.lives() == lives_before, "winning never costs a life")
 	_check(bool(S.game()["tutorial_steps"].get("tap", false)), "tutorial step saved as complete")
 	_check(S.game_stat("jars_filled") == 2 and S.game_stat("candies_moved") == 6, "stats: jars filled and candies moved")
 	await _until(func() -> bool: return SM.find_modal("win") != null, 4.0)
 	var win: Node = SM.find_modal("win")
 	_check(win != null, "win screen appears")
+	_check(DM.played.has("intro"), "level 1: Hajurama introduces the story before the win screen")
 	if win:
 		await _wait(1.2)
 		_check(win.coins_shown == 10, "win screen counts coins up")
@@ -589,14 +596,42 @@ func _test_hub_and_back() -> void:
 	_check(hub.current == 0 and hub.nav.current == 0, "bottom nav switches to Shop")
 	GM.handle_back()
 	_check(hub.current == 1, "back on Shop returns to Home")
-	# Swipe right-to-left goes to Profile.
-	for pressed in [true, false]:
-		var ev := InputEventScreenTouch.new()
-		ev.pressed = pressed
-		ev.position = Vector2(900, 1000) if pressed else Vector2(300, 1010)
+	# On Home a drag pans the renovation scene instead of switching tabs.
+	# (Zoom in first: headless windows are wide enough to show the whole width.)
+	hub.home_view.zoom_at(hub.home_view.size * 0.5, hub.home_view.zoom * 1.6)
+	var pos0: Vector2 = hub.home_view.scene.position
+	for k in 3:
+		var ev: InputEvent
+		if k == 0:
+			ev = InputEventScreenTouch.new()
+			ev.pressed = true
+			ev.position = Vector2(900, 1000)
+		elif k == 1:
+			ev = InputEventScreenDrag.new()
+			ev.position = Vector2(500, 1005)
+			ev.relative = Vector2(-400, 5)
+		else:
+			ev = InputEventScreenTouch.new()
+			ev.pressed = false
+			ev.position = Vector2(500, 1005)
 		root.push_input(ev, true)
 		await _frames(1)
-	_check(hub.current == 2, "swipe left moves to the Profile tab")
+	_check(hub.current == 1 and hub.home_view.scene.position.x < pos0.x, "dragging Home pans the scene (%.0f -> %.0f) and keeps the tab" % [pos0.x, hub.home_view.scene.position.x])
+	# Swiping on the nav bar still changes tabs.
+	var ny: float = hub.nav.get_global_rect().get_center().y
+	for k in 3:
+		var ev: InputEvent
+		if k == 1:
+			ev = InputEventScreenDrag.new()
+			ev.position = Vector2(300, ny + 10)
+			ev.relative = Vector2(-600, 10)
+		else:
+			ev = InputEventScreenTouch.new()
+			ev.pressed = k == 0
+			ev.position = Vector2(900, ny) if k == 0 else Vector2(300, ny + 10)
+		root.push_input(ev, true)
+		await _frames(1)
+	_check(hub.current == 2, "swipe left on the nav bar moves to the Profile tab")
 	hub.select_tab(1)
 	GM.handle_back()
 	var q: Node = SM.find_modal("confirm")
@@ -714,14 +749,13 @@ func _test_shop_iap_achievements() -> void:
 	current_scene.profile.set_avatar(3)
 	S.load_game()
 	_check(S.game()["profile"]["name"] == "Maya" and int(S.game()["profile"]["avatar"]) == 3, "profile name and avatar persist")
-	# Milestone gift and decorations every 10 levels.
+	# Milestone gift every 10 levels; every win is a star.
 	_fresh(10)
 	var sum: Dictionary = PM.complete_level(10, false)
-	_check(sum["milestone"] and sum["decoration"] == "fairy_lights", "level 10: milestone gift and a new pasal decoration")
+	_check(sum["milestone"] and int(sum["stars"]) == 1 and CM.get_stars() == 1, "level 10: milestone gift and a star")
 	var gift: Dictionary = PM.claim_milestone(10)
 	_check(int(gift.get("coins", 0)) == 100 and PM.claim_milestone(10).is_empty(), "milestone gift claims once")
-	_check(PM.unrevealed_decorations() == ["fairy_lights"], "decoration waits to be revealed on Home")
-	_check(PM.coin_reward(25) == 15 and PM.coin_reward(20) == 20 and PM.coin_reward(12) == 10, "HARD pays 15, SUPER HARD 20")
+	_check(PM.coin_reward(25) == 15 and PM.coin_reward(20) == 25 and PM.coin_reward(12) == 10, "coins: 10, HARD 15, SUPER HARD 25")
 
 
 func _test_save_load() -> void:
@@ -792,9 +826,10 @@ func _test_layout_aspects() -> void:
 
 func _test_hooks() -> void:
 	AU.played_log.clear()
-	for id in ["button_click", "gameplay_interaction", "success", "perfect", "failure", "combo", "reward", "level_complete", "coin_pickup", "clack", "nope", "lid_pop", "shuffle", "extra_jar", "undo", "shutter", "reveal", "unlock", "cloth"]:
+	var hooks := ["button_click", "gameplay_interaction", "success", "perfect", "failure", "combo", "reward", "level_complete", "coin_pickup", "clack", "nope", "lid_pop", "shuffle", "extra_jar", "undo", "shutter", "reveal", "unlock", "cloth", "star", "poof", "renovate", "chest_open", "page_turn", "area_complete", "tick"]
+	for id in hooks:
 		AU.play(id)
-	_check(AU.played_log.size() == 19, "all audio hooks resolve to a sound")
+	_check(AU.played_log.size() == hooks.size(), "all audio hooks resolve to a sound")
 	S.set_setting("haptics", true)
 	var h0: int = HM.fired_count
 	HM.light()

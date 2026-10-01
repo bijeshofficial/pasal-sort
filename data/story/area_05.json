@@ -1,0 +1,117 @@
+{
+	"lines": {
+		"a5.lr_walls": [
+			{
+				"who": "bhai",
+				"mood": "laugh",
+				"text": "Bye bye, yak stain!"
+			}
+		],
+		"a5.lr_floor": [
+			{
+				"who": "maya",
+				"mood": "happy",
+				"text": "It shines! I can see my face in it."
+			}
+		],
+		"a5.lr_window": [
+			{
+				"who": "hajurama",
+				"mood": "happy",
+				"text": "On a clear day you can see all the way to the mountains."
+			}
+		],
+		"a5.lr_curtain": [
+			{
+				"who": "sunita",
+				"mood": "surprised",
+				"text": "Ooh, fancy! Are you expecting guests?"
+			}
+		],
+		"a5.sofa": [
+			{
+				"who": "biralo",
+				"mood": "happy",
+				"text": "Purrrr."
+			}
+		],
+		"a5.rug": [
+			{
+				"who": "bhai",
+				"mood": "laugh",
+				"text": "Picnic time! Pass the chiura!"
+			}
+		],
+		"a5.frames": [
+			{
+				"who": "hajurama",
+				"mood": "happy",
+				"text": "That's your Hajurba, the day he opened the shop."
+			}
+		],
+		"a5.clock": [
+			{
+				"who": "bhai",
+				"mood": "grumpy",
+				"text": "Now I know it's not dinner time. Again."
+			}
+		],
+		"a5.bookshelf": [
+			{
+				"who": "maya",
+				"mood": "happy",
+				"text": "My books, Hajurama's recipes and Bhai's comics. Perfect."
+			}
+		],
+		"a5.lr_lamp": [
+			{
+				"who": "kanchha",
+				"mood": "laugh",
+				"text": "Another light, another success for Kanchha Dai!"
+			}
+		],
+		"a5.tea_table": [
+			{
+				"who": "sunita",
+				"mood": "laugh",
+				"text": "A tea table! I'll bring the tea."
+			}
+		],
+		"a5.plant": [
+			{
+				"who": "maya",
+				"mood": "neutral",
+				"text": "It needs water twice a week. Bhai, that's your job."
+			}
+		],
+		"a5.arrive": [
+			{
+				"who": "bhai",
+				"mood": "laugh",
+				"text": "This is MY room. Well, everyone's room. But mostly mine."
+			},
+			{
+				"who": "maya",
+				"mood": "worried",
+				"text": "Bhai... why is there a sock on the ceiling fan?"
+			}
+		],
+		"a5.outro": [
+			{
+				"who": "hajurama",
+				"mood": "happy",
+				"text": "The family room feels like a family room again."
+			},
+			{
+				"who": "bhai",
+				"mood": "laugh",
+				"text": "Can we go on the roof now? I want to fly my kite!"
+			},
+			{
+				"who": "maya",
+				"mood": "laugh",
+				"text": "Roof it is. Bring the kite, Bhai!"
+			}
+		]
+	}
+}

@@ -1,0 +1,464 @@
+{
+	"id": "courtyard",
+	"name": "Chiya Tole Courtyard",
+	"subtitle": "Shared with the neighbours",
+	"backdrop": "courtyard",
+	"world": [
+		1800,
+		1500
+	],
+	"focus": [
+		900,
+		820
+	],
+	"story_prefix": "a7",
+	"chest": {
+		"coins": 800,
+		"boosters": {
+			"extra_jar": 3,
+			"shuffle": 2
+		},
+		"sticker_packs": 2,
+		"unlimited_lives_min": 90
+	},
+	"intro_story": "a7.arrive",
+	"outro_story": "a7.outro",
+	"cast": [
+		{
+			"id": "sunita",
+			"pos": [
+				1360,
+				1020
+			],
+			"unit": 0.72,
+			"z": 1
+		},
+		{
+			"id": "kanchha",
+			"pos": [
+				700,
+				1260
+			],
+			"unit": 0.7,
+			"z": 3
+		},
+		{
+			"id": "biralo",
+			"pos": [
+				560,
+				1110
+			],
+			"unit": 0.42,
+			"z": 5,
+			"home": "bench",
+			"away_pos": [
+				1660,
+				1440
+			]
+		}
+	],
+	"objects": [
+		{
+			"id": "ground",
+			"kind": "street",
+			"rect": [
+				0,
+				1100,
+				1800,
+				400
+			],
+			"z": -9
+		},
+		{
+			"id": "bunting",
+			"kind": "bunting",
+			"rect": [
+				0,
+				160,
+				1800,
+				200
+			],
+			"z": -6
+		},
+		{
+			"id": "tree",
+			"kind": "tree",
+			"rect": [
+				60,
+				260,
+				560,
+				900
+			],
+			"z": -5
+		},
+		{
+			"id": "stall",
+			"kind": "tea_stall",
+			"rect": [
+				1060,
+				520,
+				640,
+				600
+			],
+			"z": 0
+		},
+		{
+			"id": "lamp",
+			"kind": "street_lamp",
+			"rect": [
+				860,
+				360,
+				170,
+				820
+			],
+			"z": -3
+		},
+		{
+			"id": "bench",
+			"kind": "bench",
+			"rect": [
+				380,
+				1000,
+				400,
+				220
+			],
+			"z": 4
+		},
+		{
+			"id": "bed",
+			"kind": "flower_bed",
+			"rect": [
+				40,
+				1200,
+				700,
+				240
+			],
+			"z": 6
+		},
+		{
+			"id": "fence",
+			"kind": "fence",
+			"rect": [
+				1020,
+				1180,
+				780,
+				180
+			],
+			"z": 2
+		},
+		{
+			"id": "bicycle",
+			"kind": "bicycle",
+			"rect": [
+				1240,
+				1240,
+				400,
+				240
+			],
+			"z": 7
+		}
+	],
+	"tasks": [
+		{
+			"id": "ground",
+			"name": "Pave the courtyard",
+			"desc": "Muddy every monsoon.",
+			"cost": 4,
+			"objects": [
+				"ground"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "stone",
+					"name": "Stone paving",
+					"base": "a89f91",
+					"accent": "7d7466",
+					"pattern": "tiles"
+				},
+				{
+					"id": "brick",
+					"name": "Brick paving",
+					"base": "b5623b",
+					"accent": "d98a5b",
+					"pattern": "brick"
+				},
+				{
+					"id": "checks",
+					"name": "Patterned tiles",
+					"base": "e8dcc0",
+					"accent": "c8693f",
+					"pattern": "checks"
+				}
+			]
+		},
+		{
+			"id": "tree",
+			"name": "Care for the big tree",
+			"desc": "The oldest tree in Chiya Tole.",
+			"cost": 4,
+			"objects": [
+				"tree"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "green",
+					"name": "Leafy",
+					"base": "3f8f3a",
+					"accent": "ff9f1c",
+					"pattern": "plain"
+				},
+				{
+					"id": "blossom",
+					"name": "Blossom",
+					"base": "5fa84f",
+					"accent": "ff8fb1",
+					"pattern": "plain"
+				},
+				{
+					"id": "autumn",
+					"name": "Autumn",
+					"base": "c8862b",
+					"accent": "c0392b",
+					"pattern": "plain"
+				}
+			]
+		},
+		{
+			"id": "stall",
+			"name": "Upgrade the tea stall",
+			"desc": "Sunita Didi's stall leans to the left.",
+			"cost": 4,
+			"objects": [
+				"stall"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "wood",
+					"name": "Wooden stall",
+					"base": "8b5a2b",
+					"accent": "c0392b",
+					"pattern": "carved"
+				},
+				{
+					"id": "blue",
+					"name": "Blue stall",
+					"base": "2f7fc1",
+					"accent": "ffd166",
+					"pattern": "painted"
+				},
+				{
+					"id": "tin",
+					"name": "Tin stall",
+					"base": "9aa5b1",
+					"accent": "e04f5f",
+					"pattern": "steel"
+				}
+			]
+		},
+		{
+			"id": "bench",
+			"name": "Build a courtyard bench",
+			"desc": "For the aunties' afternoon meetings.",
+			"cost": 3,
+			"objects": [
+				"bench"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "wood",
+					"name": "Carved wood",
+					"base": "8b5a2b",
+					"accent": "e0a458",
+					"pattern": "carved"
+				},
+				{
+					"id": "painted",
+					"name": "Painted blue",
+					"base": "2f7fc1",
+					"accent": "ffd166",
+					"pattern": "painted"
+				},
+				{
+					"id": "steel",
+					"name": "Park steel",
+					"base": "7f8c99",
+					"accent": "51606e",
+					"pattern": "steel"
+				}
+			]
+		},
+		{
+			"id": "lamp",
+			"name": "Light the courtyard",
+			"desc": "Kanchha Dai insists on doing the wiring.",
+			"cost": 3,
+			"objects": [
+				"lamp"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "iron",
+					"name": "Black iron",
+					"base": "2b2b3a",
+					"accent": "f2b632",
+					"pattern": "plain"
+				},
+				{
+					"id": "brass",
+					"name": "Brass lantern",
+					"base": "b8862b",
+					"accent": "fff2a8",
+					"pattern": "gold"
+				},
+				{
+					"id": "green",
+					"name": "Old-town green",
+					"base": "2e7d5b",
+					"accent": "fff3dc",
+					"pattern": "painted"
+				}
+			]
+		},
+		{
+			"id": "bunting",
+			"name": "Hang paper bunting",
+			"desc": "Bright colours from roof to roof.",
+			"cost": 3,
+			"objects": [
+				"bunting"
+			],
+			"requires": [
+				"tree"
+			],
+			"styles": [
+				{
+					"id": "bright",
+					"name": "Bright paper",
+					"base": "ff6b5b",
+					"accent": "f2b632",
+					"pattern": "plain"
+				},
+				{
+					"id": "marigold",
+					"name": "Marigold",
+					"base": "ff9f1c",
+					"accent": "fff3dc",
+					"pattern": "plain"
+				},
+				{
+					"id": "blue",
+					"name": "Blue and white",
+					"base": "2f7fc1",
+					"accent": "fff3dc",
+					"pattern": "plain"
+				}
+			]
+		},
+		{
+			"id": "bed",
+			"name": "Plant a flower bed",
+			"desc": "Marigolds for the whole tole.",
+			"cost": 3,
+			"objects": [
+				"bed"
+			],
+			"requires": [
+				"ground"
+			],
+			"styles": [
+				{
+					"id": "brick",
+					"name": "Brick bed",
+					"base": "b5523b",
+					"accent": "ff6b8b",
+					"pattern": "brick"
+				},
+				{
+					"id": "stone",
+					"name": "Stone bed",
+					"base": "a89f91",
+					"accent": "f2b632",
+					"pattern": "tiles"
+				},
+				{
+					"id": "wood",
+					"name": "Wooden planter",
+					"base": "8b5a2b",
+					"accent": "e85d75",
+					"pattern": "planks"
+				}
+			]
+		},
+		{
+			"id": "fence",
+			"name": "Mend the fence",
+			"desc": "Goats keep wandering in.",
+			"cost": 3,
+			"objects": [
+				"fence"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "wood",
+					"name": "Wooden fence",
+					"base": "8b5a2b",
+					"accent": "e0a458",
+					"pattern": "plain"
+				},
+				{
+					"id": "white",
+					"name": "White fence",
+					"base": "f4efe6",
+					"accent": "3a86c8",
+					"pattern": "painted"
+				},
+				{
+					"id": "bamboo",
+					"name": "Bamboo fence",
+					"base": "c9a65b",
+					"accent": "7a6a2b",
+					"pattern": "plain"
+				}
+			]
+		},
+		{
+			"id": "bicycle",
+			"name": "Paint the shared bicycle",
+			"desc": "Anyone in the tole can borrow it.",
+			"cost": 3,
+			"objects": [
+				"bicycle"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "red",
+					"name": "Cherry red",
+					"base": "c0392b",
+					"accent": "c99a5b",
+					"pattern": "plain"
+				},
+				{
+					"id": "blue",
+					"name": "Sky blue",
+					"base": "3a86c8",
+					"accent": "ffd166",
+					"pattern": "plain"
+				},
+				{
+					"id": "black",
+					"name": "Classic black",
+					"base": "2b2b3a",
+					"accent": "e0a458",
+					"pattern": "plain"
+				}
+			]
+		}
+	]
+}

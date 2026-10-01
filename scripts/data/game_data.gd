@@ -11,6 +11,8 @@ const ECONOMY := "res://data/economy.json"
 const LEVELS := "res://data/levels_authored.json"
 const ACHIEVEMENTS := "res://data/achievements.json"
 const META := "res://data/meta.json"
+const AREAS_DIR := "res://data/areas/"
+const STORY_DIR := "res://data/story/"
 
 static var _cache: Dictionary = {}
 
@@ -18,6 +20,8 @@ static var _cache: Dictionary = {}
 static func preload_all() -> void:
 	for p in [CANDIES, DIFFICULTY, ECONOMY, LEVELS, ACHIEVEMENTS, META]:
 		load_json(p)
+	area_count()
+	_story_lines()
 
 
 static func load_json(path: String) -> Dictionary:
@@ -131,8 +135,55 @@ static func achievements() -> Array:
 	return load_json(ACHIEVEMENTS).get("achievements", [])
 
 
-static func decorations() -> Array:
-	return meta().get("decorations", [])
+# --- Renovation areas and story --------------------------------------------
+
+## Areas are data/areas/area_01.json, area_02.json, ... (contiguous).
+static func area_count() -> int:
+	if _cache.has("_area_count"):
+		return int(_cache["_area_count"])
+	var n := 0
+	while FileAccess.file_exists(AREAS_DIR + "area_%02d.json" % (n + 1)):
+		n += 1
+	_cache["_area_count"] = n
+	return n
+
+
+static func area(index: int) -> Dictionary:
+	if index < 1 or index > area_count():
+		return {}
+	return load_json(AREAS_DIR + "area_%02d.json" % index)
+
+
+static func area_task(index: int, task_id: String) -> Dictionary:
+	for t in area(index).get("tasks", []):
+		if t["id"] == task_id:
+			return t
+	return {}
+
+
+## Every story file's "lines" merged into one dictionary (id -> [lines]).
+static func _story_lines() -> Dictionary:
+	if _cache.has("_story"):
+		return _cache["_story"]
+	var all := {}
+	var dir := DirAccess.open(STORY_DIR)
+	if dir:
+		var files := Array(dir.get_files())
+		files.sort()
+		for f in files:
+			var name := String(f).trim_suffix(".remap")
+			if name.ends_with(".json"):
+				all.merge(load_json(STORY_DIR + name).get("lines", {}), true)
+	_cache["_story"] = all
+	return all
+
+
+static func story(id: String) -> Array:
+	return _story_lines().get(id, [])
+
+
+static func has_story(id: String) -> bool:
+	return _story_lines().has(id)
 
 
 static func avatars() -> Array:

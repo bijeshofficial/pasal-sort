@@ -1,0 +1,107 @@
+{
+	"id": "shop_front",
+	"name": "The Shop Front",
+	"subtitle": "Out on Chiya Tole",
+	"backdrop": "exterior",
+	"world": [1800, 1500],
+	"focus": [900, 820],
+	"story_prefix": "a2",
+	"chest": {"coins": 400, "boosters": {"extra_jar": 2, "shuffle": 1}, "unlimited_lives_min": 30},
+	"intro_story": "a2.arrive",
+	"outro_story": "a2.outro",
+	"cast": [
+		{"id": "maya", "pos": [900, 1150], "unit": 0.82, "z": -4},
+		{"id": "sunita", "pos": [200, 1140], "unit": 0.62, "z": 1},
+		{"id": "biralo", "pos": [1150, 1150], "unit": 0.42, "z": 1, "home": "steps", "away_pos": [1660, 1440]}
+	],
+	"objects": [
+		{"id": "street", "kind": "street", "rect": [0, 1120, 1800, 380], "z": -9},
+		{"id": "facade", "kind": "facade", "rect": [260, 110, 1280, 1010], "z": -8},
+		{"id": "door", "kind": "door", "rect": [1360, 640, 140, 480], "z": -7, "style": {"base": "7a4a22", "accent": "f2b632", "pattern": "carved"}},
+		{"id": "upper_window", "kind": "window", "rect": [640, 170, 520, 250], "z": -6},
+		{"id": "shutter", "kind": "shutter", "rect": [500, 700, 800, 420], "z": -5},
+		{"id": "sign_board", "kind": "sign_board", "rect": [430, 470, 940, 140], "z": -3},
+		{"id": "awning", "kind": "awning", "rect": [440, 620, 920, 140], "z": -2},
+		{"id": "string_lights", "kind": "string_lights", "rect": [270, 400, 1260, 90], "z": -1},
+		{"id": "steps", "kind": "steps", "rect": [500, 1110, 800, 120], "z": 0},
+		{"id": "plant_left", "kind": "plant_pot", "rect": [320, 950, 170, 230], "z": 1},
+		{"id": "plant_right", "kind": "plant_pot", "rect": [1180, 960, 170, 220], "z": 1},
+		{"id": "street_lamp", "kind": "street_lamp", "rect": [1590, 380, 170, 820], "z": 2},
+		{"id": "bench", "kind": "bench", "rect": [30, 1030, 340, 200], "z": 2},
+		{"id": "bicycle", "kind": "bicycle", "rect": [1230, 1180, 380, 240], "z": 5}
+	],
+	"tasks": [
+		{"id": "shutter", "name": "Fix the rusty shutter", "desc": "It only opens halfway, with a screech the whole tole can hear.", "cost": 2, "objects": ["shutter"], "requires": [],
+			"styles": [
+				{"id": "green", "name": "Forest green", "base": "2e7d5b", "accent": "f2b632", "pattern": "painted"},
+				{"id": "steel", "name": "Brushed steel", "base": "a3acb1", "accent": "5d6b78", "pattern": "steel"},
+				{"id": "carved", "name": "Wood-panel look", "base": "8b5a2b", "accent": "e0a458", "pattern": "carved"}
+			]},
+		{"id": "paint_facade", "name": "Paint the shop front", "desc": "Faded, cracked and covered in old posters.", "cost": 2, "objects": ["facade"], "requires": [],
+			"styles": [
+				{"id": "brick", "name": "Red brick", "base": "b5523b", "accent": "e8d5b5", "trim": "6b3b22", "pattern": "brick"},
+				{"id": "yellow", "name": "Sunny yellow", "base": "f2c14e", "accent": "e07a3a", "trim": "7a4a22", "pattern": "plaster"},
+				{"id": "teal", "name": "Teal with flowers", "base": "2a9d8f", "accent": "fff3dc", "trim": "0f5e63", "pattern": "floral"}
+			]},
+		{"id": "sign_board", "name": "Paint a new sign", "desc": "Everyone should know whose pasal this is.", "cost": 2, "objects": ["sign_board"], "requires": ["paint_facade"],
+			"styles": [
+				{"id": "red", "name": "Red and gold", "base": "c0392b", "accent": "ffd166", "pattern": "gold"},
+				{"id": "carved", "name": "Carved wood", "base": "8b5a2b", "accent": "ffd166", "pattern": "carved"},
+				{"id": "blue", "name": "Sky blue", "base": "3a86c8", "accent": "fff3dc", "pattern": "painted"}
+			]},
+		{"id": "awning", "name": "Put up an awning", "desc": "Shade for the sweets and shelter from the monsoon.", "cost": 2, "objects": ["awning"], "requires": ["shutter"],
+			"styles": [
+				{"id": "marigold", "name": "Marigold stripes", "base": "ff9f1c", "accent": "fff3dc", "pattern": "stripes"},
+				{"id": "teal", "name": "Teal stripes", "base": "0f5e63", "accent": "fff3dc", "pattern": "stripes"},
+				{"id": "dhaka", "name": "Dhaka pattern", "base": "c0392b", "accent": "1f2a36", "pattern": "dhaka"}
+			]},
+		{"id": "steps", "name": "Repair the steps", "desc": "A crack in the middle step has tripped three customers this week.", "cost": 1, "objects": ["steps"], "requires": [],
+			"styles": [
+				{"id": "stone", "name": "Stone slabs", "base": "a89f91", "accent": "6f665a", "pattern": "tiles"},
+				{"id": "terracotta", "name": "Terracotta", "base": "c8693f", "accent": "e0a458", "pattern": "tiles"},
+				{"id": "painted", "name": "Painted red", "base": "b5523b", "accent": "fff3dc", "pattern": "painted"}
+			]},
+		{"id": "plants", "name": "Pot some plants", "desc": "A little green makes customers stop and look.", "cost": 1, "objects": ["plant_left", "plant_right"], "requires": ["steps"],
+			"styles": [
+				{"id": "clay", "name": "Clay pots", "base": "b5623b", "accent": "e0a458", "pattern": "carved"},
+				{"id": "blue", "name": "Blue glazed", "base": "2f7fc1", "accent": "ffd166", "pattern": "painted"},
+				{"id": "tin", "name": "Recycled tins", "base": "a3acb1", "accent": "e04f5f", "pattern": "steel"}
+			]},
+		{"id": "street_lamp", "name": "Fix the street lamp", "desc": "Dark at night. Kanchha Dai says he can fix it. Probably.", "cost": 2, "objects": ["street_lamp"], "requires": [],
+			"styles": [
+				{"id": "iron", "name": "Black iron", "base": "2b2b3a", "accent": "f2b632", "pattern": "plain"},
+				{"id": "brass", "name": "Brass lantern", "base": "b8862b", "accent": "fff2a8", "pattern": "gold"},
+				{"id": "green", "name": "Old-town green", "base": "2e7d5b", "accent": "fff3dc", "pattern": "painted"}
+			]},
+		{"id": "bench", "name": "Build a bench for customers", "desc": "Somewhere to sit, sip tea and gossip.", "cost": 2, "objects": ["bench"], "requires": [],
+			"styles": [
+				{"id": "wood", "name": "Carved wood", "base": "8b5a2b", "accent": "e0a458", "pattern": "carved"},
+				{"id": "painted", "name": "Painted blue", "base": "2f7fc1", "accent": "ffd166", "pattern": "painted"},
+				{"id": "steel", "name": "Park steel", "base": "7f8c99", "accent": "51606e", "pattern": "steel"}
+			]},
+		{"id": "upper_window", "name": "Fix the upstairs window", "desc": "Hajurama's bedroom window has been stuck for a year.", "cost": 2, "objects": ["upper_window"], "requires": ["paint_facade"],
+			"styles": [
+				{"id": "carved", "name": "Carved lattice", "base": "7a4a22", "accent": "e0a458", "pattern": "carved"},
+				{"id": "white", "name": "White frame", "base": "f4efe6", "accent": "3a86c8", "pattern": "painted"},
+				{"id": "steel", "name": "Steel frame", "base": "9aa5b1", "accent": "51606e", "pattern": "steel"}
+			]},
+		{"id": "string_lights", "name": "String up lights", "desc": "Let the whole street see we're open after dark.", "cost": 2, "objects": ["string_lights"], "requires": ["sign_board"],
+			"styles": [
+				{"id": "warm", "name": "Warm bulbs", "base": "ffd166", "accent": "ff9f1c", "pattern": "plain"},
+				{"id": "festive", "name": "Festive colours", "base": "ff6b8b", "accent": "8fd3ff", "pattern": "plain"},
+				{"id": "white", "name": "Fairy white", "base": "fff8e6", "accent": "fff2a8", "pattern": "plain"}
+			]},
+		{"id": "bicycle", "name": "Fix the delivery bicycle", "desc": "Flat tyre, rusty chain, and a bell that only goes 'clunk'.", "cost": 2, "objects": ["bicycle"], "requires": [],
+			"styles": [
+				{"id": "red", "name": "Cherry red", "base": "c0392b", "accent": "c99a5b", "pattern": "plain"},
+				{"id": "blue", "name": "Sky blue", "base": "3a86c8", "accent": "ffd166", "pattern": "plain"},
+				{"id": "black", "name": "Classic black", "base": "2b2b3a", "accent": "e0a458", "pattern": "plain"}
+			]},
+		{"id": "street", "name": "Sweep the street", "desc": "Weeds, puddles and potholes right outside the door.", "cost": 1, "objects": ["street"], "requires": [],
+			"styles": [
+				{"id": "stone", "name": "Stone paving", "base": "a89f91", "accent": "7d7466", "pattern": "tiles"},
+				{"id": "brick", "name": "Brick paving", "base": "b5623b", "accent": "d98a5b", "pattern": "brick"},
+				{"id": "checks", "name": "Patterned tiles", "base": "e8dcc0", "accent": "c8693f", "pattern": "checks"}
+			]}
+	]
+}

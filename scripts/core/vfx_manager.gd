@@ -6,6 +6,7 @@ const TEXT_POPUP := preload("res://scenes/components/text_popup.tscn")
 const SPARKLE := preload("res://scenes/components/sparkle_burst.tscn")
 const CONFETTI := preload("res://scenes/components/confetti_burst.tscn")
 const COIN := preload("res://scenes/components/coin_visual.tscn")
+const DUST := preload("res://scenes/components/dust_poof.tscn")
 
 var shake_count := 0
 var flash_count := 0
@@ -106,6 +107,14 @@ func sparkle(parent: Node, pos: Vector2, color: Color, amount_scale: float = 1.0
 	s.burst(pos, color, amount_scale)
 
 
+## A dust cloud where something is being renovated (world position of `parent`).
+func dust_poof(parent: Node, pos: Vector2, size: float = 200.0) -> void:
+	var gp: Vector2 = (parent as CanvasItem).get_global_transform() * pos if parent is CanvasItem else pos
+	var d: DustPoof = PoolManager.acquire(DUST, parent)
+	d.burst(gp, size)
+	sparkle(parent, gp, Color("ffe08a"), 1.4)
+
+
 ## Paper confetti falling from the top of `parent`'s visible area.
 func confetti(parent: Node, width: float, top: float = -40.0) -> void:
 	for i in 3:
@@ -115,14 +124,20 @@ func confetti(parent: Node, width: float, top: float = -40.0) -> void:
 
 ## Coins fly from `from` to `to` (global canvas positions on the FX layer).
 ## `on_each` is called as each coin lands.
-func coin_fly(from: Vector2, to: Vector2, count: int = 8, on_each: Callable = Callable()) -> void:
+func coin_fly(from: Vector2, to: Vector2, count: int = 8, on_each: Callable = Callable(), kind: String = "coin") -> void:
 	for i in count:
 		var c: CoinVisual = PoolManager.acquire(COIN, _fx_layer)
+		c.kind = kind
 		var start := from + Vector2(randf_range(-60, 60), randf_range(-40, 40))
 		c.fly(start, to, i * 0.05, func() -> void:
-			AudioManager.play("coin_pickup", 1.0 + 0.04 * i, -6.0)
+			AudioManager.play("coin_pickup" if kind == "coin" else "star", 1.0 + 0.04 * i, -6.0)
 			if on_each.is_valid():
 				on_each.call())
+
+
+## Stars fly along an arc (win screen -> star counter -> renovation spot).
+func star_fly(from: Vector2, to: Vector2, count: int = 1, on_each: Callable = Callable()) -> void:
+	coin_fly(from, to, count, on_each, "star")
 
 
 func toast(text: String, duration: float = 1.8) -> void:

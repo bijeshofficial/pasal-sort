@@ -24,6 +24,8 @@ config/icon="res://icon.svg"
 [autoload]
 
 SaveManager="*res://scripts/core/save_manager.gd"
+TimeManager="*res://scripts/core/time_manager.gd"
+NotificationManager="*res://scripts/core/notification_manager.gd"
 GameManager="*res://scripts/core/game_manager.gd"
 CurrencyManager="*res://scripts/core/currency_manager.gd"
 ProgressionManager="*res://scripts/core/progression_manager.gd"
@@ -37,6 +39,8 @@ VFXManager="*res://scripts/core/vfx_manager.gd"
 ScreenManager="*res://scripts/core/screen_manager.gd"
 AdManager="*res://scripts/core/ad_manager.gd"
 IAPManager="*res://scripts/core/iap_manager.gd"
+RenovationManager="*res://scripts/meta/renovation_manager.gd"
+DialogueManager="*res://scripts/meta/dialogue_manager.gd"
 
 [display]
 

@@ -1,0 +1,610 @@
+{
+	"id": "living_room",
+	"name": "Living Room",
+	"subtitle": "Where the family gathers",
+	"backdrop": "interior",
+	"world": [
+		1800,
+		1500
+	],
+	"focus": [
+		900,
+		820
+	],
+	"story_prefix": "a5",
+	"chest": {
+		"coins": 600,
+		"boosters": {
+			"shuffle": 2,
+			"extra_jar": 2
+		},
+		"sticker_packs": 1,
+		"unlimited_lives_min": 60
+	},
+	"intro_story": "a5.arrive",
+	"outro_story": "a5.outro",
+	"cast": [
+		{
+			"id": "bhai",
+			"pos": [
+				620,
+				1080
+			],
+			"unit": 0.8,
+			"z": 1
+		},
+		{
+			"id": "biralo",
+			"pos": [
+				880,
+				1080
+			],
+			"unit": 0.38,
+			"z": 3,
+			"home": "sofa",
+			"away_pos": [
+				1500,
+				1420
+			]
+		}
+	],
+	"objects": [
+		{
+			"id": "wall",
+			"kind": "wall",
+			"rect": [
+				0,
+				0,
+				1800,
+				1060
+			],
+			"z": -10
+		},
+		{
+			"id": "floor",
+			"kind": "floor",
+			"rect": [
+				0,
+				1040,
+				1800,
+				460
+			],
+			"z": -9
+		},
+		{
+			"id": "beams",
+			"kind": "beams",
+			"rect": [
+				0,
+				0,
+				1800,
+				64
+			],
+			"z": -1,
+			"style": {
+				"base": "6b4423",
+				"accent": "a0703f",
+				"pattern": "plain"
+			}
+		},
+		{
+			"id": "window",
+			"kind": "window",
+			"rect": [
+				1260,
+				190,
+				380,
+				400
+			],
+			"z": -6
+		},
+		{
+			"id": "curtain",
+			"kind": "curtain",
+			"rect": [
+				1220,
+				160,
+				460,
+				460
+			],
+			"z": -5
+		},
+		{
+			"id": "frames",
+			"kind": "frames",
+			"rect": [
+				400,
+				280,
+				560,
+				260
+			],
+			"z": -6
+		},
+		{
+			"id": "clock",
+			"kind": "wall_clock",
+			"rect": [
+				120,
+				200,
+				200,
+				200
+			],
+			"z": -6
+		},
+		{
+			"id": "bookshelf",
+			"kind": "shelf",
+			"rect": [
+				100,
+				480,
+				420,
+				560
+			],
+			"z": -4
+		},
+		{
+			"id": "lamp",
+			"kind": "pendant_lamp",
+			"rect": [
+				960,
+				30,
+				190,
+				300
+			],
+			"z": 0
+		},
+		{
+			"id": "sofa",
+			"kind": "sofa",
+			"rect": [
+				420,
+				820,
+				760,
+				400
+			],
+			"z": 2
+		},
+		{
+			"id": "rug",
+			"kind": "rug",
+			"rect": [
+				300,
+				1200,
+				1000,
+				220
+			],
+			"z": -8
+		},
+		{
+			"id": "table",
+			"kind": "table",
+			"rect": [
+				1180,
+				1020,
+				380,
+				200
+			],
+			"z": 4
+		},
+		{
+			"id": "plant",
+			"kind": "plant_pot",
+			"rect": [
+				1600,
+				960,
+				170,
+				260
+			],
+			"z": 5
+		}
+	],
+	"tasks": [
+		{
+			"id": "lr_walls",
+			"name": "Paint the living room",
+			"desc": "Faded wallpaper with a mysterious stain shaped like a yak.",
+			"cost": 3,
+			"objects": [
+				"wall"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "plaster",
+					"name": "Warm plaster",
+					"base": "f4d9a8",
+					"accent": "d98a2b",
+					"pattern": "plaster",
+					"trim": "8b5a2b"
+				},
+				{
+					"id": "brick",
+					"name": "Exposed brick",
+					"base": "b5523b",
+					"accent": "e8d5b5",
+					"pattern": "brick",
+					"trim": "0f5e63"
+				},
+				{
+					"id": "floral",
+					"name": "Flowered paper",
+					"base": "fff1d6",
+					"accent": "e8a0a0",
+					"pattern": "floral",
+					"trim": "a86b3c"
+				}
+			]
+		},
+		{
+			"id": "lr_floor",
+			"name": "Polish the floor",
+			"desc": "Scratches from forty years of furniture moving.",
+			"cost": 3,
+			"objects": [
+				"floor"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "tiles",
+					"name": "Terracotta tiles",
+					"base": "c8693f",
+					"accent": "e0a458",
+					"pattern": "tiles"
+				},
+				{
+					"id": "planks",
+					"name": "Wooden planks",
+					"base": "a86b3c",
+					"accent": "f0c68a",
+					"pattern": "planks"
+				},
+				{
+					"id": "checks",
+					"name": "Black and white",
+					"base": "f2ece0",
+					"accent": "3a3a3a",
+					"pattern": "checks"
+				}
+			]
+		},
+		{
+			"id": "lr_window",
+			"name": "Fix the big window",
+			"desc": "The best view of the hills in the house.",
+			"cost": 2,
+			"objects": [
+				"window"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "carved",
+					"name": "Carved lattice",
+					"base": "7a4a22",
+					"accent": "e0a458",
+					"pattern": "carved"
+				},
+				{
+					"id": "blue",
+					"name": "Blue frame",
+					"base": "2f7fc1",
+					"accent": "ffd166",
+					"pattern": "painted"
+				},
+				{
+					"id": "steel",
+					"name": "Steel frame",
+					"base": "9aa5b1",
+					"accent": "51606e",
+					"pattern": "steel"
+				}
+			]
+		},
+		{
+			"id": "lr_curtain",
+			"name": "Hang new curtains",
+			"desc": "The old ones are more hole than curtain.",
+			"cost": 2,
+			"objects": [
+				"curtain"
+			],
+			"requires": [
+				"lr_window"
+			],
+			"styles": [
+				{
+					"id": "dhaka",
+					"name": "Dhaka weave",
+					"base": "c0392b",
+					"accent": "1f2a36",
+					"pattern": "dhaka"
+				},
+				{
+					"id": "floral",
+					"name": "Flowered cotton",
+					"base": "f4c66b",
+					"accent": "e85d75",
+					"pattern": "floral"
+				},
+				{
+					"id": "stripes",
+					"name": "Blue stripes",
+					"base": "3a86c8",
+					"accent": "fff3dc",
+					"pattern": "stripes"
+				}
+			]
+		},
+		{
+			"id": "sofa",
+			"name": "Reupholster the sofa",
+			"desc": "The springs have a mind of their own.",
+			"cost": 3,
+			"objects": [
+				"sofa"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "red",
+					"name": "Red velvet",
+					"base": "b23a48",
+					"accent": "f2b632",
+					"pattern": "plain"
+				},
+				{
+					"id": "teal",
+					"name": "Teal cotton",
+					"base": "2a9d8f",
+					"accent": "fff3dc",
+					"pattern": "stripes"
+				},
+				{
+					"id": "dhaka",
+					"name": "Dhaka covers",
+					"base": "c0392b",
+					"accent": "1f2a36",
+					"pattern": "dhaka"
+				}
+			]
+		},
+		{
+			"id": "rug",
+			"name": "Lay a big rug",
+			"desc": "For Bhai's floor picnics.",
+			"cost": 2,
+			"objects": [
+				"rug"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "dhaka",
+					"name": "Dhaka rug",
+					"base": "c0392b",
+					"accent": "1f2a36",
+					"pattern": "dhaka"
+				},
+				{
+					"id": "stripes",
+					"name": "Striped rug",
+					"base": "2a9d8f",
+					"accent": "fff3dc",
+					"pattern": "stripes"
+				},
+				{
+					"id": "floral",
+					"name": "Flower rug",
+					"base": "f4c66b",
+					"accent": "e85d75",
+					"pattern": "floral"
+				}
+			]
+		},
+		{
+			"id": "frames",
+			"name": "Frame the family photos",
+			"desc": "Five generations of the pasal family.",
+			"cost": 2,
+			"objects": [
+				"frames"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "wood",
+					"name": "Wooden frames",
+					"base": "8b5a2b",
+					"accent": "c0392b",
+					"pattern": "plain"
+				},
+				{
+					"id": "gold",
+					"name": "Gold frames",
+					"base": "d6a53a",
+					"accent": "2f7fc1",
+					"pattern": "plain"
+				},
+				{
+					"id": "blue",
+					"name": "Blue frames",
+					"base": "2f7fc1",
+					"accent": "f2b632",
+					"pattern": "plain"
+				}
+			]
+		},
+		{
+			"id": "clock",
+			"name": "Hang the wall clock",
+			"desc": "Bhai keeps asking what time dinner is.",
+			"cost": 2,
+			"objects": [
+				"clock"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "carved",
+					"name": "Carved wood",
+					"base": "7a4a22",
+					"accent": "f2b632",
+					"pattern": "carved"
+				},
+				{
+					"id": "brass",
+					"name": "Brass",
+					"base": "d6a53a",
+					"accent": "fff2a8",
+					"pattern": "gold"
+				},
+				{
+					"id": "blue",
+					"name": "Painted blue",
+					"base": "3a86c8",
+					"accent": "fff3dc",
+					"pattern": "painted"
+				}
+			]
+		},
+		{
+			"id": "bookshelf",
+			"name": "Build a bookshelf",
+			"desc": "Maya's books from the city need a home.",
+			"cost": 3,
+			"objects": [
+				"bookshelf"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "carved",
+					"name": "Carved wood",
+					"base": "8b5a2b",
+					"accent": "e0a458",
+					"pattern": "carved"
+				},
+				{
+					"id": "blue",
+					"name": "Painted blue",
+					"base": "2f7fc1",
+					"accent": "ffd166",
+					"pattern": "painted"
+				},
+				{
+					"id": "bamboo",
+					"name": "Bamboo",
+					"base": "c9a65b",
+					"accent": "7a6a2b",
+					"pattern": "bamboo"
+				}
+			]
+		},
+		{
+			"id": "lr_lamp",
+			"name": "Hang a lamp",
+			"desc": "For reading after dark.",
+			"cost": 2,
+			"objects": [
+				"lamp"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "brass",
+					"name": "Brass shade",
+					"base": "d6a53a",
+					"accent": "8b5a2b",
+					"pattern": "gold"
+				},
+				{
+					"id": "paper",
+					"name": "Paper lantern",
+					"base": "ff6b5b",
+					"accent": "fff3dc",
+					"pattern": "dhaka"
+				},
+				{
+					"id": "enamel",
+					"name": "Green enamel",
+					"base": "2e8b57",
+					"accent": "fff3dc",
+					"pattern": "plain"
+				}
+			]
+		},
+		{
+			"id": "tea_table",
+			"name": "Fix the tea table",
+			"desc": "Every guest needs a cup of tea.",
+			"cost": 2,
+			"objects": [
+				"table"
+			],
+			"requires": [
+				"rug"
+			],
+			"styles": [
+				{
+					"id": "wood",
+					"name": "Solid wood",
+					"base": "8b5a2b",
+					"accent": "c0392b",
+					"pattern": "carved"
+				},
+				{
+					"id": "painted",
+					"name": "Painted yellow",
+					"base": "f2b632",
+					"accent": "2f7fc1",
+					"pattern": "painted"
+				},
+				{
+					"id": "cloth",
+					"name": "Dhaka cloth",
+					"base": "c0392b",
+					"accent": "1f2a36",
+					"pattern": "dhaka"
+				}
+			]
+		},
+		{
+			"id": "plant",
+			"name": "Bring in a plant",
+			"desc": "Something green in the corner.",
+			"cost": 1,
+			"objects": [
+				"plant"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "clay",
+					"name": "Clay pots",
+					"base": "b5623b",
+					"accent": "e0a458",
+					"pattern": "carved"
+				},
+				{
+					"id": "blue",
+					"name": "Blue glazed",
+					"base": "2f7fc1",
+					"accent": "ffd166",
+					"pattern": "painted"
+				},
+				{
+					"id": "tin",
+					"name": "Recycled tins",
+					"base": "a3acb1",
+					"accent": "e04f5f",
+					"pattern": "steel"
+				}
+			]
+		}
+	],
+	"sun": [
+		1440,
+		360
+	]
+}

@@ -1,5 +1,5 @@
 extends Node
-## Levels, background level generation, cosmetics and pasal decorations.
+## Levels, background level generation and cosmetics.
 ##
 ## Levels are generated on a WorkerThreadPool task and cached in memory.
 ## prefetch(n) starts one in the background; get_level(n) returns it (or
@@ -66,8 +66,8 @@ func coin_reward(level: int) -> int:
 	return int(round(int(GameData.economy()["level_reward"]) * mult))
 
 
-## Records a win and advances. Returns a summary for the win screen:
-## {coins, tier, milestone (bool), decoration (id or "")}.
+## Records a win and advances. Every win earns 1 star (renovation) plus
+## coins. Returns a summary for the win screen: {coins, stars, tier, milestone}.
 func complete_level(level: int, used_boosters: bool) -> Dictionary:
 	var tier := tier_for(level)
 	var coins := coin_reward(level)
@@ -89,11 +89,12 @@ func complete_level(level: int, used_boosters: bool) -> Dictionary:
 	var every := int(GameData.economy().get("milestone_every", 10))
 	var claimed: Array = SaveManager.game()["milestones_claimed"]
 	var milestone := level % every == 0 and not claimed.has(level)
-	var deco := unlock_decorations()
+	var stars := int(GameData.economy().get("stars_per_win", 1))
 	SaveManager.game()["in_progress_level"] = null
 	CurrencyManager.add_coins(coins, false)
+	CurrencyManager.add_stars(stars, false)
 	SaveManager.save_game()
-	return {"coins": coins, "tier": tier, "milestone": milestone, "decoration": deco}
+	return {"coins": coins, "stars": stars, "tier": tier, "milestone": milestone}
 
 
 ## Milestone gift every N levels: coins plus a booster picked by the level
@@ -161,41 +162,6 @@ func _store(level: int, lvl: Dictionary) -> void:
 		var oldest: int = _cache.keys().min()
 		if oldest != level:
 			_cache.erase(oldest)
-
-
-# --- Pasal decorations -------------------------------------------------------
-
-## Adds every decoration earned so far; returns the newest new id (or "").
-func unlock_decorations() -> String:
-	var owned: Array = SaveManager.game()["pasal_decorations"]
-	var newest := ""
-	for d in GameData.decorations():
-		if highest_completed() >= int(d["level"]) and not owned.has(d["id"]):
-			owned.append(d["id"])
-			newest = d["id"]
-	return newest
-
-
-## Decorations unlocked but not yet revealed on the Home screen.
-func unrevealed_decorations() -> Array:
-	var owned: Array = SaveManager.game()["pasal_decorations"]
-	var seen: Array = SaveManager.game()["decorations_revealed"]
-	return owned.filter(func(id): return not seen.has(id))
-
-
-func mark_decorations_revealed() -> void:
-	var seen: Array = SaveManager.game()["decorations_revealed"]
-	for id in unrevealed_decorations():
-		seen.append(id)
-	SaveManager.save_game()
-
-
-func next_decoration() -> Dictionary:
-	var owned: Array = SaveManager.game()["pasal_decorations"]
-	for d in GameData.decorations():
-		if not owned.has(d["id"]):
-			return d
-	return {}
 
 
 # --- Tutorial steps ----------------------------------------------------------

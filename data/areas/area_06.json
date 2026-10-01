@@ -1,0 +1,523 @@
+{
+	"id": "rooftop",
+	"name": "Rooftop",
+	"subtitle": "Kites and sky",
+	"backdrop": "rooftop",
+	"world": [
+		1800,
+		1500
+	],
+	"focus": [
+		900,
+		820
+	],
+	"story_prefix": "a6",
+	"chest": {
+		"coins": 700,
+		"boosters": {
+			"undo": 3,
+			"shuffle": 2
+		},
+		"sticker_packs": 2,
+		"unlimited_lives_min": 60
+	},
+	"intro_story": "a6.arrive",
+	"outro_story": "a6.outro",
+	"cast": [
+		{
+			"id": "bhai",
+			"pos": [
+				420,
+				1000
+			],
+			"unit": 0.75,
+			"z": 1
+		},
+		{
+			"id": "biralo",
+			"pos": [
+				1500,
+				1300
+			],
+			"unit": 0.42,
+			"z": 8,
+			"home": "garden",
+			"away_pos": [
+				1560,
+				1440
+			]
+		}
+	],
+	"objects": [
+		{
+			"id": "roof_floor",
+			"kind": "floor",
+			"rect": [
+				0,
+				1040,
+				1800,
+				460
+			],
+			"z": -9
+		},
+		{
+			"id": "railing",
+			"kind": "railing",
+			"rect": [
+				0,
+				880,
+				1800,
+				180
+			],
+			"z": -2
+		},
+		{
+			"id": "tank",
+			"kind": "water_tank",
+			"rect": [
+				1320,
+				420,
+				400,
+				520
+			],
+			"z": -6
+		},
+		{
+			"id": "kite",
+			"kind": "kite",
+			"rect": [
+				160,
+				80,
+				280,
+				460
+			],
+			"z": -7
+		},
+		{
+			"id": "lights",
+			"kind": "string_lights",
+			"rect": [
+				0,
+				340,
+				1800,
+				120
+			],
+			"z": -5
+		},
+		{
+			"id": "clothesline",
+			"kind": "clothesline",
+			"rect": [
+				620,
+				480,
+				640,
+				380
+			],
+			"z": -4
+		},
+		{
+			"id": "umbrella",
+			"kind": "umbrella",
+			"rect": [
+				860,
+				700,
+				380,
+				560
+			],
+			"z": 3
+		},
+		{
+			"id": "chair_l",
+			"kind": "chair",
+			"rect": [
+				760,
+				1060,
+				180,
+				260
+			],
+			"z": 4
+		},
+		{
+			"id": "chair_r",
+			"kind": "chair",
+			"rect": [
+				1160,
+				1060,
+				180,
+				260
+			],
+			"z": 4
+		},
+		{
+			"id": "garden",
+			"kind": "flower_bed",
+			"rect": [
+				60,
+				1160,
+				620,
+				260
+			],
+			"z": 5
+		},
+		{
+			"id": "pot_a",
+			"kind": "plant_pot",
+			"rect": [
+				1360,
+				1100,
+				170,
+				240
+			],
+			"z": 6
+		},
+		{
+			"id": "pot_b",
+			"kind": "plant_pot",
+			"rect": [
+				1560,
+				1120,
+				170,
+				240
+			],
+			"z": 6
+		}
+	],
+	"tasks": [
+		{
+			"id": "roof_floor",
+			"name": "Tile the rooftop",
+			"desc": "Cracked cement that bakes in the sun.",
+			"cost": 3,
+			"objects": [
+				"roof_floor"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "tiles",
+					"name": "Terracotta tiles",
+					"base": "c8693f",
+					"accent": "e0a458",
+					"pattern": "tiles"
+				},
+				{
+					"id": "planks",
+					"name": "Wooden planks",
+					"base": "a86b3c",
+					"accent": "f0c68a",
+					"pattern": "planks"
+				},
+				{
+					"id": "checks",
+					"name": "Black and white",
+					"base": "f2ece0",
+					"accent": "3a3a3a",
+					"pattern": "checks"
+				}
+			]
+		},
+		{
+			"id": "railing",
+			"name": "Fix the railing",
+			"desc": "Wobbly. Nobody leans on it. Nobody!",
+			"cost": 3,
+			"objects": [
+				"railing"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "wood",
+					"name": "Wooden",
+					"base": "8b5a2b",
+					"accent": "e0a458",
+					"pattern": "plain"
+				},
+				{
+					"id": "white",
+					"name": "White painted",
+					"base": "f4efe6",
+					"accent": "3a86c8",
+					"pattern": "painted"
+				},
+				{
+					"id": "iron",
+					"name": "Wrought iron",
+					"base": "2b2b3a",
+					"accent": "f2b632",
+					"pattern": "plain"
+				}
+			]
+		},
+		{
+			"id": "tank",
+			"name": "Paint the water tank",
+			"desc": "A big rusty eyesore.",
+			"cost": 3,
+			"objects": [
+				"tank"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "blue",
+					"name": "Blue tank",
+					"base": "2f7fc1",
+					"accent": "ffd166",
+					"pattern": "painted"
+				},
+				{
+					"id": "steel",
+					"name": "Steel tank",
+					"base": "9aa5b1",
+					"accent": "51606e",
+					"pattern": "steel"
+				},
+				{
+					"id": "mural",
+					"name": "Painted mural",
+					"base": "f2b632",
+					"accent": "2a9d8f",
+					"pattern": "floral"
+				}
+			]
+		},
+		{
+			"id": "kite",
+			"name": "Build a kite corner",
+			"desc": "Bhai's kites deserve a proper launch spot.",
+			"cost": 2,
+			"objects": [
+				"kite"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "red",
+					"name": "Red and gold",
+					"base": "c0392b",
+					"accent": "f2b632",
+					"pattern": "plain"
+				},
+				{
+					"id": "blue",
+					"name": "Sky blue",
+					"base": "2f7fc1",
+					"accent": "fff3dc",
+					"pattern": "plain"
+				},
+				{
+					"id": "green",
+					"name": "Green and pink",
+					"base": "2e8b57",
+					"accent": "ff6b8b",
+					"pattern": "plain"
+				}
+			]
+		},
+		{
+			"id": "lights",
+			"name": "String fairy lights",
+			"desc": "For evenings on the roof.",
+			"cost": 3,
+			"objects": [
+				"lights"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "warm",
+					"name": "Warm bulbs",
+					"base": "ffd166",
+					"accent": "ff9f1c",
+					"pattern": "plain"
+				},
+				{
+					"id": "festive",
+					"name": "Festive colours",
+					"base": "ff6b8b",
+					"accent": "8fd3ff",
+					"pattern": "plain"
+				},
+				{
+					"id": "white",
+					"name": "Fairy white",
+					"base": "fff8e6",
+					"accent": "fff2a8",
+					"pattern": "plain"
+				}
+			]
+		},
+		{
+			"id": "clothesline",
+			"name": "Put up a clothesline",
+			"desc": "Laundry dries in an hour up here.",
+			"cost": 2,
+			"objects": [
+				"clothesline"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "bright",
+					"name": "Bright cottons",
+					"base": "ff6b5b",
+					"accent": "2f7fc1",
+					"pattern": "plain"
+				},
+				{
+					"id": "pastel",
+					"name": "Pastels",
+					"base": "8fd3ff",
+					"accent": "ffd6e0",
+					"pattern": "plain"
+				},
+				{
+					"id": "dhaka",
+					"name": "Dhaka shawls",
+					"base": "c0392b",
+					"accent": "f2b632",
+					"pattern": "plain"
+				}
+			]
+		},
+		{
+			"id": "umbrella",
+			"name": "Open a sun umbrella",
+			"desc": "Shade for afternoon tea.",
+			"cost": 3,
+			"objects": [
+				"umbrella"
+			],
+			"requires": [
+				"roof_floor"
+			],
+			"styles": [
+				{
+					"id": "marigold",
+					"name": "Marigold",
+					"base": "ff9f1c",
+					"accent": "fff3dc",
+					"pattern": "plain"
+				},
+				{
+					"id": "teal",
+					"name": "Teal",
+					"base": "0f5e63",
+					"accent": "fff3dc",
+					"pattern": "plain"
+				},
+				{
+					"id": "rainbow",
+					"name": "Rainbow",
+					"base": "e04f5f",
+					"accent": "2f7fc1",
+					"pattern": "plain"
+				}
+			]
+		},
+		{
+			"id": "chairs",
+			"name": "Bring up two chairs",
+			"desc": "For watching the sunset.",
+			"cost": 3,
+			"objects": [
+				"chair_l",
+				"chair_r"
+			],
+			"requires": [
+				"umbrella"
+			],
+			"styles": [
+				{
+					"id": "wood",
+					"name": "Wooden",
+					"base": "8b5a2b",
+					"accent": "e0a458",
+					"pattern": "carved"
+				},
+				{
+					"id": "red",
+					"name": "Painted red",
+					"base": "c0392b",
+					"accent": "fff3dc",
+					"pattern": "painted"
+				},
+				{
+					"id": "cane",
+					"name": "Cane",
+					"base": "c9a65b",
+					"accent": "7a6a2b",
+					"pattern": "bamboo"
+				}
+			]
+		},
+		{
+			"id": "garden",
+			"name": "Plant a rooftop garden",
+			"desc": "Herbs, chilies and marigolds.",
+			"cost": 3,
+			"objects": [
+				"garden"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "brick",
+					"name": "Brick bed",
+					"base": "b5523b",
+					"accent": "ff6b8b",
+					"pattern": "brick"
+				},
+				{
+					"id": "stone",
+					"name": "Stone bed",
+					"base": "a89f91",
+					"accent": "f2b632",
+					"pattern": "tiles"
+				},
+				{
+					"id": "wood",
+					"name": "Wooden planter",
+					"base": "8b5a2b",
+					"accent": "e85d75",
+					"pattern": "planks"
+				}
+			]
+		},
+		{
+			"id": "pots",
+			"name": "Pot some herbs",
+			"desc": "Mint for Sunita Didi's tea.",
+			"cost": 2,
+			"objects": [
+				"pot_a",
+				"pot_b"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "clay",
+					"name": "Clay pots",
+					"base": "b5623b",
+					"accent": "e0a458",
+					"pattern": "carved"
+				},
+				{
+					"id": "blue",
+					"name": "Blue glazed",
+					"base": "2f7fc1",
+					"accent": "ffd166",
+					"pattern": "painted"
+				},
+				{
+					"id": "tin",
+					"name": "Recycled tins",
+					"base": "a3acb1",
+					"accent": "e04f5f",
+					"pattern": "steel"
+				}
+			]
+		}
+	]
+}

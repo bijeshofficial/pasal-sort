@@ -57,6 +57,11 @@ const BUTTON_KINDS := {
 static var _fonts: Dictionary = {}
 
 
+## Translate from static code (Object.tr() needs an instance).
+static func t(text: String) -> String:
+	return String(TranslationServer.translate(text))
+
+
 ## heavy = the chunky display face (titles, buttons, numbers);
 ## otherwise a rounded bold body face.
 static func font(heavy: bool = true) -> Font:

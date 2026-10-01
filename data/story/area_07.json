@@ -1,0 +1,101 @@
+{
+	"lines": {
+		"a7.ground": [
+			{
+				"who": "sunita",
+				"mood": "laugh",
+				"text": "No more muddy shoes in my stall!"
+			}
+		],
+		"a7.tree": [
+			{
+				"who": "hajurama",
+				"mood": "happy",
+				"text": "I climbed this tree as a girl. Don't tell Bhai."
+			}
+		],
+		"a7.stall": [
+			{
+				"who": "sunita",
+				"mood": "surprised",
+				"text": "My stall! It's... it's beautiful! Free tea for a month!"
+			}
+		],
+		"a7.bench": [
+			{
+				"who": "sunita",
+				"mood": "laugh",
+				"text": "Now all the gossip has a proper home."
+			}
+		],
+		"a7.lamp": [
+			{
+				"who": "kanchha",
+				"mood": "laugh",
+				"text": "See? Not a single spark. Well, one small spark."
+			}
+		],
+		"a7.bunting": [
+			{
+				"who": "bhai",
+				"mood": "laugh",
+				"text": "It's like the sky is wearing a necklace!"
+			}
+		],
+		"a7.bed": [
+			{
+				"who": "maya",
+				"mood": "happy",
+				"text": "Marigolds! Hajurama's favourite."
+			}
+		],
+		"a7.fence": [
+			{
+				"who": "kanchha",
+				"mood": "grumpy",
+				"text": "That goat ate my lunch. This is personal."
+			}
+		],
+		"a7.bicycle": [
+			{
+				"who": "bhai",
+				"mood": "happy",
+				"text": "Everybody's bicycle! I'm first!"
+			}
+		],
+		"a7.arrive": [
+			{
+				"who": "sunita",
+				"mood": "happy",
+				"text": "Welcome to Chiya Tole's heart, Maya. Or what's left of it."
+			},
+			{
+				"who": "kanchha",
+				"mood": "neutral",
+				"text": "The whole tole chipped in for paint. Let's make it count."
+			}
+		],
+		"a7.outro": [
+			{
+				"who": "sunita",
+				"mood": "laugh",
+				"text": "The whole tole is out here! Children, grandparents, even the goats."
+			},
+			{
+				"who": "hajurama",
+				"mood": "happy",
+				"text": "This is what a neighbourhood should feel like."
+			},
+			{
+				"who": "bhai",
+				"mood": "surprised",
+				"text": "Didi! Tihar is next week! Can we decorate the whole street?"
+			},
+			{
+				"who": "maya",
+				"mood": "laugh",
+				"text": "The whole street, Bhai. Every light, every garland."
+			}
+		]
+	}
+}

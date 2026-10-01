@@ -6,8 +6,12 @@ extends Node
 
 signal lives_changed(lives: int)
 
-## Test/debug aid: seconds added to the system clock.
-var time_offset := 0.0
+## Test/debug aid: seconds added to the clock (forwards to TimeManager).
+var time_offset: float:
+	get:
+		return TimeManager.debug_offset
+	set(v):
+		TimeManager.debug_offset = v
 
 var _accum := 0.0
 
@@ -27,7 +31,7 @@ func _process(delta: float) -> void:
 
 
 func now() -> float:
-	return Time.get_unix_time_from_system() + time_offset
+	return TimeManager.now()
 
 
 func max_lives() -> int:
@@ -56,7 +60,26 @@ func level_costs_life(level: int) -> bool:
 
 
 func can_play(level: int) -> bool:
-	return not level_costs_life(level) or lives() > 0
+	return not level_costs_life(level) or lives() > 0 or unlimited_active()
+
+
+# --- Unlimited lives (timer item from chests and events) --------------------
+
+func unlimited_active() -> bool:
+	return unlimited_seconds_left() > 0
+
+
+func unlimited_seconds_left() -> int:
+	return maxi(0, int(float(SaveManager.game().get("unlimited_lives_until", 0)) - now()))
+
+
+## Adds `seconds` of unlimited lives (stacks with a running timer).
+func add_unlimited(seconds: int) -> void:
+	var g := SaveManager.game()
+	var start := maxf(now(), float(g.get("unlimited_lives_until", 0)))
+	g["unlimited_lives_until"] = int(start + seconds)
+	lives_changed.emit(lives())
+	SaveManager.save_game()
 
 
 ## Applies regeneration. Returns the number of lives gained.
@@ -85,6 +108,8 @@ func tick() -> int:
 
 
 func lose_life() -> bool:
+	if unlimited_active():
+		return true
 	if lives() <= 0:
 		return false
 	var g := SaveManager.game()
@@ -93,13 +118,25 @@ func lose_life() -> bool:
 	g["lives"] = lives() - 1
 	lives_changed.emit(lives())
 	SaveManager.save_game()
+	_schedule_full_notification()
 	return true
+
+
+## "Your lives are full!" local notification for when the last life returns.
+func _schedule_full_notification() -> void:
+	if is_full():
+		NotificationManager.cancel("lives_full")
+		return
+	var missing := max_lives() - lives()
+	var secs := seconds_to_next() + (missing - 1) * int(regen_seconds())
+	NotificationManager.schedule("lives_full", secs, "Pasal Sort", "Your lives are full! Come sort some candies.")
 
 
 func add_lives(n: int = 1) -> void:
 	SaveManager.game()["lives"] = mini(max_lives(), lives() + n)
 	if is_full():
 		SaveManager.game()["last_life_time"] = now()
+		NotificationManager.cancel("lives_full")
 	lives_changed.emit(lives())
 	SaveManager.save_game()
 
@@ -128,6 +165,8 @@ func seconds_to_next() -> int:
 
 ## "12:34" until the next life, or "Full".
 func countdown_text() -> String:
+	if unlimited_active():
+		return TimeManager.short_duration(unlimited_seconds_left())
 	if is_full():
 		return "Full"
 	var s := seconds_to_next()

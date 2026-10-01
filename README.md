@@ -1,9 +1,12 @@
-# Pasal Sort
+# Pasal Sort: Sort & Renovate
 
 A cosy Nepali sort puzzle for mobile (Godot 4, GDScript, 2D, portrait).
-Every kirana pasal has a row of candy jars on the counter; somebody mixed
-them all up. Tap a jar, tap another, and move candies until every jar holds
-one kind. The lid snaps shut and the shop comes back to life. Infinite levels.
+Maya comes home to her grandmother's dusty pasal in Chiya Tole. Tap a jar,
+tap another, and sort the candies until every jar holds one kind. Every
+win earns a star; stars renovate the shop, the family home above it and,
+later, new branches across Nepal. Infinite levels, 10 areas.
+
+See PROGRESS.md for the build status and how the pieces fit together.
 
 ## Run
 
@@ -18,6 +21,13 @@ one kind. The lid snaps shut and the shop comes back to life. Infinite levels.
 ## Tests
 
 ```
+# Every suite (smoke, meta, relaunch, generator); --quick skips the generator.
+godot --headless --path . --script res://tests/run_all.gd
+
+# Renovation rules, area/story data, save migration, debug clock, first
+# renovation end to end and the area-complete flow.
+godot --headless --path . --script res://tests/meta_test.gd
+
 # Everything important: rules, solver, lives, tutorial, level 1 solved by taps,
 # boosters, resume, save/load, ads, IAP, shop, achievements, back button, layout.
 godot --headless --path . --script res://tests/smoke_test.gd
@@ -33,7 +43,10 @@ godot --headless --path . --script res://tests/relaunch_check.gd -- --phase=veri
 godot --headless --path . --script res://tools/parse_check.gd
 
 # Screenshots for visual review (needs a window).
-godot --path . --resolution 540x960 --script res://tests/capture.gd -- --out=/tmp/shots --set=hub|play|twists|popups|themes|boot|extra
+godot --path . --resolution 540x960 --script res://tests/capture.gd -- --out=/tmp/shots --set=hub|reno|play|twists|popups|themes|boot|extra
+
+# Contact sheets of every renovation object, the cast and all 10 areas.
+godot --path . --resolution 1080x1920 res://tools/art_sheet.tscn -- --out=/tmp/sheets
 ```
 All tests use their own save files, never the player's `user://save.json`.
 
@@ -67,7 +80,9 @@ tests/           smoke_test, generator_test, relaunch_check, capture
 
 All art is drawn in code. Each visual lives in its own scene
 (`scenes/components/jar_visual.tscn`, `candy_visual.tscn`,
-`shopkeeper_visual.tscn`, `pasal_visual.tscn`, ...). Gameplay talks to them
+`character_visual.tscn`, ...). Renovation objects pick up a PNG
+automatically: `res://assets/art/areas/<area id>/<object id>_<variant>.png`
+where variant is `broken` or the style id from the area JSON. Gameplay talks to them
 only through their public methods (`setup`, `slot_position`, `set_selected`,
 `close_lid`, `set_cloth`, `set_lock`, `reveal`, ...), so sprites can replace
 the `_draw()` code without touching gameplay.

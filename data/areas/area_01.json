@@ -1,0 +1,114 @@
+{
+	"_comment": "Area data. World coordinates (px). objects: kind = RenoArt drawer, rect = [x, y, w, h], z = draw order. Objects named in a task's 'objects' start broken; decor objects without a task use their own 'style'. Final art: res://assets/art/areas/<id>/<object>_<variant>.png (variant = broken | style id) replaces the drawing automatically.",
+	"id": "old_counter",
+	"name": "The Old Counter",
+	"subtitle": "Hajurama's shop, inside",
+	"backdrop": "interior",
+	"world": [1800, 1500],
+	"focus": [880, 800],
+	"sun": [1440, 380],
+	"chest": {"coins": 300, "boosters": {"undo": 2, "shuffle": 1}, "unlimited_lives_min": 30},
+	"intro_story": "a1.arrive",
+	"outro_story": "a1.outro",
+	"cast": [
+		{"id": "maya", "pos": [880, 840], "unit": 0.9, "z": 2},
+		{"id": "biralo", "pos": [1615, 1300], "unit": 0.5, "z": 8, "home": "cat_basket", "away_pos": [1560, 1440]}
+	],
+	"objects": [
+		{"id": "wall", "kind": "wall", "rect": [0, 0, 1800, 1060], "z": -10},
+		{"id": "floor", "kind": "floor", "rect": [0, 1040, 1800, 460], "z": -9},
+		{"id": "beams", "kind": "beams", "rect": [0, 0, 1800, 64], "z": -1, "style": {"base": "6b4423", "accent": "a0703f", "pattern": "plain"}},
+		{"id": "jar_shelf", "kind": "shelf", "rect": [130, 250, 860, 520], "z": -6},
+		{"id": "wall_sign", "kind": "wall_sign", "rect": [170, 84, 700, 136], "z": -5},
+		{"id": "window", "kind": "window", "rect": [1240, 190, 400, 430], "z": -5},
+		{"id": "garland", "kind": "garland", "rect": [1190, 150, 500, 130], "z": -4},
+		{"id": "lamp_left", "kind": "pendant_lamp", "rect": [1010, 40, 190, 300], "z": -3},
+		{"id": "lamp_right", "kind": "pendant_lamp", "rect": [1640, 40, 160, 270], "z": -3},
+		{"id": "stool", "kind": "stool", "rect": [60, 1000, 200, 250], "z": 4},
+		{"id": "counter", "kind": "counter", "rect": [280, 800, 1180, 430], "z": 5},
+		{"id": "counter_jars", "kind": "counter_jars", "rect": [330, 680, 460, 130], "z": 6},
+		{"id": "cash_box", "kind": "cash_box", "rect": [870, 715, 190, 105], "z": 6},
+		{"id": "brass_scale", "kind": "scale", "rect": [1130, 650, 270, 165], "z": 6},
+		{"id": "cat_basket", "kind": "basket", "rect": [1480, 1170, 280, 150], "z": 7}
+	],
+	"tasks": [
+		{"id": "clean_counter", "name": "Clean the counter", "desc": "Years of dust! Give the old counter a good scrub.", "cost": 1, "objects": ["counter"], "requires": [],
+			"styles": [
+				{"id": "carved", "name": "Carved wood", "base": "8b5a2b", "accent": "e0a458", "trim": "5a3517", "pattern": "carved"},
+				{"id": "blue", "name": "Painted blue", "base": "2f7fc1", "accent": "ffd166", "trim": "1d4f7a", "pattern": "painted"},
+				{"id": "steel", "name": "Modern steel", "base": "9aa5b1", "accent": "51606e", "trim": "5d6b78", "pattern": "steel"}
+			]},
+		{"id": "sweep_floor", "name": "Fix the floor", "desc": "Cracked concrete and sticky toffee. Time for a new floor.", "cost": 1, "objects": ["floor"], "requires": [],
+			"styles": [
+				{"id": "terracotta", "name": "Terracotta tiles", "base": "c8693f", "accent": "e0a458", "pattern": "tiles"},
+				{"id": "planks", "name": "Wooden planks", "base": "a86b3c", "accent": "f0c68a", "pattern": "planks"},
+				{"id": "checks", "name": "Black and white", "base": "f2ece0", "accent": "3a3a3a", "pattern": "checks"}
+			]},
+		{"id": "fix_shelf", "name": "Mend the jar shelf", "desc": "The middle shelf is sagging and the jars have tipped over.", "cost": 2, "objects": ["jar_shelf"], "requires": [],
+			"styles": [
+				{"id": "carved", "name": "Carved wood", "base": "8b5a2b", "accent": "e0a458", "pattern": "carved"},
+				{"id": "mint", "name": "Mint green", "base": "4fb08a", "accent": "fff3dc", "pattern": "painted"},
+				{"id": "steel", "name": "Steel racks", "base": "b8c4cc", "accent": "6b7b88", "pattern": "steel"}
+			]},
+		{"id": "hang_lights", "name": "Hang new lights", "desc": "Just one bare bulb, swinging. Let's light the place up.", "cost": 1, "objects": ["lamp_left", "lamp_right"], "requires": [],
+			"styles": [
+				{"id": "brass", "name": "Brass shades", "base": "d6a53a", "accent": "8b5a2b", "pattern": "gold"},
+				{"id": "paper", "name": "Paper lanterns", "base": "ff6b5b", "accent": "fff3dc", "pattern": "dhaka"},
+				{"id": "enamel", "name": "Green enamel", "base": "2e8b57", "accent": "fff3dc", "pattern": "plain"}
+			]},
+		{"id": "counter_jars", "name": "Line up the candy jars", "desc": "Fresh jars of sweets right where customers can see them.", "cost": 1, "objects": ["counter_jars"], "requires": ["clean_counter"],
+			"styles": [
+				{"id": "classic", "name": "Classic glass", "base": "dcefee", "accent": "8fb9bd", "pattern": "plain"},
+				{"id": "tinted", "name": "Tinted glass", "base": "a9d3f2", "accent": "5f97c2", "pattern": "plain"},
+				{"id": "festival", "name": "Festival glass", "base": "fbe2b4", "accent": "d99a3c", "pattern": "plain"}
+			]},
+		{"id": "cash_box", "name": "Polish the cash box", "desc": "Hajurama's old tin cash box. The lid won't even close.", "cost": 1, "objects": ["cash_box"], "requires": ["clean_counter"],
+			"styles": [
+				{"id": "tin", "name": "Painted tin", "base": "c0392b", "accent": "f2b632", "pattern": "floral"},
+				{"id": "wood", "name": "Wooden chest", "base": "8b5a2b", "accent": "d6a53a", "pattern": "carved"},
+				{"id": "steel", "name": "Steel safe", "base": "7f8c99", "accent": "f2b632", "pattern": "steel"}
+			]},
+		{"id": "paint_walls", "name": "Paint the walls", "desc": "Peeling plaster everywhere. A fresh coat will work wonders.", "cost": 2, "objects": ["wall"], "requires": [],
+			"styles": [
+				{"id": "marigold", "name": "Marigold plaster", "base": "f4c66b", "accent": "d98a2b", "trim": "8b5a2b", "pattern": "plaster"},
+				{"id": "brick", "name": "Exposed brick", "base": "b5523b", "accent": "e8d5b5", "trim": "0f5e63", "pattern": "brick"},
+				{"id": "cream", "name": "Cream with flowers", "base": "fff1d6", "accent": "e8a0a0", "trim": "a86b3c", "pattern": "floral"}
+			]},
+		{"id": "fix_window", "name": "Restore the window", "desc": "Boarded up for years. There's a mountain view behind those planks!", "cost": 2, "objects": ["window"], "requires": [],
+			"styles": [
+				{"id": "carved", "name": "Carved lattice", "base": "7a4a22", "accent": "e0a458", "pattern": "carved"},
+				{"id": "blue", "name": "Blue frame", "base": "2f7fc1", "accent": "ffd166", "pattern": "painted"},
+				{"id": "steel", "name": "Steel frame", "base": "9aa5b1", "accent": "51606e", "pattern": "steel"}
+			]},
+		{"id": "garland", "name": "Hang a marigold garland", "desc": "Something bright over the new window.", "cost": 1, "objects": ["garland"], "requires": ["fix_window"],
+			"styles": [
+				{"id": "marigold", "name": "Marigolds", "base": "ff9f1c", "accent": "ffd23f", "pattern": "plain"},
+				{"id": "roses", "name": "Roses and marigolds", "base": "ff6b8b", "accent": "ff9f1c", "pattern": "plain"},
+				{"id": "paper", "name": "Paper flowers", "base": "8fd3ff", "accent": "fff3dc", "pattern": "plain"}
+			]},
+		{"id": "wall_sign", "name": "Put up the shop sign", "desc": "Hajurama's sign has been face-down behind the shelf for ages.", "cost": 2, "objects": ["wall_sign"], "requires": ["paint_walls"],
+			"styles": [
+				{"id": "carved", "name": "Carved board", "base": "8b5a2b", "accent": "ffd166", "pattern": "carved"},
+				{"id": "red", "name": "Painted red", "base": "c0392b", "accent": "fff3dc", "pattern": "painted"},
+				{"id": "gold", "name": "Gold letters", "base": "2b2b4a", "accent": "f2b632", "pattern": "gold"}
+			]},
+		{"id": "cat_basket", "name": "Make Biralo a bed", "desc": "Biralo keeps sleeping in the candy boxes. Give the cat a basket.", "cost": 1, "objects": ["cat_basket"], "requires": [],
+			"styles": [
+				{"id": "wicker", "name": "Wicker with dhaka", "base": "c99a5b", "accent": "c0392b", "pattern": "dhaka"},
+				{"id": "blue", "name": "Blue cushion", "base": "c99a5b", "accent": "2f7fc1", "pattern": "stripes"},
+				{"id": "pink", "name": "Pink cushion", "base": "b98a5b", "accent": "ff8fb1", "pattern": "floral"}
+			]},
+		{"id": "stool", "name": "Fix the old stool", "desc": "Customers love to sit and chat. The stool has other plans.", "cost": 1, "objects": ["stool"], "requires": [],
+			"styles": [
+				{"id": "wood", "name": "Dhaka cushion", "base": "8b5a2b", "accent": "c0392b", "pattern": "plain"},
+				{"id": "painted", "name": "Painted yellow", "base": "f2b632", "accent": "2f7fc1", "pattern": "painted"},
+				{"id": "steel", "name": "Chrome bar stool", "base": "aab4bd", "accent": "e04f5f", "pattern": "steel"}
+			]},
+		{"id": "brass_scale", "name": "Shine the brass scale", "desc": "Every good pasal weighs its sweets fairly.", "cost": 2, "objects": ["brass_scale"], "requires": ["clean_counter"],
+			"styles": [
+				{"id": "brass", "name": "Shiny brass", "base": "d6a53a", "accent": "ff9f1c", "pattern": "plain"},
+				{"id": "copper", "name": "Copper", "base": "c77b4a", "accent": "ffd166", "pattern": "plain"},
+				{"id": "silver", "name": "Silver", "base": "c9d1d9", "accent": "7f8c99", "pattern": "plain"}
+			]}
+	]
+}

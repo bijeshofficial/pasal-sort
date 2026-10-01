@@ -1,8 +1,10 @@
 class_name Hub
 extends Control
-## Hub screen: top bar (lives, coins, settings), three pages (Shop | Home |
-## Profile) that slide horizontally, and the bottom navigation. Swipe
-## left/right or tap a tab. Back: other tab -> Home; Home -> quit prompt.
+## Hub screen: top bar (lives, coins, stars, settings), three pages (Shop |
+## Home | Profile) that slide horizontally, and the bottom navigation. Home
+## is the renovation scene, drawn full-screen behind the bars; it slides with
+## the Home page. Swipe left/right (on Home: on the nav bar, since dragging
+## the scene pans it) or tap a tab. Back: other tab -> Home; Home -> quit.
 
 const TAB_NAMES := ["shop", "home", "profile"]
 
@@ -13,8 +15,10 @@ var shop: ShopPage
 var profile: ProfilePage
 var nav: BottomNav
 var coin_chip: CoinChip
+var star_chip: StarChip
 var lives_chip: LivesChip
 var backdrop: ShopBackdrop
+var home_view: HomeView
 
 var _page_area: Control
 var _swipe_start := Vector2.ZERO
@@ -30,10 +34,14 @@ func _ready() -> void:
 	backdrop.horizon = 0.62
 	backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(backdrop)
+	home_view = HomeView.new()
+	home_view.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	add_child(home_view)
 
 	var root := VBoxContainer.new()
 	root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	root.add_theme_constant_override("separation", 0)
+	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(root)
 
 	# Top bar inside the safe area.
@@ -42,9 +50,11 @@ func _ready() -> void:
 	top.add_theme_constant_override("margin_left", 30)
 	top.add_theme_constant_override("margin_right", 30)
 	top.add_theme_constant_override("margin_bottom", 12)
+	top.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(top)
 	var bar := HBoxContainer.new()
-	bar.add_theme_constant_override("separation", 16)
+	bar.add_theme_constant_override("separation", 12)
+	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	top.add_child(bar)
 	lives_chip = LivesChip.new()
 	bar.add_child(lives_chip)
@@ -52,6 +62,11 @@ func _ready() -> void:
 	coin_chip = CoinChip.new()
 	coin_chip.plus_pressed.connect(func() -> void: select_tab(0))
 	bar.add_child(coin_chip)
+	star_chip = StarChip.new()
+	star_chip.pressed.connect(func() -> void:
+		select_tab(1)
+		home.open_tasks())
+	bar.add_child(star_chip)
 	var gear := UIKit.button("", "secondary", "gear", 50, Vector2(112, 112))
 	gear.pressed.connect(open_settings)
 	bar.add_child(gear)
@@ -59,7 +74,7 @@ func _ready() -> void:
 	_page_area = Control.new()
 	_page_area.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_page_area.clip_contents = true
-	_page_area.mouse_filter = Control.MOUSE_FILTER_PASS
+	_page_area.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(_page_area)
 	shop = ShopPage.new()
 	home = HomePage.new()
@@ -81,13 +96,14 @@ func _ready() -> void:
 
 	current = maxi(0, TAB_NAMES.find(ScreenManager.hub_tab))
 	nav.select(current, false)
+	home.attach_view(home_view, self)
 	_place_pages()
 	_refresh_dots()
 	AdManager.banner_opportunity("hub")
 	# Prepare the next level while the player looks around.
 	ProgressionManager.prefetch(ProgressionManager.current_level())
 	if current == 1:
-		home.reveal_new_decorations()
+		home.on_shown.call_deferred()
 
 
 func _on_claimable_changed(_n: int) -> void:
@@ -100,7 +116,7 @@ func _on_cosmetic_changed(_c: String, _i: String) -> void:
 
 
 func _rebuild() -> void:
-	home.refresh()
+	home.back_to_current()
 	shop.build()
 	profile.build()
 	_refresh_dots()
@@ -120,8 +136,12 @@ func _place_pages(animate: bool = false) -> void:
 		if animate:
 			var tw := p.create_tween()
 			tw.tween_property(p, "position", target, 0.26).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+			if p == home:
+				tw.parallel().tween_property(home_view, "position:x", target.x, 0.26).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 		else:
 			p.position = target
+			if p == home:
+				home_view.position.x = target.x
 
 
 func select_tab(index: int) -> void:
@@ -136,8 +156,7 @@ func select_tab(index: int) -> void:
 		0:
 			shop._refresh_buttons()
 		1:
-			home.refresh()
-			home.reveal_new_decorations()
+			home.on_shown()
 		2:
 			profile.build()
 	_refresh_dots()
@@ -156,7 +175,8 @@ func _input(event: InputEvent) -> void:
 		if event.pressed:
 			_swipe_start = event.position
 			_swipe_time = Time.get_ticks_msec()
-			_swiping = true
+			# On Home a drag pans the scene; only the nav bar swipes tabs.
+			_swiping = current != 1 or nav.get_global_rect().has_point(event.position)
 		elif _swiping:
 			_swiping = false
 			var d: Vector2 = event.position - _swipe_start

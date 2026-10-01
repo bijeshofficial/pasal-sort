@@ -1,0 +1,566 @@
+{
+	"id": "lakeside_branch",
+	"name": "Lakeside Branch",
+	"subtitle": "A little shop by the lake",
+	"backdrop": "lakeside",
+	"world": [
+		1800,
+		1500
+	],
+	"focus": [
+		900,
+		820
+	],
+	"story_prefix": "a9",
+	"chest": {
+		"coins": 1000,
+		"boosters": {
+			"undo": 4,
+			"extra_jar": 3,
+			"shuffle": 3
+		},
+		"sticker_packs": 3,
+		"unlimited_lives_min": 120
+	},
+	"intro_story": "a9.arrive",
+	"outro_story": "a9.outro",
+	"cast": [
+		{
+			"id": "maya",
+			"pos": [
+				560,
+				1110
+			],
+			"unit": 0.72,
+			"z": 2
+		},
+		{
+			"id": "biralo",
+			"pos": [
+				1330,
+				1080
+			],
+			"unit": 0.4,
+			"z": 6,
+			"home": "dock",
+			"away_pos": [
+				380,
+				1420
+			]
+		}
+	],
+	"objects": [
+		{
+			"id": "ground",
+			"kind": "street",
+			"rect": [
+				0,
+				1140,
+				1800,
+				360
+			],
+			"z": -9
+		},
+		{
+			"id": "hut",
+			"kind": "hut",
+			"rect": [
+				160,
+				380,
+				800,
+				780
+			],
+			"z": -6
+		},
+		{
+			"id": "sign",
+			"kind": "sign_board",
+			"rect": [
+				260,
+				340,
+				600,
+				120
+			],
+			"z": -4
+		},
+		{
+			"id": "awning",
+			"kind": "awning",
+			"rect": [
+				220,
+				820,
+				680,
+				130
+			],
+			"z": -3
+		},
+		{
+			"id": "dock",
+			"kind": "dock",
+			"rect": [
+				1000,
+				1020,
+				800,
+				300
+			],
+			"z": -5
+		},
+		{
+			"id": "boat",
+			"kind": "boat",
+			"rect": [
+				1180,
+				880,
+				440,
+				220
+			],
+			"z": -4
+		},
+		{
+			"id": "bench",
+			"kind": "bench",
+			"rect": [
+				1060,
+				860,
+				300,
+				180
+			],
+			"z": -2
+		},
+		{
+			"id": "umbrella",
+			"kind": "umbrella",
+			"rect": [
+				880,
+				780,
+				300,
+				460
+			],
+			"z": 3
+		},
+		{
+			"id": "lights",
+			"kind": "string_lights",
+			"rect": [
+				160,
+				280,
+				1640,
+				120
+			],
+			"z": -1
+		},
+		{
+			"id": "pots",
+			"kind": "plant_pot",
+			"rect": [
+				60,
+				1060,
+				170,
+				240
+			],
+			"z": 4
+		},
+		{
+			"id": "lantern",
+			"kind": "lantern",
+			"rect": [
+				1380,
+				640,
+				380,
+				200
+			],
+			"z": -1
+		},
+		{
+			"id": "bed",
+			"kind": "flower_bed",
+			"rect": [
+				260,
+				1220,
+				600,
+				220
+			],
+			"z": 5
+		}
+	],
+	"tasks": [
+		{
+			"id": "hut",
+			"name": "Build the branch shop",
+			"desc": "A tiny shop with a big view.",
+			"cost": 4,
+			"objects": [
+				"hut"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "stone",
+					"name": "Stone and slate",
+					"base": "a89f91",
+					"accent": "7a4a22",
+					"pattern": "brick",
+					"trim": "5a6b7a"
+				},
+				{
+					"id": "wood",
+					"name": "Timber",
+					"base": "8b5a2b",
+					"accent": "e0a458",
+					"pattern": "planks",
+					"trim": "5a3b22"
+				},
+				{
+					"id": "white",
+					"name": "Whitewashed",
+					"base": "f4efe6",
+					"accent": "2f7fc1",
+					"pattern": "plaster",
+					"trim": "b5523b"
+				}
+			]
+		},
+		{
+			"id": "sign",
+			"name": "Paint the branch sign",
+			"desc": "Same name, new address.",
+			"cost": 3,
+			"objects": [
+				"sign"
+			],
+			"requires": [
+				"hut"
+			],
+			"styles": [
+				{
+					"id": "red",
+					"name": "Red and gold",
+					"base": "c0392b",
+					"accent": "ffd166",
+					"pattern": "gold"
+				},
+				{
+					"id": "carved",
+					"name": "Carved wood",
+					"base": "8b5a2b",
+					"accent": "ffd166",
+					"pattern": "carved"
+				},
+				{
+					"id": "blue",
+					"name": "Sky blue",
+					"base": "3a86c8",
+					"accent": "fff3dc",
+					"pattern": "painted"
+				}
+			]
+		},
+		{
+			"id": "awning",
+			"name": "Add an awning",
+			"desc": "Lake sun is strong.",
+			"cost": 3,
+			"objects": [
+				"awning"
+			],
+			"requires": [
+				"hut"
+			],
+			"styles": [
+				{
+					"id": "marigold",
+					"name": "Marigold stripes",
+					"base": "ff9f1c",
+					"accent": "fff3dc",
+					"pattern": "stripes"
+				},
+				{
+					"id": "teal",
+					"name": "Teal stripes",
+					"base": "0f5e63",
+					"accent": "fff3dc",
+					"pattern": "stripes"
+				},
+				{
+					"id": "dhaka",
+					"name": "Dhaka pattern",
+					"base": "c0392b",
+					"accent": "1f2a36",
+					"pattern": "dhaka"
+				}
+			]
+		},
+		{
+			"id": "dock",
+			"name": "Repair the dock",
+			"desc": "Boards missing. Splash risk: high.",
+			"cost": 4,
+			"objects": [
+				"dock"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "planks",
+					"name": "Wooden planks",
+					"base": "9b6a3d",
+					"accent": "e0a458",
+					"pattern": "planks"
+				},
+				{
+					"id": "painted",
+					"name": "Painted blue",
+					"base": "3a86c8",
+					"accent": "fff3dc",
+					"pattern": "planks"
+				},
+				{
+					"id": "bamboo",
+					"name": "Bamboo",
+					"base": "c9a65b",
+					"accent": "7a6a2b",
+					"pattern": "bamboo"
+				}
+			]
+		},
+		{
+			"id": "boat",
+			"name": "Paint the rowing boat",
+			"desc": "Deliveries across the lake!",
+			"cost": 4,
+			"objects": [
+				"boat"
+			],
+			"requires": [
+				"dock"
+			],
+			"styles": [
+				{
+					"id": "red",
+					"name": "Red and yellow",
+					"base": "c0392b",
+					"accent": "f2b632",
+					"pattern": "painted"
+				},
+				{
+					"id": "blue",
+					"name": "Blue and white",
+					"base": "2f7fc1",
+					"accent": "fff3dc",
+					"pattern": "stripes"
+				},
+				{
+					"id": "green",
+					"name": "Green",
+					"base": "2e8b57",
+					"accent": "fff3dc",
+					"pattern": "painted"
+				}
+			]
+		},
+		{
+			"id": "bench",
+			"name": "Build a lakeside bench",
+			"desc": "For watching the boats.",
+			"cost": 3,
+			"objects": [
+				"bench"
+			],
+			"requires": [
+				"dock"
+			],
+			"styles": [
+				{
+					"id": "wood",
+					"name": "Carved wood",
+					"base": "8b5a2b",
+					"accent": "e0a458",
+					"pattern": "carved"
+				},
+				{
+					"id": "painted",
+					"name": "Painted blue",
+					"base": "2f7fc1",
+					"accent": "ffd166",
+					"pattern": "painted"
+				},
+				{
+					"id": "steel",
+					"name": "Park steel",
+					"base": "7f8c99",
+					"accent": "51606e",
+					"pattern": "steel"
+				}
+			]
+		},
+		{
+			"id": "umbrella",
+			"name": "Open a big umbrella",
+			"desc": "Tables for tea outside.",
+			"cost": 3,
+			"objects": [
+				"umbrella"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "marigold",
+					"name": "Marigold",
+					"base": "ff9f1c",
+					"accent": "fff3dc",
+					"pattern": "plain"
+				},
+				{
+					"id": "teal",
+					"name": "Teal",
+					"base": "0f5e63",
+					"accent": "fff3dc",
+					"pattern": "plain"
+				},
+				{
+					"id": "rainbow",
+					"name": "Rainbow",
+					"base": "e04f5f",
+					"accent": "2f7fc1",
+					"pattern": "plain"
+				}
+			]
+		},
+		{
+			"id": "lights",
+			"name": "String lights to the dock",
+			"desc": "They'll reflect in the water.",
+			"cost": 4,
+			"objects": [
+				"lights"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "warm",
+					"name": "Warm bulbs",
+					"base": "ffd166",
+					"accent": "ff9f1c",
+					"pattern": "plain"
+				},
+				{
+					"id": "festive",
+					"name": "Festive colours",
+					"base": "ff6b8b",
+					"accent": "8fd3ff",
+					"pattern": "plain"
+				},
+				{
+					"id": "white",
+					"name": "Fairy white",
+					"base": "fff8e6",
+					"accent": "fff2a8",
+					"pattern": "plain"
+				}
+			]
+		},
+		{
+			"id": "pots",
+			"name": "Pot some flowers",
+			"desc": "Colour by the door.",
+			"cost": 3,
+			"objects": [
+				"pots"
+			],
+			"requires": [],
+			"styles": [
+				{
+					"id": "clay",
+					"name": "Clay pots",
+					"base": "b5623b",
+					"accent": "e0a458",
+					"pattern": "carved"
+				},
+				{
+					"id": "blue",
+					"name": "Blue glazed",
+					"base": "2f7fc1",
+					"accent": "ffd166",
+					"pattern": "painted"
+				},
+				{
+					"id": "tin",
+					"name": "Recycled tins",
+					"base": "a3acb1",
+					"accent": "e04f5f",
+					"pattern": "steel"
+				}
+			]
+		},
+		{
+			"id": "lantern",
+			"name": "Hang lanterns on the dock",
+			"desc": "For evening boat rides.",
+			"cost": 4,
+			"objects": [
+				"lantern"
+			],
+			"requires": [
+				"dock"
+			],
+			"styles": [
+				{
+					"id": "paper",
+					"name": "Paper lanterns",
+					"base": "ff6b5b",
+					"accent": "f2b632",
+					"pattern": "plain"
+				},
+				{
+					"id": "gold",
+					"name": "Golden",
+					"base": "f2b632",
+					"accent": "ff9f1c",
+					"pattern": "plain"
+				},
+				{
+					"id": "pastel",
+					"name": "Pastel",
+					"base": "8fd3ff",
+					"accent": "ffb3c8",
+					"pattern": "plain"
+				}
+			]
+		},
+		{
+			"id": "bed",
+			"name": "Plant a flower bed",
+			"desc": "Wildflowers from the hills.",
+			"cost": 4,
+			"objects": [
+				"bed"
+			],
+			"requires": [
+				"hut"
+			],
+			"styles": [
+				{
+					"id": "brick",
+					"name": "Brick bed",
+					"base": "b5523b",
+					"accent": "ff6b8b",
+					"pattern": "brick"
+				},
+				{
+					"id": "stone",
+					"name": "Stone bed",
+					"base": "a89f91",
+					"accent": "f2b632",
+					"pattern": "tiles"
+				},
+				{
+					"id": "wood",
+					"name": "Wooden planter",
+					"base": "8b5a2b",
+					"accent": "e85d75",
+					"pattern": "planks"
+				}
+			]
+		}
+	]
+}

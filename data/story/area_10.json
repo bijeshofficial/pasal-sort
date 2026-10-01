@@ -1,0 +1,118 @@
+{
+	"lines": {
+		"a10.hut": [
+			{
+				"who": "kanchha",
+				"mood": "laugh",
+				"text": "Stone by stone. My back will remember this."
+			}
+		],
+		"a10.sign": [
+			{
+				"who": "maya",
+				"mood": "happy",
+				"text": "Hajurama's Pasal, Mountain Branch. It has a ring to it!"
+			}
+		],
+		"a10.steps": [
+			{
+				"who": "biralo",
+				"mood": "grumpy",
+				"text": "Mrrrow."
+			}
+		],
+		"a10.fences": [
+			{
+				"who": "kanchha",
+				"mood": "grumpy",
+				"text": "A yak sat on my toolbox. A YAK."
+			}
+		],
+		"a10.bench": [
+			{
+				"who": "maya",
+				"mood": "happy",
+				"text": "Rest your legs, have a Lapsi candy!"
+			}
+		],
+		"a10.lamp": [
+			{
+				"who": "kanchha",
+				"mood": "surprised",
+				"text": "Solar powered! Even I'm impressed with me."
+			}
+		],
+		"a10.crates": [
+			{
+				"who": "bhai",
+				"mood": "laugh",
+				"text": "So many candies! For the shop. Not for me. Mostly."
+			}
+		],
+		"a10.pots": [
+			{
+				"who": "hajurama",
+				"mood": "happy",
+				"text": "Even up here, flowers find a way."
+			}
+		],
+		"a10.umbrella": [
+			{
+				"who": "sunita",
+				"mood": "laugh",
+				"text": "I came all this way for tea under an umbrella!"
+			}
+		],
+		"a10.bunting": [
+			{
+				"who": "maya",
+				"mood": "happy",
+				"text": "Look how it flutters in the wind!"
+			}
+		],
+		"a10.arrive": [
+			{
+				"who": "maya",
+				"mood": "surprised",
+				"text": "The mountains look so close you could touch them."
+			},
+			{
+				"who": "kanchha",
+				"mood": "worried",
+				"text": "Maya... the shop is a pile of stones. Literally."
+			},
+			{
+				"who": "maya",
+				"mood": "laugh",
+				"text": "Then we have a lot of stones to work with!"
+			}
+		],
+		"a10.outro": [
+			{
+				"who": "maya",
+				"mood": "happy",
+				"text": "Three shops. A whole family of pasals."
+			},
+			{
+				"who": "hajurama",
+				"mood": "happy",
+				"text": "From one dusty counter to the mountains. I am so proud of you, nani."
+			},
+			{
+				"who": "sunita",
+				"mood": "laugh",
+				"text": "And Chiya Tole has the best tea AND the best sweets."
+			},
+			{
+				"who": "bhai",
+				"mood": "laugh",
+				"text": "What's next, Didi? The moon?"
+			},
+			{
+				"who": "maya",
+				"mood": "laugh",
+				"text": "One jar at a time, Bhai. One jar at a time."
+			}
+		]
+	}
+}

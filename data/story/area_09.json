@@ -1,0 +1,115 @@
+{
+	"lines": {
+		"a9.hut": [
+			{
+				"who": "maya",
+				"mood": "happy",
+				"text": "Our second pasal. Hajurba, this one's for you."
+			}
+		],
+		"a9.sign": [
+			{
+				"who": "bhai",
+				"mood": "laugh",
+				"text": "I did the S again. It's less wobbly this time!"
+			}
+		],
+		"a9.awning": [
+			{
+				"who": "sunita",
+				"mood": "happy",
+				"text": "Shade by the water. Lovely."
+			}
+		],
+		"a9.dock": [
+			{
+				"who": "kanchha",
+				"mood": "worried",
+				"text": "I tested every board. Personally. I'm a bit wet."
+			}
+		],
+		"a9.boat": [
+			{
+				"who": "bhai",
+				"mood": "laugh",
+				"text": "A boat delivery service! Ahoy!"
+			}
+		],
+		"a9.bench": [
+			{
+				"who": "hajurama",
+				"mood": "happy",
+				"text": "I could watch this water for hours."
+			}
+		],
+		"a9.umbrella": [
+			{
+				"who": "maya",
+				"mood": "happy",
+				"text": "Tea and sweets by the lake. Customers will love it."
+			}
+		],
+		"a9.lights": [
+			{
+				"who": "sunita",
+				"mood": "surprised",
+				"text": "Double the lights! One in the sky, one in the lake!"
+			}
+		],
+		"a9.pots": [
+			{
+				"who": "biralo",
+				"mood": "happy",
+				"text": "Mrrp."
+			}
+		],
+		"a9.lantern": [
+			{
+				"who": "bhai",
+				"mood": "happy",
+				"text": "It's like the lanterns are floating!"
+			}
+		],
+		"a9.bed": [
+			{
+				"who": "hajurama",
+				"mood": "happy",
+				"text": "Wildflowers, just like where I grew up."
+			}
+		],
+		"a9.arrive": [
+			{
+				"who": "maya",
+				"mood": "surprised",
+				"text": "It's so peaceful here. Just the water and the hills."
+			},
+			{
+				"who": "kanchha",
+				"mood": "worried",
+				"text": "And a very, very old hut. With a very, very leaky roof."
+			}
+		],
+		"a9.outro": [
+			{
+				"who": "maya",
+				"mood": "happy",
+				"text": "Two shops! I can't believe it."
+			},
+			{
+				"who": "hajurama",
+				"mood": "happy",
+				"text": "Your Hajurba is smiling somewhere, nani."
+			},
+			{
+				"who": "bhai",
+				"mood": "laugh",
+				"text": "Next stop: the mountains! Trekkers love sweets!"
+			},
+			{
+				"who": "maya",
+				"mood": "laugh",
+				"text": "Then the mountains it is. Pack warm, everyone."
+			}
+		]
+	}
+}

@@ -1,0 +1,58 @@
+{
+	"lines": {
+		"a2.arrive": [
+			{"who": "maya", "mood": "surprised", "text": "Oof. From out here the pasal looks even sadder."},
+			{"who": "sunita", "mood": "happy", "text": "Don't worry, nani. The best tea stall in Chiya Tole is right next door. You'll have help!"}
+		],
+		"a2.shutter": [
+			{"who": "kanchha", "mood": "laugh", "text": "A little oil, a big push... and!"},
+			{"who": "maya", "mood": "laugh", "text": "It opens all the way! And it doesn't scream anymore!"}
+		],
+		"a2.paint_facade": [
+			{"who": "hajurama", "mood": "surprised", "text": "Oho! The neighbours will think we've become rich."},
+			{"who": "maya", "mood": "happy", "text": "Rich in paint, Hajurama. That's a start."}
+		],
+		"a2.sign_board": [
+			{"who": "bhai", "mood": "laugh", "text": "I helped with the letters! The S is mine. It's a bit wobbly."},
+			{"who": "maya", "mood": "happy", "text": "It's the best S in Kathmandu, Bhai."}
+		],
+		"a2.awning": [
+			{"who": "sunita", "mood": "happy", "text": "Now my customers can wait for tea in your shade. Very good business, Maya!"}
+		],
+		"a2.steps": [
+			{"who": "maya", "mood": "neutral", "text": "No more tripping. Safe steps, happy customers."}
+		],
+		"a2.plants": [
+			{"who": "biralo", "mood": "grumpy", "text": "Mrrrow."},
+			{"who": "maya", "mood": "worried", "text": "Those are not for digging, Biralo!"}
+		],
+		"a2.street_lamp": [
+			{"who": "kanchha", "mood": "surprised", "text": "It works! I mean... of course it works. Kanchha Dai never fails."}
+		],
+		"a2.bench": [
+			{"who": "sunita", "mood": "laugh", "text": "A bench! Now the aunties will sit here all afternoon. You'll hear everything!"},
+			{"who": "maya", "mood": "worried", "text": "Everything? Oh no."}
+		],
+		"a2.upper_window": [
+			{"who": "hajurama", "mood": "happy", "text": "Fresh air in my room at last. Now I can watch the whole tole, hehe."}
+		],
+		"a2.string_lights": [
+			{"who": "bhai", "mood": "surprised", "text": "Didi, it looks like a festival!"},
+			{"who": "maya", "mood": "happy", "text": "Every evening can feel a little bit like one."}
+		],
+		"a2.bicycle": [
+			{"who": "bhai", "mood": "laugh", "text": "Ring ring! Delivery for Sunita Didi! One packet of Pudina!"}
+		],
+		"a2.street": [
+			{"who": "sunita", "mood": "surprised", "text": "Maya swept the whole street? Even in front of MY stall?"},
+			{"who": "maya", "mood": "laugh", "text": "Neighbours help neighbours, Didi."}
+		],
+		"a2.outro": [
+			{"who": "sunita", "mood": "laugh", "text": "Look at it! Customers are stopping just to take photos."},
+			{"who": "hajurama", "mood": "happy", "text": "Your Hajurba would have made a speech. A long one."},
+			{"who": "kanchha", "mood": "neutral", "text": "There's just one thing. The storage room. Nobody has opened it in years."},
+			{"who": "bhai", "mood": "worried", "text": "I heard something scratching in there..."},
+			{"who": "maya", "mood": "happy", "text": "Then let's find out what's inside. Together!"}
+		]
+	}
+}

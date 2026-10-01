@@ -1,0 +1,108 @@
+{
+	"lines": {
+		"a6.roof_floor": [
+			{
+				"who": "maya",
+				"mood": "happy",
+				"text": "Cool tiles under bare feet. Bliss."
+			}
+		],
+		"a6.railing": [
+			{
+				"who": "hajurama",
+				"mood": "worried",
+				"text": "Now Bhai can fly his kite without giving me a heart attack."
+			}
+		],
+		"a6.tank": [
+			{
+				"who": "kanchha",
+				"mood": "surprised",
+				"text": "It doesn't leak anymore. I am a genius."
+			}
+		],
+		"a6.kite": [
+			{
+				"who": "bhai",
+				"mood": "laugh",
+				"text": "It's flying! Didi, look, it's FLYING!"
+			}
+		],
+		"a6.lights": [
+			{
+				"who": "sunita",
+				"mood": "happy",
+				"text": "Fairy lights! It's like a little festival every night."
+			}
+		],
+		"a6.clothesline": [
+			{
+				"who": "hajurama",
+				"mood": "neutral",
+				"text": "Sun-dried clothes smell the best. That's a fact."
+			}
+		],
+		"a6.umbrella": [
+			{
+				"who": "maya",
+				"mood": "happy",
+				"text": "Tea, shade and a view. I could stay here all day."
+			}
+		],
+		"a6.chairs": [
+			{
+				"who": "hajurama",
+				"mood": "happy",
+				"text": "Sit with me, nani. Watch the hills turn pink."
+			}
+		],
+		"a6.garden": [
+			{
+				"who": "biralo",
+				"mood": "happy",
+				"text": "Mrrp!"
+			}
+		],
+		"a6.pots": [
+			{
+				"who": "sunita",
+				"mood": "laugh",
+				"text": "Fresh mint! My tea will be famous."
+			}
+		],
+		"a6.arrive": [
+			{
+				"who": "bhai",
+				"mood": "laugh",
+				"text": "The roof! The best place in the whole house!"
+			},
+			{
+				"who": "maya",
+				"mood": "worried",
+				"text": "It would be, if the railing wasn't held up by a broom."
+			}
+		],
+		"a6.outro": [
+			{
+				"who": "bhai",
+				"mood": "laugh",
+				"text": "My kite went higher than the neighbour's!"
+			},
+			{
+				"who": "hajurama",
+				"mood": "happy",
+				"text": "From up here the whole tole looks like family."
+			},
+			{
+				"who": "sunita",
+				"mood": "neutral",
+				"text": "Speaking of the tole... the courtyard could use some love, Maya."
+			},
+			{
+				"who": "maya",
+				"mood": "happy",
+				"text": "Then let's fix it for everyone."
+			}
+		]
+	}
+}
