@@ -1,0 +1,53 @@
+{
+	"_comment": "Jar-count ramp, difficulty rhythm, twists and generator budgets. Levels 1-30 come from levels_authored.json.",
+	"authored_levels": 30,
+	"empty_jars": 2,
+	"bands": [
+		{"from": 1, "types": 2, "empty": 1},
+		{"from": 2, "types": 3},
+		{"from": 4, "types": 4},
+		{"from": 11, "types": 5},
+		{"from": 21, "types": 6},
+		{"from": 36, "types": 7},
+		{"from": 56, "types": 8},
+		{"from": 81, "types": 9},
+		{"from": 121, "types": 10},
+		{"from": 171, "types": 10, "types_max": 12}
+	],
+	"rhythm": {
+		"hard_every": 5,
+		"super_every": 10,
+		"easy_after_hard": true,
+		"easy_types_delta": -1,
+		"hard_types_delta": 0,
+		"super_types_delta": 1
+	},
+	"tiers": {
+		"easy": {"label": "", "coin_mult": 1.0, "candidates": 3, "pick": "min"},
+		"normal": {"label": "", "coin_mult": 1.0, "candidates": 3, "pick": "median"},
+		"hard": {"label": "HARD", "coin_mult": 1.5, "candidates": 4, "pick": "max"},
+		"super": {"label": "SUPER HARD", "coin_mult": 2.0, "candidates": 6, "pick": "max"}
+	},
+	"twists": {
+		"wrapped": {"from": 15, "title": "Wrapped candies", "text": "Some candies hide in paper wrappers. A wrapper opens when its candy reaches the top.", "hidden_ratio": 0.45},
+		"cloth": {"from": 30, "title": "Dhaka-cloth jar", "text": "This jar is covered with a woven cloth. Fill any 2 jars and the cloth slides off.", "unlock_after": 2},
+		"lock": {"from": 50, "title": "Padlocked jar", "text": "A brass padlock! Fill a jar of the candy on its badge to unlock it."},
+		"tall": {"from": 80, "title": "Tall jar", "text": "A tall jar holds 2 extra candies. Handy storage space!", "extra": 2}
+	},
+	"twist_chance": 0.45,
+	"twist_combo_from": 120,
+	"twist_combo_chance": 0.35,
+	"generator": {
+		"node_budget": 20000,
+		"max_attempts": 40,
+		"dead_end_weight": 0.5
+	},
+	"hint": {
+		"idle_seconds": 20.0,
+		"node_budget": 6000
+	},
+	"shuffle": {
+		"max_tries": 30,
+		"node_budget": 8000
+	}
+}

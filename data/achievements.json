@@ -1,0 +1,16 @@
+{
+	"achievements": [
+		{"id": "first_lid", "title": "First Lid", "desc": "Fill your first jar", "stat": "jars_filled", "target": 1, "reward": {"coins": 20}},
+		{"id": "pasal_opened", "title": "Pasal Opened", "desc": "Complete level 10", "stat": "highest_level", "target": 10, "reward": {"coins": 100, "undo": 2}},
+		{"id": "regular_customer", "title": "Regular Customer", "desc": "Complete level 50", "stat": "highest_level", "target": 50, "reward": {"coins": 250, "shuffle": 2}},
+		{"id": "shopkeeper", "title": "Shopkeeper", "desc": "Complete level 100", "stat": "highest_level", "target": 100, "reward": {"coins": 500, "extra_jar": 2}},
+		{"id": "bazaar_legend", "title": "Bazaar Legend", "desc": "Complete level 500", "stat": "highest_level", "target": 500, "reward": {"coins": 2000}},
+		{"id": "jar_filler_1", "title": "Jar Filler I", "desc": "Fill 100 jars", "stat": "jars_filled", "target": 100, "reward": {"coins": 100}},
+		{"id": "jar_filler_2", "title": "Jar Filler II", "desc": "Fill 1,000 jars", "stat": "jars_filled", "target": 1000, "reward": {"coins": 400, "undo": 5}},
+		{"id": "jar_filler_3", "title": "Jar Filler III", "desc": "Fill 10,000 jars", "stat": "jars_filled", "target": 10000, "reward": {"coins": 1500}},
+		{"id": "clean_hands", "title": "Clean Hands", "desc": "Win 10 levels without boosters", "stat": "no_booster_wins", "target": 10, "reward": {"coins": 150}},
+		{"id": "hard_worker", "title": "Hard Worker", "desc": "Complete 10 HARD levels", "stat": "hard_completed", "target": 10, "reward": {"coins": 200, "shuffle": 1}},
+		{"id": "super_sorter", "title": "Super Sorter", "desc": "Complete 10 SUPER HARD levels", "stat": "super_completed", "target": 10, "reward": {"coins": 300, "extra_jar": 1}},
+		{"id": "collector", "title": "Collector", "desc": "Own 5 cosmetics", "stat": "cosmetics_owned", "target": 5, "reward": {"coins": 250}}
+	]
+}

@@ -1,0 +1,42 @@
+{
+	"level_reward": 10,
+	"milestone_every": 10,
+	"milestone_coins": 100,
+	"daily_free_coins": 50,
+	"lives": {"max": 5, "regen_seconds": 1800, "refill_price": 300, "free_levels": 10},
+	"starting_boosters": {"undo": 3, "extra_jar": 1, "shuffle": 1},
+	"booster_prices": {"undo": 50, "shuffle": 100, "extra_jar": 150},
+	"tutorial_grants": {"undo": 3, "extra_jar": 2, "shuffle": 2},
+	"coin_packs": [
+		{"id": "coins_small", "name": "Handful of coins", "coins": 500, "price_label": "$0.99"},
+		{"id": "coins_medium", "name": "Coin jar", "coins": 1200, "price_label": "$1.99"},
+		{"id": "coins_large", "name": "Coin sack", "coins": 3000, "price_label": "$3.99", "ribbon": "Best value"}
+	],
+	"bundles": [
+		{"id": "bundle_undo", "name": "Undo x5", "price": 200, "grant": {"undo": 5}},
+		{"id": "bundle_shuffle", "name": "Shuffle x3", "price": 250, "grant": {"shuffle": 3}},
+		{"id": "bundle_extra", "name": "Extra Jar x3", "price": 380, "grant": {"extra_jar": 3}},
+		{"id": "bundle_mixed", "name": "Mixed bundle", "price": 400, "grant": {"undo": 3, "shuffle": 2, "extra_jar": 1}}
+	],
+	"cosmetic_categories": [
+		{"id": "jar", "name": "Jar skins"},
+		{"id": "wrapper", "name": "Candy wrappers"},
+		{"id": "theme", "name": "Shop themes"}
+	],
+	"cosmetics": [
+		{"id": "jar_classic", "category": "jar", "name": "Classic Glass", "price": 0, "glass": "dcefee", "rim": "8fb9bd", "lid": "candy", "base": "b8d6d6"},
+		{"id": "jar_steel", "category": "jar", "name": "Steel-lid Jar", "price": 60, "glass": "e4ecee", "rim": "8c979f", "lid": "steel", "base": "b9c3c8"},
+		{"id": "jar_blue", "category": "jar", "name": "Blue-tint Glass", "price": 150, "glass": "a9d3f2", "rim": "5f97c2", "lid": "candy", "base": "86b4d8"},
+		{"id": "jar_festival", "category": "jar", "name": "Festival Glass", "price": 300, "glass": "fbe2b4", "rim": "d99a3c", "lid": "candy", "base": "e8c48a", "fx": "diyo"},
+		{"id": "jar_frost", "category": "jar", "name": "Himalayan Frost", "price": 450, "glass": "eef6ff", "rim": "a9c2dc", "lid": "candy", "base": "cfdff0", "fx": "frost"},
+		{"id": "jar_gold", "category": "jar", "name": "Gold Rim", "price": 700, "glass": "f1ead8", "rim": "cf9b26", "lid": "gold", "base": "dcc690", "rim_width": 1.8},
+		{"id": "wrap_classic", "category": "wrapper", "name": "Classic Twist", "price": 0, "style": "classic"},
+		{"id": "wrap_striped", "category": "wrapper", "name": "Striped Paper", "price": 120, "style": "striped"},
+		{"id": "wrap_foil", "category": "wrapper", "name": "Shiny Foil", "price": 350, "style": "foil"},
+		{"id": "theme_asan", "category": "theme", "name": "Asan Bazaar Morning", "price": 0},
+		{"id": "theme_thamel", "category": "theme", "name": "Thamel Evening Lights", "price": 200},
+		{"id": "theme_hill", "category": "theme", "name": "Hill-village Shop", "price": 350},
+		{"id": "theme_tihar", "category": "theme", "name": "Tihar Night", "price": 500},
+		{"id": "theme_snow", "category": "theme", "name": "Snowy Mountain Shop", "price": 800}
+	]
+}

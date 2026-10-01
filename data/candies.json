@@ -1,0 +1,17 @@
+{
+	"capacity": 4,
+	"candies": [
+		{"id": "lapsi", "name": "Lapsi", "color": "c8733a", "shape": "round"},
+		{"id": "pudina", "name": "Pudina", "color": "4fc59b", "shape": "leaf"},
+		{"id": "gulab", "name": "Gulab", "color": "f2769f", "shape": "heart"},
+		{"id": "aanp", "name": "Aanp", "color": "f7c52e", "shape": "oval"},
+		{"id": "jamun", "name": "Jamun", "color": "6c3aa0", "shape": "drop"},
+		{"id": "nariwal", "name": "Nariwal", "color": "f8f4ea", "shape": "cube"},
+		{"id": "khursani", "name": "Khursani", "color": "e0382c", "shape": "flame"},
+		{"id": "neelo", "name": "Neelo", "color": "44a5ec", "shape": "star"},
+		{"id": "kagati", "name": "Kagati", "color": "a9d53a", "shape": "diamond"},
+		{"id": "kafi", "name": "Kafi", "color": "6d4431", "shape": "square"},
+		{"id": "suntala", "name": "Suntala", "color": "ff8c1a", "shape": "crescent"},
+		{"id": "chocolate_gold", "name": "Chocolate Gold", "color": "d8a52a", "shape": "hexagon"}
+	]
+}

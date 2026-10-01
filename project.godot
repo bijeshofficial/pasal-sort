@@ -1,0 +1,60 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Pasal Sort"
+config/description="A cosy Nepali candy-jar sort puzzle. Tap jars, sort the candies, bring the pasal back to life."
+config/version="0.1.0"
+run/main_scene="res://scenes/main/boot.tscn"
+config/quit_on_go_back=false
+config/auto_accept_quit=false
+config/features=PackedStringArray("4.3", "GL Compatibility")
+boot_splash/bg_color=Color(0.984, 0.953, 0.898, 1)
+boot_splash/show_image=false
+config/icon="res://icon.svg"
+
+[autoload]
+
+SaveManager="*res://scripts/core/save_manager.gd"
+GameManager="*res://scripts/core/game_manager.gd"
+CurrencyManager="*res://scripts/core/currency_manager.gd"
+ProgressionManager="*res://scripts/core/progression_manager.gd"
+LivesManager="*res://scripts/core/lives_manager.gd"
+BoosterManager="*res://scripts/core/booster_manager.gd"
+AchievementManager="*res://scripts/core/achievement_manager.gd"
+AudioManager="*res://scripts/core/audio_manager.gd"
+HapticsManager="*res://scripts/core/haptics_manager.gd"
+PoolManager="*res://scripts/core/pool_manager.gd"
+VFXManager="*res://scripts/core/vfx_manager.gd"
+ScreenManager="*res://scripts/core/screen_manager.gd"
+AdManager="*res://scripts/core/ad_manager.gd"
+IAPManager="*res://scripts/core/iap_manager.gd"
+
+[display]
+
+window/size/viewport_width=1080
+window/size/viewport_height=1920
+window/size/window_width_override=450
+window/size/window_height_override=800
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+window/handheld/orientation=1
+
+[input_devices]
+
+pointing/emulate_touch_from_mouse=true
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+textures/vram_compression/import_etc2_astc=true
+environment/defaults/default_clear_color=Color(0.984, 0.953, 0.898, 1)
