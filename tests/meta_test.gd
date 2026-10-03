@@ -850,6 +850,18 @@ func _test_popup_switching() -> void:
 	await _wait(0.3)
 	_check(found and SM.find_modal("missions") == null and SM.find_modal("chest") != null, "opening the mission chest closes the missions popup")
 	SM.close_all_modals()
+	# A popup opened on top hides the one below (one ribbon on screen).
+	var PP = load("res://scripts/ui/popups.gd")
+	var under: Control = PP.show({"id": "under", "title": "Paused", "buttons": []})
+	var over: Control = PP.show({"id": "over", "title": "Settings", "buttons": []})
+	await _wait(0.1)
+	_check(not under.visible and over.visible, "a stacked popup hides the one under it")
+	SM.close_modal(over)
+	await _wait(0.1)
+	_check(under.visible, "closing the top popup shows the one under it again")
+	SM.close_all_modals()
+	var items: Array = load("res://scripts/ui/chest_popup.gd").compact([{"key": "coins"}, {"key": "sticker"}, {"key": "sticker"}, {"key": "sticker"}])
+	_check(items.size() == 2 and String(items[1]["text"]) == "+3", "chest shows all stickers as one tile")
 
 
 # --- Helpers -----------------------------------------------------------------

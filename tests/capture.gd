@@ -212,6 +212,12 @@ func _run() -> void:
 		await _wait(0.4)
 		await _save("81_start_card")
 		SM.close_all_modals()
+		for n in [0, 3]:
+			S.data["game"]["streaks"]["dami"] = n
+			current_scene.home.play_button.pressed.emit()
+			await _wait(0.6)
+			await _save("81_start_card_streak%d" % n)
+			SM.close_all_modals()
 		current_scene.select_tab(0)
 		await _wait(0.5)
 		await _save("82_shop_top")
@@ -224,8 +230,18 @@ func _run() -> void:
 		await _wait(0.5)
 		await _save("84_so_close")
 		SM.close_all_modals()
-		load("res://scripts/ui/chest_popup.gd").open("Hajurama's Trunk", {"coins": 400, "boosters": {"undo": 2, "lucky": 1}, "unlimited_lives_min": 30}, "capture", Callable(), "trunk")
-		await _wait(2.8)
+		# Pause -> Settings -> Credits: only the top popup shows.
+		current_scene.open_pause()
+		await _wait(0.4)
+		SM.push_modal(load("res://scenes/ui/settings.tscn").instantiate())
+		await _wait(0.4)
+		load("res://scripts/ui/popups.gd").show({"id": "credits", "title": "Credits", "body": "Pasal Sort", "buttons": [{"id": "ok", "text": "OK"}]})
+		await _wait(0.5)
+		await _save("84b_pause_settings_credits")
+		SM.close_all_modals()
+		var trunk: Dictionary = GameData.economy()["treasure_streak"]["chest"]
+		load("res://scripts/ui/chest_popup.gd").open("Hajurama's Trunk", trunk, "capture", Callable(), "trunk")
+		await _wait(4.0)
 		await _save("85_trunk")
 		SM.close_all_modals()
 

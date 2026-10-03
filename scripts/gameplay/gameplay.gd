@@ -62,6 +62,8 @@ var orders: Array = []
 var order_cards: HBoxContainer
 ## Gift box jars already paid out (undo never pays twice).
 var gifts_paid: Array = []
+## Moves still to play when the end is obvious and the game finishes it.
+var autosort_queue: Array = []
 var order_bonus := 0
 
 
@@ -465,7 +467,77 @@ func do_move(a: int, b: int) -> void:
 	if move_limit > 0 and moves_used >= move_limit:
 		_after(dur + 0.2, out_of_moves)
 		return
-	_after(dur + 0.15, _check_stuck)
+	_after(dur + (0.05 if state == State.BUSY else 0.15), _after_move)
+
+
+func _after_move() -> void:
+	if state == State.BUSY and not autosort_queue.is_empty():
+		var m: Array = autosort_queue.pop_front()
+		do_move(int(m[0]), int(m[1]))
+		return
+	if state == State.PLAYING and start_autosort():
+		return
+	_check_stuck()
+
+
+# --- Auto-sort ---------------------------------------------------------------
+
+## The end is obvious when nothing is hidden or sealed and every unfinished
+## jar holds a single kind of candy: all that is left is pouring the smaller
+## piles onto the bigger ones. Returns those moves, or [] when the board is
+## not obvious yet.
+func autosort_moves() -> Array:
+	var b := board.duplicate_board()
+	if not b.cat_path.is_empty() or b.is_won():
+		return []
+	for i in b.jar_count():
+		if b.size_of(i) == 0 or b.is_done(i):
+			continue
+		if b.is_sealed(i) or not b.is_uniform(i) or (b.hidden[i] as Array).has(true):
+			return []
+	var out: Array = []
+	for guard in 64:
+		if b.is_won():
+			return out
+		var by_type: Dictionary = {}
+		for i in b.jar_count():
+			if b.size_of(i) > 0 and not b.is_done(i):
+				if not by_type.has(b.top(i)):
+					by_type[b.top(i)] = []
+				(by_type[b.top(i)] as Array).append(i)
+		var moved := false
+		for t in by_type:
+			var jars: Array = by_type[t]
+			if jars.size() < 2:
+				continue
+			jars.sort_custom(func(x: int, y: int) -> bool: return b.size_of(x) > b.size_of(y))
+			var src: int = jars[jars.size() - 1]
+			var dst: int = jars[0]
+			if b.can_move(src, dst) and not b.apply_move(src, dst).is_empty():
+				out.append([src, dst])
+				moved = true
+				break
+		if not moved:
+			return []
+	return []
+
+
+## Starts finishing the level by itself (input is blocked while it runs).
+func start_autosort() -> bool:
+	if tutorial.is_active() or ScreenManager.has_modal():
+		return false
+	var plan := autosort_moves()
+	if plan.is_empty():
+		return false
+	if move_limit > 0 and moves_used + plan.size() > move_limit:
+		return false
+	_deselect()
+	_clear_hint()
+	state = State.BUSY
+	autosort_queue = plan
+	VFXManager.popup_text(hud, tr("Auto-sort!"), get_viewport_rect().size * Vector2(0.5, 0.3), UIKit.GOLD, 90, 40, 1.0)
+	_after(0.35, _after_move)
+	return true
 
 
 ## Gift box: a small reward when its jar is completed.

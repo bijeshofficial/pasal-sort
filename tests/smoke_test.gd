@@ -87,6 +87,7 @@ func _main() -> void:
 	await _test_resume()
 	await _test_give_up_and_leave()
 	await _test_stuck_popup()
+	await _test_autosort()
 	await _test_hub_and_back()
 	await _test_ads()
 	await _test_shop_iap_achievements()
@@ -381,6 +382,32 @@ func _test_tutorial_not_repeated() -> void:
 	S.game()["tutorial_steps"].erase("stack")
 	g = await _open_level()
 	_check(g.tutorial.step == "stack" and g.tutorial.text_panel.visible, "level 2 shows the stacking hint")
+
+
+func _test_autosort() -> void:
+	_fresh(12)
+	var g := await _open_level()
+	var real: Board = g.board
+	g.board = _board([[0, 0], [0, 0], [1, 1, 1], [1], [2, 2, 2, 2], []])
+	_check((g.autosort_moves() as Array).size() == 2, "auto-sort: only single-candy jars left -> 2 pours finish it")
+	g.board = _board([[0, 1], [1, 0], [0, 0], [1, 1], []])
+	_check((g.autosort_moves() as Array).is_empty(), "auto-sort waits while candies still alternate")
+	g.board = _board([[0, 0], [0, 0], [1, 1, 1, 1], []])
+	g.board.hidden[0] = [true, false]
+	_check((g.autosort_moves() as Array).is_empty(), "auto-sort waits while a wrapped candy is hidden")
+	g.board = real
+	# Play the solver's solution until the game takes over, then it wins alone.
+	var sol: Array = Solver.solve(g.board)["moves"]
+	var played := 0
+	for mv in sol:
+		if g.state != ST_PLAYING:
+			break
+		g.do_move(mv[0], mv[1])
+		played += 1
+		await _wait(0.5)
+	await _until(func() -> bool: return g.state == ST_WON, 8.0)
+	_check(g.state == ST_WON and played < sol.size(), "auto-sort finishes an obvious ending (%d of %d moves by hand)" % [played, sol.size()])
+	SM.close_all_modals()
 
 
 func _test_boosters_in_level() -> void:

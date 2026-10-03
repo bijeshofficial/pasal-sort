@@ -125,6 +125,7 @@ func push_modal(node: Control) -> Control:
 	_modal_layer.add_child(node)
 	_modals.append(node)
 	node.tree_exited.connect(_on_modal_exited.bind(node))
+	_refresh_stack()
 	return node
 
 
@@ -133,6 +134,23 @@ func close_modal(node: Control) -> void:
 		return
 	_modals.erase(node)
 	node.queue_free()
+	_refresh_stack()
+
+
+## Only the top modal is shown, so stacked popups never pile their ribbons
+## and dims on top of each other (Pause -> Settings -> Credits). A modal
+## with meta "modal_overlay" (the dialogue box) lets the one below show
+## through. Covered modals come back when the ones above them close.
+func _refresh_stack() -> void:
+	var live: Array[Control] = []
+	for m in _modals:
+		if is_instance_valid(m) and not m.is_queued_for_deletion():
+			live.append(m)
+	var show := true
+	for i in range(live.size() - 1, -1, -1):
+		live[i].visible = show
+		if not live[i].has_meta("modal_overlay"):
+			show = false
 
 
 func close_all_modals() -> void:
@@ -187,3 +205,5 @@ func handle_back_on_modal() -> bool:
 
 func _on_modal_exited(node: Control) -> void:
 	_modals.erase(node)
+	if is_inside_tree():
+		_refresh_stack()

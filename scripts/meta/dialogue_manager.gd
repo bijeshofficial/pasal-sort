@@ -37,6 +37,7 @@ func play(id: String, on_done: Callable = Callable(), opts: Dictionary = {}) -> 
 	var box: Control = BoxScript.new()
 	box.setup(id, lines, opts)
 	_box = box
+	box.set_meta("modal_overlay", true)
 	box.finished.connect(func() -> void:
 		_box = null
 		dialogue_finished.emit(id)

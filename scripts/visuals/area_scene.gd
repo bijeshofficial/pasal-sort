@@ -308,7 +308,10 @@ func _setup_ambient() -> void:
 func _process(delta: float) -> void:
 	_t += delta
 	for c in _clouds:
-		c["x"] = fmod(float(c["x"]) + delta * 14.0 * float(c["s"]) + world_size.x + 400, world_size.x + 400) - 200
+		# A slow, steady drift; wrap once fully off the right edge.
+		c["x"] = float(c["x"]) + delta * 9.0 * float(c["s"])
+		if float(c["x"]) > world_size.x + 220:
+			c["x"] = -220.0
 	for b in _birds:
 		b["x"] = float(b["x"]) + delta * float(b["speed"])
 		if float(b["x"]) > world_size.x + 200:

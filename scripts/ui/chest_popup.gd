@@ -27,7 +27,7 @@ var _chest: Control
 var _shake := 0.0
 var _lid := 0.0       # 0 closed, 1 open
 var _rays := 0.0
-var _row: HBoxContainer
+var _row: GridContainer
 var _on_done: Callable
 
 
@@ -60,10 +60,12 @@ func _ready() -> void:
 	_chest.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_chest.draw.connect(_draw_chest)
 	v.add_child(_chest)
-	_row = HBoxContainer.new()
-	_row.alignment = BoxContainer.ALIGNMENT_CENTER
-	_row.add_theme_constant_override("separation", 26)
-	_row.custom_minimum_size = Vector2(0, 230)
+	# Rewards wrap into rows of four so a big chest still fits the screen.
+	_row = GridContainer.new()
+	_row.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_row.add_theme_constant_override("h_separation", 18)
+	_row.add_theme_constant_override("v_separation", 14)
+	_row.custom_minimum_size = Vector2(0, 190)
 	v.add_child(_row)
 	collect_button = UIKit.button(tr("Collect"), "primary", "check", 56, Vector2(0, 170))
 	collect_button.modulate.a = 0.0
@@ -75,7 +77,23 @@ func _ready() -> void:
 	else:
 		items = Rewards.grant(bundle, source)
 		ChestManager.note_opened(source)
+	items = compact(items)
+	_row.columns = clampi(items.size(), 1, 4)
 	_animate()
+
+
+## One tile for all the stickers instead of one per sticker name.
+static func compact(list: Array) -> Array:
+	var out: Array = []
+	var stickers := 0
+	for it in list:
+		if String(it.get("key", "")) == "sticker":
+			stickers += 1
+		else:
+			out.append(it)
+	if stickers > 0:
+		out.append({"icon": "sticker", "text": "+%d" % stickers, "color": UIKit.PINK, "key": "sticker"})
+	return out
 
 
 func _animate() -> void:
@@ -125,8 +143,12 @@ func _pop_item(i: int) -> void:
 	box.add_theme_constant_override("separation", 4)
 	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var col: Color = it.get("color", UIKit.GOLD)
-	box.add_child(UIKit.disk(String(it.get("icon", "star")), 140, col, col.darkened(0.35)))
-	var l := UIKit.title(String(it.get("text", "")), 40)
+	box.custom_minimum_size = Vector2(170, 0)
+	var d := UIKit.disk(String(it.get("icon", "star")), 116, col, col.darkened(0.35))
+	d.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	box.add_child(d)
+	var l := UIKit.title(String(it.get("text", "")), 36)
+	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(l)
 	_row.add_child(box)
 	UIKit.pop_in(box)

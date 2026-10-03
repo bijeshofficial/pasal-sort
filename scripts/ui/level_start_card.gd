@@ -41,8 +41,7 @@ func _ready() -> void:
 		for id in BoosterManager.PRE_IDS:
 			granted += BoosterManager.grant_tutorial(id)
 		v.add_child(_streak_meter())
-		var hint := UIKit.label(tr("Pick up to %d boosters") % int(GameData.economy().get("pre_boosters_max", 2)), 34, UIKit.INK_SOFT)
-		v.add_child(hint)
+		v.add_child(_booster_hint())
 		var row := HBoxContainer.new()
 		row.alignment = BoxContainer.ALIGNMENT_CENTER
 		row.add_theme_constant_override("separation", 26)
@@ -82,32 +81,70 @@ func _goal_row() -> Control:
 	return row
 
 
-## Three marigold flames: lit by the Dami streak, flickering.
+## The Dami streak: a flame, three steps (one per win in a row) and what
+## the next win adds. Below it, progress to Hajurama's Trunk.
 func _streak_meter() -> Control:
+	var n := StreakManager.dami()
 	var box := VBoxContainer.new()
-	box.add_theme_constant_override("separation", 4)
+	box.add_theme_constant_override("separation", 10)
+	var card := PanelContainer.new()
+	card.add_theme_stylebox_override("panel", UIKit.card_box(UIKit.PAPER_DARK, 20, UIKit.LINE))
+	box.add_child(card)
+	var h := HBoxContainer.new()
+	h.add_theme_constant_override("separation", 22)
+	card.add_child(h)
 	_streak = Control.new()
-	_streak.custom_minimum_size = Vector2(0, 120)
+	_streak.custom_minimum_size = Vector2(120, 140)
 	_streak.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_streak.draw.connect(_draw_streak)
-	box.add_child(_streak)
-	var n := StreakManager.dami()
-	var text := tr("Dami streak: win without failing for free boosters!")
-	if n > 0:
-		var names: PackedStringArray = []
-		for id in free:
-			names.append(BoosterManager.display_name(id))
-		text = tr("Dami streak %d! Free: %s") % [n, ", ".join(names)]
-	var l := UIKit.label(text, 32, UIKit.INK_SOFT)
-	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	box.add_child(l)
+	h.add_child(_streak)
+	var col := VBoxContainer.new()
+	col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	col.alignment = BoxContainer.ALIGNMENT_CENTER
+	col.add_theme_constant_override("separation", 8)
+	h.add_child(col)
+	col.add_child(UIKit.label(tr("Dami streak: %d") % n if n > 0 else tr("Dami streak"), 38, UIKit.INK, HORIZONTAL_ALIGNMENT_LEFT))
+	var steps := Control.new()
+	steps.custom_minimum_size = Vector2(0, 30)
+	steps.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	steps.draw.connect(_draw_steps.bind(steps, mini(n, 3)))
+	col.add_child(steps)
+	var cap := UIKit.label(_streak_caption(n), 28, UIKit.INK_SOFT, HORIZONTAL_ALIGNMENT_LEFT)
+	cap.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	col.add_child(cap)
 	var trunk := HBoxContainer.new()
 	trunk.alignment = BoxContainer.ALIGNMENT_CENTER
 	trunk.add_theme_constant_override("separation", 10)
-	trunk.add_child(UIKit.icon("chest", 48, Color("2f6f8f")))
-	trunk.add_child(UIKit.label(tr("Hajurama's Trunk: %d / %d wins in a row") % [StreakManager.treasure(), StreakManager.treasure_goal()], 30, UIKit.INK_SOFT))
+	trunk.add_child(UIKit.icon("chest", 44, Color("2f6f8f")))
+	trunk.add_child(UIKit.label(tr("Hajurama's Trunk: %d / %d wins in a row") % [StreakManager.treasure(), StreakManager.treasure_goal()], 28, UIKit.INK_SOFT))
 	box.add_child(trunk)
 	return box
+
+
+func _streak_caption(n: int) -> String:
+	if n >= 3:
+		return tr("Top streak! All three boosters are free.")
+	if n <= 0:
+		return tr("Win without failing for free boosters")
+	var table: Dictionary = GameData.economy().get("dami_streak", {})
+	var next: Array = (table.get(str(n + 1), []) as Array)
+	for id in next:
+		if not free.has(id):
+			return tr("Win again without failing: %s free next time") % BoosterManager.display_name(String(id))
+	return tr("Win without failing for free boosters")
+
+
+## What the player can do with the booster row, in plain words.
+func _booster_hint() -> Label:
+	var cap := int(GameData.economy().get("pre_boosters_max", 2))
+	var text := tr("Tap a booster to bring it (up to %d)") % cap
+	if free.size() >= BoosterManager.PRE_IDS.size():
+		text = tr("Your streak turned every booster on for free")
+	elif not free.is_empty():
+		text = tr("Gold ones are free. Tap another to add it")
+	var l := UIKit.label(text, 32, UIKit.INK_SOFT)
+	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	return l
 
 
 func _process(delta: float) -> void:
@@ -116,30 +153,49 @@ func _process(delta: float) -> void:
 		_streak.queue_redraw()
 
 
+## One soft, layered flame (red-orange, orange, yellow core) that sways a
+## little; grey when there is no streak yet.
 func _draw_streak() -> void:
-	var n := mini(StreakManager.dami(), 3)
-	var w := _streak.size.x
+	var lit := StreakManager.dami() > 0
+	var base := Vector2(_streak.size.x * 0.5, _streak.size.y - 14)
+	_streak.draw_colored_polygon(DrawKit.ellipse(base + Vector2(0, 8), 40, 8, 20), Color(0, 0, 0, 0.12))
+	var sway := sin(_t * 3.1) * 0.06 + sin(_t * 7.3) * 0.025 if lit else 0.0
+	var breathe := 1.0 + (sin(_t * 5.0) * 0.03 if lit else 0.0)
+	var layers := [
+		[1.0, Color("ff5a36"), Color("e0342a")],
+		[0.72, Color("ff9f1c"), Color("ff7a1a")],
+		[0.44, Color("ffe066"), Color("ffc61f")],
+	]
+	for layer in layers:
+		var k: float = layer[0]
+		var top: Color = layer[1] if lit else Color(UIKit.INK_SOFT, 0.18 + 0.12 * (1.0 - k))
+		var bottom: Color = layer[2] if lit else Color(UIKit.INK_SOFT, 0.25)
+		var pts := _flame_shape(base + Vector2(0, -6 * (1.0 - k)), 46.0 * k, 116.0 * k * breathe, sway * (1.4 - k))
+		DrawKit.gradient_fill(_streak, pts, top, bottom)
+
+
+## A teardrop: round bottom at `base`, a tip `height` above it that leans
+## with `sway`.
+func _flame_shape(base: Vector2, r: float, height: float, sway: float) -> PackedVector2Array:
+	var pts := PackedVector2Array()
+	for i in 36:
+		var a := TAU * i / 36.0
+		var up := (1.0 + cos(a)) * 0.5          # 1 at the tip, 0 at the bottom
+		var x := sin(a) * pow(absf(sin(a * 0.5)), 1.4) * r
+		pts.append(Vector2(base.x + x + sway * height * up * up, base.y - up * height))
+	return pts
+
+
+## Three steps, lit up to the streak.
+func _draw_steps(ci: Control, n: int) -> void:
+	var gap := 12.0
+	var w := minf((ci.size.x - gap * 2.0) / 3.0, 150.0)
 	for k in 3:
-		var c := Vector2(w * 0.5 + (k - 1) * 150, 70)
-		var lit := k < n
-		var flick := 1.0 + (0.08 * sin(_t * 9.0 + k * 2.0) if lit else 0.0)
-		var flame := PackedVector2Array()
-		for i in 24:
-			var a := TAU * i / 24.0
-			var r := 34.0 * flick
-			var y := sin(a) * r
-			if y < 0:
-				y *= 1.0 + 0.8 * absf(cos(a * 0.5))
-			flame.append(c + Vector2(cos(a) * r * 0.85, y))
-		var outer := Color("ff7a1a") if lit else Color(UIKit.INK, 0.15)
-		var inner := Color("ffd23f") if lit else Color(UIKit.INK, 0.08)
-		_streak.draw_colored_polygon(flame, outer)
-		_streak.draw_colored_polygon(DrawKit.ellipse(c + Vector2(0, 6), 16, 20, 14), inner)
-		if lit:
-			# Marigold petals around the flame.
-			for i in 8:
-				var a := TAU * i / 8.0 + _t * 0.8
-				_streak.draw_circle(c + Vector2(cos(a), sin(a)) * 50, 9, Color("ff9f1c"), true, -1.0, true)
+		var r := Rect2(k * (w + gap), 4, w, ci.size.y - 8)
+		var on := k < n
+		DrawKit.rrect(ci, r, r.size.y * 0.5, Color("ff8a1f") if on else Color(UIKit.INK_SOFT, 0.16))
+		if on:
+			DrawKit.rrect(ci, Rect2(r.position + Vector2(6, 3), Vector2(r.size.x - 12, r.size.y * 0.35)), r.size.y * 0.2, Color(1, 1, 1, 0.3))
 
 
 func _slot(id: String) -> Control:
@@ -150,9 +206,16 @@ func _slot(id: String) -> Control:
 	for st in ["normal", "hover", "pressed", "focus"]:
 		b.add_theme_stylebox_override(st, StyleBoxEmpty.new())
 	b.draw.connect(func() -> void:
-		var on := selected.has(id) or free.has(id)
 		var r := Rect2(Vector2(10, 10), Vector2(200, 200))
-		DrawKit.glossy_rrect(b, r, 40, UIKit.PRIMARY if on else UIKit.SECONDARY, UIKit.PRIMARY_EDGE if on else UIKit.SECONDARY_EDGE, 0.0, 6.0, 12.0, true))
+		var fill := UIKit.SECONDARY
+		var edge := UIKit.SECONDARY_EDGE
+		if free.has(id):
+			fill = UIKit.GOLD
+			edge = UIKit.GOLD_EDGE
+		elif selected.has(id):
+			fill = UIKit.PRIMARY
+			edge = UIKit.PRIMARY_EDGE
+		DrawKit.glossy_rrect(b, r, 40, fill, edge, 0.0, 6.0, 12.0, true))
 	var ic := UIKit.icon(BoosterManager.icon_for(id), 110, Color.WHITE)
 	ic.shadow = true
 	ic.position = Vector2(55, 40)
@@ -162,34 +225,38 @@ func _slot(id: String) -> Control:
 	name_l.position = Vector2(0, 214)
 	name_l.size = Vector2(220, 36)
 	b.add_child(name_l)
-	var tag := UIKit.badge("", UIKit.HEART, 30)
-	tag.position = Vector2(150, -6)
-	b.add_child(tag)
-	b.set_meta("tag", tag)
 	b.pressed.connect(func() -> void: toggle(id))
 	slots[id] = b
 	_refresh_slot(id)
 	return b
 
 
+## The corner tag: FREE (streak), a tick (picked), the stock count, or +.
 func _refresh_slot(id: String) -> void:
 	var b: Button = slots[id]
-	var tag: PanelContainer = b.get_meta("tag")
-	var l: Label = tag.get_child(0)
+	if b.has_meta("tag"):
+		(b.get_meta("tag") as Node).queue_free()
+	var tag: PanelContainer
 	if free.has(id):
-		l.text = tr("FREE")
+		tag = UIKit.badge(tr("FREE"), UIKit.DANGER, 30)
 	elif selected.has(id):
-		l.text = tr("ON")
+		tag = UIKit.badge(tr("ON"), UIKit.PRIMARY_EDGE, 30)
 	else:
 		var n := BoosterManager.count(id)
-		l.text = str(n) if n > 0 else "+"
+		tag = UIKit.badge(str(n) if n > 0 else "+", UIKit.SECONDARY_EDGE if n > 0 else UIKit.HEART, 30)
+	tag.position = Vector2(150, -6)
+	b.add_child(tag)
+	b.set_meta("tag", tag)
 	b.queue_redraw()
 
 
-## Select/deselect a booster (max 2). With none in stock, offer to buy one.
+## Select/deselect a booster (max 2 besides the free ones). With none in
+## stock, offer to buy one.
 func toggle(id: String) -> void:
 	if free.has(id):
-		VFXManager.toast(tr("Free from your Dami streak!"))
+		AudioManager.play("button_click")
+		UIKit.bounce(slots[id], 1.05)
+		VFXManager.toast(tr("Already on: a gift from your Dami streak"))
 		return
 	AudioManager.play("button_click")
 	if selected.has(id):

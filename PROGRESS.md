@@ -34,6 +34,15 @@ Read this first at the start of every session. Godot 4.7.2 at
   iap_products.json; `--store` shows it on desktop); weekly events and the
   Bazaar Race removed; Tasks moved to the right feature column with a full-
   width PLAY; new bottom nav; calm gameplay background.
+- 2026-10-04 (user feedback round 2): only the top modal is visible
+  (`ScreenManager._refresh_stack`; meta `modal_overlay` lets the one below
+  show, used by the dialogue box), so stacked popups never show two
+  ribbons; chest rewards wrap 4 per row and stickers merge into one tile;
+  start card shows streak freebies as gold FREE slots with a plain hint and
+  a new flame + 3-step streak meter; slow cloud drift on Home; auto-sort
+  finishes the level once every unfinished jar holds one candy type and
+  nothing is hidden/sealed/cat (`Gameplay.autosort_moves`, state BUSY while
+  it plays, skipped in tutorials or when it would break a move limit).
 
 ## How it fits together (meta)
 
