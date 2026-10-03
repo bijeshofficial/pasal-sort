@@ -595,7 +595,7 @@ func _add_moves(n: int) -> void:
 func _check_stuck() -> void:
 	if state != State.PLAYING or board.is_won() or _stuck_shown:
 		return
-	if not board.has_useful_move():
+	if board.is_stuck():
 		show_stuck()
 
 

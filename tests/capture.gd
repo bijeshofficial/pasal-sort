@@ -241,7 +241,9 @@ func _run() -> void:
 		SM.close_all_modals()
 		var trunk: Dictionary = GameData.economy()["treasure_streak"]["chest"]
 		load("res://scripts/ui/chest_popup.gd").open("Hajurama's Trunk", trunk, "capture", Callable(), "trunk")
-		await _wait(4.0)
+		await _wait(0.25)
+		await _save("85a_trunk_closed")
+		await _wait(3.6)
 		await _save("85_trunk")
 		SM.close_all_modals()
 

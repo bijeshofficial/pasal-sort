@@ -138,6 +138,12 @@ func _test_move_rules() -> void:
 	var pointless := _board([{"c": [0, 1, 0, 1], "cloth": true}, {"c": [1, 0, 1, 0], "cloth": true}, [2, 2], []])
 	_check(pointless.can_move(2, 3) and not pointless.has_useful_move(), "stuck ignores pouring a one-candy jar into an empty jar")
 	_check(_board([[0, 1], [1], []]).has_useful_move(), "not stuck when a real move exists")
+	# The 0s can only pour from one jar to the other and back; nothing completes.
+	var loop := _board([[3, 0, 0], [2, 0, 0], [1, 2, 3, 1], [2, 3, 1, 2]])
+	var t0 := Time.get_ticks_msec()
+	_check(loop.has_useful_move() and loop.is_stuck(), "stuck: the only moves swap candies back and forth")
+	_check(not _board([[0, 1, 1, 1], [1, 0, 0, 0], [0], []]).is_stuck(), "not stuck when a few moves lead to a full jar")
+	_check(not Board.from_level(LevelGenerator.generate(40)).is_stuck() and Time.get_ticks_msec() - t0 < 600, "stuck check is quick (%d ms)" % (Time.get_ticks_msec() - t0))
 	# Round trip through to_dict (used by undo and the save).
 	var d := _board([[0, 1], [1, 0, 0], []], {})
 	_check(Board.from_level(d.to_dict()).stacks == d.stacks, "board serialises and restores exactly")

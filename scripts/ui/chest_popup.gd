@@ -8,9 +8,9 @@ extends Control
 signal closed
 
 const STYLES := {
-	"wood": [Color("a8672f"), Color("6b3d1a"), Color("d6a53a")],
-	"gold": [Color("f2b632"), Color("b07c14"), Color("fff2a8")],
-	"trunk": [Color("2f6f8f"), Color("17405a"), Color("f2b632")],
+	"wood": [Color("b8723a"), Color("6b3d1a"), Color("e3b04b")],
+	"gold": [Color("e9a52a"), Color("9a6410"), Color("fff2a8")],
+	"trunk": [Color("c2412f"), Color("6e1d16"), Color("f2c14e")],
 	"mission": [Color("a35cff"), Color("6a2ad2"), Color("ffd23f")],
 }
 
@@ -155,44 +155,104 @@ func _pop_item(i: int) -> void:
 	AudioManager.play("pop", 1.0 + 0.08 * i)
 
 
+## A planked treasure chest: domed lid, metal bands with rivets, corner
+## caps and a keyhole plate. Opening squashes the lid back and shows its
+## dark underside, a warm glow and coins and gems inside.
 func _draw_chest() -> void:
 	var cols: Array = STYLES.get(style, STYLES["wood"])
 	var base: Color = cols[0]
 	var dark: Color = cols[1]
 	var metal: Color = cols[2]
-	var c := Vector2(_chest.size.x * 0.5, _chest.size.y * 0.72)
+	var ink := Color("2b1640")
+	var c := Vector2(_chest.size.x * 0.5, _chest.size.y * 0.78)
 	var t := Time.get_ticks_msec() / 1000.0
 	if _rays > 0.0:
 		for k in 14:
 			var a := t * 0.4 + TAU * k / 14.0
-			var pts := PackedVector2Array([c + Vector2(0, -60), c + Vector2(cos(a), sin(a)) * 520, c + Vector2(cos(a + 0.18), sin(a + 0.18)) * 520])
-			_chest.draw_colored_polygon(pts, Color(1.0, 0.88, 0.4, 0.18 * _rays))
+			var pts := PackedVector2Array([c + Vector2(0, -140), c + Vector2(0, -140) + Vector2(cos(a), sin(a)) * 560, c + Vector2(0, -140) + Vector2(cos(a + 0.18), sin(a + 0.18)) * 560])
+			_chest.draw_colored_polygon(pts, Color(1.0, 0.88, 0.4, 0.16 * _rays))
 	var wob := sin(Time.get_ticks_msec() * 0.06) * 0.08 * _shake
 	_chest.draw_set_transform(c, wob, Vector2(1.0 + 0.04 * _shake, 1.0 - 0.04 * _shake))
-	var w := 360.0
-	var h := 200.0
-	_chest.draw_colored_polygon(DrawKit.ellipse(Vector2(0, 8), w * 0.6, 26, 28), Color(0, 0, 0, 0.25))
-	var body := Rect2(-w * 0.5, -h, w, h)
-	DrawKit.glossy_rrect(_chest, body, 22, base, dark, 0.0, 7.0, 12.0, false)
-	for x in [-w * 0.32, w * 0.32 - 30]:
-		_chest.draw_rect(Rect2(x, -h + 6, 30, h - 12), metal)
+	var w := 380.0
+	var h := 190.0
+	var dome := 120.0
+	RenoArt.soft_shadow(_chest, Vector2(0, 10), w * 0.62, 26, 0.28)
+	# Opened: the lid's underside stands up behind the body.
+	if _lid > 0.5:
+		var up := (_lid - 0.5) * 2.0
+		var lh := 150.0 * up
+		var back := PackedVector2Array([Vector2(-w * 0.5, -h), Vector2(w * 0.5, -h), Vector2(w * 0.56, -h - lh), Vector2(-w * 0.56, -h - lh)])
+		RenoArt.shape(_chest, back, dark.darkened(0.35), 6.0)
+		_chest.draw_rect(Rect2(-w * 0.56 + 8, -h - lh, w * 1.12 - 16, 18 * up), base)
+	# Body.
+	var body := DrawKit.rounded_rect(Rect2(-w * 0.5, -h, w, h), 18, 4)
+	_chest.draw_colored_polygon(body, base)
+	DrawKit.gradient_fill(_chest, DrawKit.rounded_rect(Rect2(-w * 0.5, -h * 0.45, w, h * 0.45), 18, 4), Color(dark, 0.0), Color(dark, 0.55))
+	for k in [1, 2]:
+		var y: float = -h + h * k / 3.0
+		_chest.draw_line(Vector2(-w * 0.5 + 6, y), Vector2(w * 0.5 - 6, y), dark, 4.0)
+		_chest.draw_line(Vector2(-w * 0.5 + 6, y + 4), Vector2(w * 0.5 - 6, y + 4), Color(1, 1, 1, 0.12), 2.0)
 	if _lid > 0.0:
-		# Glow inside.
-		_chest.draw_colored_polygon(DrawKit.ellipse(Vector2(0, -h), w * 0.42, 40, 24), Color(1.0, 0.95, 0.6, 0.95))
-	# Lid: rotates back when opening.
-	_chest.draw_set_transform(c + Vector2(0, -h).rotated(wob) + Vector2(0, -_lid * 60), wob - _lid * 0.5, Vector2.ONE)
-	var lid := PackedVector2Array()
-	for k in 17:
-		var a := PI + PI * k / 16.0
-		lid.append(Vector2(cos(a) * w * 0.52, sin(a) * 110))
-	_chest.draw_colored_polygon(lid, dark.darkened(0.3))
-	var inner := PackedVector2Array()
-	for p in lid:
-		inner.append(p * 0.94)
-	DrawKit.gradient_fill(_chest, inner, base.lightened(0.25), base)
-	_chest.draw_rect(Rect2(-w * 0.52, -12, w * 1.04, 22), metal)
-	DrawKit.rrect(_chest, Rect2(-34, -40, 68, 66), 12, metal.darkened(0.1))
-	_chest.draw_circle(Vector2(0, -8), 10, dark, true, -1.0, true)
+		# Inside glow and the loot peeking over the rim.
+		_chest.draw_colored_polygon(DrawKit.ellipse(Vector2(0, -h), w * 0.44, 30, 28), Color(1.0, 0.93, 0.55, minf(1.0, _lid * 1.6)))
+		var loot := clampf((_lid - 0.4) * 1.8, 0.0, 1.0)
+		for coin in [[-110, 14], [-60, 26], [70, 20], [118, 10], [10, 30]]:
+			var p := Vector2(coin[0], -h - coin[1] * loot)
+			_chest.draw_circle(p, 22, Color("e8a10f"), true, -1.0, true)
+			_chest.draw_circle(p, 17, Color("ffd23f"), true, -1.0, true)
+			_chest.draw_arc(p, 22, 0, TAU, 20, ink, 3.0, true)
+		for gem in [[-20, 34, Color("ff4f7a")], [40, 30, Color("2fb8ff")]]:
+			var g := Vector2(gem[0], -h - gem[1] * loot)
+			var gp := PackedVector2Array([g + Vector2(0, -20), g + Vector2(17, -4), g + Vector2(0, 18), g + Vector2(-17, -4)])
+			RenoArt.shape(_chest, gp, gem[2], 3.0)
+			_chest.draw_colored_polygon(PackedVector2Array([g + Vector2(0, -20), g + Vector2(8, -6), g + Vector2(-6, -6)]), Color(1, 1, 1, 0.55))
+		# The body's front rim hides the bottom of the loot.
+		_chest.draw_rect(Rect2(-w * 0.5, -h, w, 26), base)
+		_chest.draw_line(Vector2(-w * 0.5, -h + 26), Vector2(w * 0.5, -h + 26), dark, 4.0)
+	# Bands, corner caps, rivets.
+	for x in [-w * 0.3, w * 0.3]:
+		var band := Rect2(x - 18, -h, 36, h)
+		_chest.draw_rect(band, metal)
+		_chest.draw_rect(Rect2(band.position, Vector2(8, h)), Color(1, 1, 1, 0.25))
+		_chest.draw_rect(Rect2(band.position + Vector2(28, 0), Vector2(8, h)), metal.darkened(0.25))
+		for y in [-h + 22, -h * 0.5, -22]:
+			_chest.draw_circle(Vector2(x, y), 5, metal.darkened(0.4), true, -1.0, true)
+	for side in [-1.0, 1.0]:
+		var cx: float = side * w * 0.5
+		var cap := PackedVector2Array([Vector2(cx, -46), Vector2(cx, 0), Vector2(cx - side * 46, 0), Vector2(cx - side * 46, -12), Vector2(cx - side * 12, -12), Vector2(cx - side * 12, -46)])
+		_chest.draw_colored_polygon(cap, metal.darkened(0.1))
+	DrawKit.outline(_chest, body, ink, 6.0)
+	# Closed (or squashing) domed lid.
+	if _lid <= 0.5:
+		var squash := 1.0 - _lid * 2.0
+		var lid := PackedVector2Array()
+		for k in 25:
+			var a := PI + PI * k / 24.0
+			lid.append(Vector2(cos(a) * w * 0.52, -h + sin(a) * dome * squash))
+		lid.append(Vector2(w * 0.52, -h + 10))
+		lid.append(Vector2(-w * 0.52, -h + 10))
+		_chest.draw_colored_polygon(lid, base.lightened(0.08))
+		var plank := PackedVector2Array()
+		for k in 25:
+			var a := PI + PI * k / 24.0
+			plank.append(Vector2(cos(a) * w * 0.52 * 0.97, -h + sin(a) * dome * squash * 0.55))
+		_chest.draw_polyline(plank, dark, 4.0, true)
+		for x in [-w * 0.3, w * 0.3]:
+			for part in Geometry2D.intersect_polygons(PackedVector2Array([Vector2(x - 18, -h - dome - 10), Vector2(x + 18, -h - dome - 10), Vector2(x + 18, -h + 10), Vector2(x - 18, -h + 10)]), lid):
+				_chest.draw_colored_polygon(part, metal)
+		# Shine along the top of the dome.
+		var shine := PackedVector2Array()
+		for k in range(5, 20):
+			var a := PI + PI * k / 24.0
+			shine.append(Vector2(cos(a) * w * 0.42, -h + sin(a) * dome * squash * 0.82))
+		_chest.draw_polyline(shine, Color(1, 1, 1, 0.3), 6.0, true)
+		_chest.draw_rect(Rect2(-w * 0.52, -h - 2, w * 1.04, 16), metal.darkened(0.15))
+		DrawKit.outline(_chest, lid, ink, 6.0)
+	# Keyhole plate on the front.
+	var plate := DrawKit.rounded_rect(Rect2(-36, -h - 22, 72, 84), 14, 4)
+	RenoArt.shape(_chest, plate, metal, 4.0)
+	_chest.draw_circle(Vector2(0, -h + 10), 10, ink, true, -1.0, true)
+	_chest.draw_colored_polygon(PackedVector2Array([Vector2(-6, -h + 12), Vector2(6, -h + 12), Vector2(9, -h + 40), Vector2(-9, -h + 40)]), ink)
 	_chest.draw_set_transform(Vector2.ZERO)
 
 

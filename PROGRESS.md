@@ -43,6 +43,10 @@ Read this first at the start of every session. Godot 4.7.2 at
   finishes the level once every unfinished jar holds one candy type and
   nothing is hidden/sealed/cat (`Gameplay.autosort_moves`, state BUSY while
   it plays, skipped in tutorials or when it would break a move limit).
+  Stuck now means no reachable progress (`Board.is_stuck`: small search for a
+  move that completes a jar, reveals a candy or lifts a seal), so endless
+  back-and-forth swaps trigger the Stuck popup. New chest art (domed planked
+  chest, bands, keyhole, loot); Hajurama's Trunk is red with brass.
 
 ## How it fits together (meta)
 

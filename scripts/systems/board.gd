@@ -279,6 +279,53 @@ func has_useful_move() -> bool:
 	return false
 
 
+## Stuck means no sequence of legal moves ever gets anywhere: no jar
+## completes, no wrapped candy opens and no seal lifts. Catches the loop
+## where the only moves left swap the same candies back and forth. Explores
+## up to `budget` positions; past that the player still has room to play.
+func is_stuck(budget: int = 300) -> bool:
+	if is_won():
+		return false
+	var options := useful_moves().size()
+	if options == 0:
+		return cat_path.is_empty() or not has_useful_move()
+	# Plenty of moves means plenty of room; loops only happen on tight boards.
+	if options > 6:
+		return false
+	var seen := {state_key(): true}
+	var queue: Array = [self]
+	while not queue.is_empty():
+		var b: Board = queue.pop_front()
+		for a in b.stacks.size():
+			if not b.can_select(a):
+				continue
+			for t in b.stacks.size():
+				if not b.can_move(a, t):
+					continue
+				var nb := b.duplicate_board()
+				var r := nb.apply_move(a, t)
+				if r.is_empty():
+					continue
+				if r["completed"] or r["won"] or not (r["revealed"] as Array).is_empty() or not (r["unsealed"] as Array).is_empty():
+					return false
+				var k := nb.state_key()
+				if seen.has(k):
+					continue
+				seen[k] = true
+				if seen.size() > budget:
+					return false
+				queue.append(nb)
+	return true
+
+
+## Position identity for search: the stacks plus where the cat is in its cycle.
+func state_key() -> String:
+	var key := JSON.stringify(stacks)
+	if not cat_path.is_empty():
+		key += "#%d" % (move_count % (cat_every * cat_path.size()))
+	return key
+
+
 func add_jar(cap: int = -1) -> int:
 	stacks.append([])
 	hidden.append([])
