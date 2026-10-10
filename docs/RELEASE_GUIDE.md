@@ -165,8 +165,9 @@ from Aksyatra, which already work on Godot 4.7.2.
 - [ ] Android export preset: Gradle build, **AAB**, target API **36** (min 24),
   arm64 + armv7, Internet + network-state permissions
 - [ ] Version `1.0.0`, code `1` (raise the code by 1 for every upload after this)
-- [ ] Launcher icon (adaptive, foreground plus background) from your final
-  Canva icon
+- [x] Launcher icon from your icon set (`assets/app_icon/`): 192 px legacy
+  icon, plus an adaptive foreground and a soft lilac background that blends
+  when the launcher wobbles the icon. Wired into the Android preset.
 - [ ] `tools/build_android.sh test` (APK with test ads) and `release`
   (signed AAB), the same as Aksyatra
 - [ ] Release build check: the debug menu is unreachable, no "TEST" overlays
@@ -260,7 +261,7 @@ they're all done.
 - [ ] **Main store listing** (text in Appendix A; images from
   `docs/STORE_ASSETS.md`):
   - [ ] Title, short description, full description
-  - [ ] App icon 512×512 PNG (your final Canva icon)
+  - [ ] App icon 512×512 PNG: `assets/app_icon/icon_512.png`
   - [ ] Feature graphic 1024×500
   - [ ] 4–8 phone screenshots 1080×1920 (`docs/store/play/01…08`)
   - [ ] Optional: Nepali translation (Manage translations → add Nepali, paste A.3)
@@ -324,7 +325,8 @@ they're all done.
 
 - [ ] Apple items in section 1 done
 - [ ] (Claude) iOS export preset: bundle ID `com.neuronnest.pasalsort`, your
-  Team ID; `GADApplicationIdentifier`, `NSUserTrackingUsageDescription` and
+  Team ID, app icon `assets/app_icon/icon_1024.png` (no transparency, ready);
+  `GADApplicationIdentifier`, `NSUserTrackingUsageDescription` and
   Google's SKAdNetwork IDs in Info.plist
 - [ ] (Claude) Option A or B from section 0 finished
 - [ ] (you) App Store Connect → New app → bundle ID → SKU `pasalsort`
