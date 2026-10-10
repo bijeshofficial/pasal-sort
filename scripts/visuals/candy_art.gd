@@ -1,7 +1,9 @@
 class_name CandyArt
 extends RefCounted
 ## Code-drawn candies: a glossy body in the candy's colour AND a unique
-## shape (colour-blind friendly), inside a twisted-wrapper silhouette.
+## shape (colour-blind friendly), each with its own wrapper ("wrap" in
+## data/candies.json): twisted cellophane, crimped ends, a ribbon bow, a
+## pleated paper cup, a lollipop stick, or bare and sugar-coated.
 ## Shapes are built once on a unit grid (1 = slot diameter) and cached.
 ## Final art can replace CandyVisual without touching gameplay code.
 
@@ -121,12 +123,25 @@ static func draw_candy(ci: CanvasItem, c: Vector2, d: float, type: int, style: S
 	elif type == 5:
 		twist = Color("f4efe6")
 		twist_edge = edge
+	var wrap := String(GameData.candy(type).get("wrap", "twist"))
+	if wrap == "bare":
+		d *= 1.12
 	var pts := shape(shape_name)
 	var body := _xf(pts, c, d)
 	var parts := _parts(shape_name)
 	# Contact shadow (the candy rests on the one below / the jar floor).
 	ci.draw_colored_polygon(DrawKit.ellipse(c + Vector2(0, 0.3) * d, 0.3 * d, 0.055 * d, 20), Color(0.05, 0.02, 0.15, 0.22))
-	_draw_twists(ci, c, d, twist, twist_edge, style, line, selected)
+	match wrap:
+		"twist":
+			_draw_twists(ci, c, d, twist, twist_edge, style, line, selected)
+		"crimp":
+			_draw_crimp(ci, c, d, twist, twist_edge, style, line, selected)
+		"bow":
+			# A ribbon in a deeper shade of the candy, so it reads as a bow.
+			var ribbon := twist if style == "foil" else Color.from_hsv(col.h, minf(1.0, col.s * 1.15), col.v * 0.82)
+			_draw_bow(ci, c, d, ribbon, edge if style != "foil" else twist_edge, style, line, selected)
+		"stick":
+			_draw_stick(ci, c, d, line, selected)
 	if selected:
 		ci.draw_colored_polygon(_xf(parts["halo"], c, d), Color.WHITE)
 	# Inked outline, then a gradient body.
@@ -136,6 +151,16 @@ static func draw_candy(ci: CanvasItem, c: Vector2, d: float, type: int, style: S
 	for crescent in parts["rim"]:
 		ci.draw_colored_polygon(_xf(crescent, c, d), Color(_lit(col).lightened(0.35), 0.55))
 	_details(ci, c, d, type, shape_name, col, edge, line, body)
+	if wrap == "cup":
+		var cup := twist
+		var cup_edge := twist_edge
+		if style != "foil" and type == 5:  # pink paper so the white coconut stands out
+			cup = Color("f4a6c0")
+			cup_edge = Color("c0577c")
+		elif style != "foil" and type == 11:  # brown paper under the gold chocolate
+			cup = Color("8a5636")
+			cup_edge = Color("4e2c18")
+		_draw_cup(ci, c, d, cup, cup_edge, style, line, selected)
 	# Gloss: a big soft highlight and a sharp specular dot.
 	DrawKit.gradient_fill(ci, _xf(parts["gloss"], c, d), Color(1, 1, 1, 0.62), Color(1, 1, 1, 0.04))
 	ci.draw_circle(c + Vector2(-0.15, -0.02) * d, d * 0.024, Color(1, 1, 1, 0.8), true, -1.0, true)
@@ -307,6 +332,95 @@ static func _draw_twists(ci: CanvasItem, c: Vector2, d: float, fill: Color, edge
 		var knot := DrawKit.rounded_rect(Rect2(c.x + (s * 0.27 - 0.038) * d, c.y - 0.08 * d, 0.076 * d, 0.16 * d), 0.034 * d, 3)
 		DrawKit.gradient_fill(ci, knot, fill.lightened(0.1), fill.darkened(0.2))
 		DrawKit.outline(ci, knot, edge, line * 0.8)
+
+
+## Crimped sachet ends: flat, with a zigzag edge and pressed lines.
+static func _draw_crimp(ci: CanvasItem, c: Vector2, d: float, fill: Color, edge: Color, style: String, line: float, selected: bool) -> void:
+	for side in [-1.0, 1.0]:
+		var s: float = side
+		var pts := PackedVector2Array([c + Vector2(s * 0.22, -0.15) * d, c + Vector2(s * 0.42, -0.19) * d])
+		var teeth := 6
+		for k in teeth + 1:
+			var y := -0.19 + 0.38 * k / teeth
+			pts.append(c + Vector2(s * (0.49 if k % 2 == 0 else 0.44), y) * d)
+		pts.append(c + Vector2(s * 0.42, 0.19) * d)
+		pts.append(c + Vector2(s * 0.22, 0.15) * d)
+		if s < 0:
+			pts.reverse()
+		if selected:
+			DrawKit.outline(ci, pts, Color.WHITE, line * 4.0)
+		DrawKit.gradient_fill(ci, pts, Color(_wrap_top(fill, style), 0.95), Color(_wrap_bottom(fill, style), 0.9))
+		for x in [0.34, 0.39]:
+			ci.draw_line(c + Vector2(s * x, -0.15) * d, c + Vector2(s * x, 0.15) * d, Color(edge, 0.45), line * 0.7, true)
+		if style == "striped":
+			ci.draw_line(c + Vector2(s * 0.26, 0) * d, c + Vector2(s * 0.45, 0) * d, Color(1, 1, 1, 0.95), line * 2.2)
+		DrawKit.outline(ci, pts, edge, line * 0.9)
+
+
+## A ribbon bow on each side: two round loops and a knot.
+static func _draw_bow(ci: CanvasItem, c: Vector2, d: float, fill: Color, edge: Color, style: String, line: float, selected: bool) -> void:
+	for side in [-1.0, 1.0]:
+		var s: float = side
+		for up in [-1.0, 1.0]:
+			var lc := c + Vector2(s * 0.38, up * 0.12) * d
+			var loop := PackedVector2Array()
+			for p in DrawKit.ellipse(Vector2.ZERO, 0.13 * d, 0.075 * d, 24):
+				loop.append(lc + p.rotated(s * up * 0.55))
+			if selected:
+				DrawKit.outline(ci, loop, Color.WHITE, line * 4.0)
+			DrawKit.gradient_fill(ci, loop, _wrap_top(fill, style), _wrap_bottom(fill, style))
+			var hole := PackedVector2Array()
+			for p in DrawKit.ellipse(Vector2.ZERO, 0.06 * d, 0.025 * d, 16):
+				hole.append(lc + Vector2(s * 0.02, 0) * d + p.rotated(s * up * 0.55))
+			ci.draw_colored_polygon(hole, Color(edge, 0.55))
+			if style == "striped":
+				ci.draw_line(lc - Vector2(s * 0.08, 0).rotated(s * up * 0.55) * d, lc + Vector2(s * 0.08, 0).rotated(s * up * 0.55) * d, Color(1, 1, 1, 0.9), line * 1.4)
+			DrawKit.outline(ci, loop, edge, line * 0.9)
+		var knot := DrawKit.ellipse(c + Vector2(s * 0.28, 0) * d, 0.05 * d, 0.07 * d, 16)
+		DrawKit.gradient_fill(ci, knot, fill.lightened(0.15), fill.darkened(0.15))
+		DrawKit.outline(ci, knot, edge, line * 0.8)
+
+
+## A lollipop stick poking out to the lower right.
+static func _draw_stick(ci: CanvasItem, c: Vector2, d: float, line: float, selected: bool) -> void:
+	var a := c + Vector2(0.1, 0.06) * d
+	var b := c + Vector2(0.47, 0.3) * d
+	if selected:
+		ci.draw_line(a, b, Color.WHITE, d * 0.075 + line * 4.0, true)
+	ci.draw_line(a, b, Color("8f8577"), d * 0.075, true)
+	ci.draw_line(a, b, Color("fbf6ec"), d * 0.075 - line * 1.6, true)
+	ci.draw_circle(b, d * 0.0375, Color("8f8577"), true, -1.0, true)
+	ci.draw_circle(b, d * 0.0375 - line * 0.8, Color("fbf6ec"), true, -1.0, true)
+
+
+## A pleated paper cup holding the lower half of the sweet (drawn in front).
+static func _draw_cup(ci: CanvasItem, c: Vector2, d: float, fill: Color, edge: Color, style: String, line: float, selected: bool) -> void:
+	var pts := PackedVector2Array()
+	var scallops := 7
+	for k in scallops * 4 + 1:
+		var t := float(k) / (scallops * 4)
+		var x := -0.38 + 0.76 * t
+		pts.append(c + Vector2(x, 0.03 - absf(sin(t * scallops * PI)) * 0.035) * d)
+	pts.append(c + Vector2(0.29, 0.34) * d)
+	pts.append(c + Vector2(-0.29, 0.34) * d)
+	if selected:
+		DrawKit.outline(ci, pts, Color.WHITE, line * 4.0)
+	DrawKit.gradient_fill(ci, pts, _wrap_top(fill, style), _wrap_bottom(fill, style).darkened(0.08))
+	for k in range(1, 8):
+		var t := k / 8.0
+		ci.draw_line(c + Vector2(-0.36 + 0.72 * t, 0.06) * d, c + Vector2(-0.27 + 0.54 * t, 0.32) * d, Color(edge, 0.5), line * 0.8, true)
+	if style == "striped":
+		ci.draw_line(c + Vector2(-0.33, 0.18) * d, c + Vector2(0.33, 0.18) * d, Color(1, 1, 1, 0.9), line * 2.0)
+	ci.draw_polyline(PackedVector2Array([c + Vector2(-0.34, 0.07) * d, c + Vector2(0.34, 0.07) * d]), Color(1, 1, 1, 0.35), line, true)
+	DrawKit.outline(ci, pts, edge, line * 0.9)
+
+
+static func _wrap_top(fill: Color, style: String) -> Color:
+	return fill.lightened(0.45 if style == "foil" else 0.25)
+
+
+static func _wrap_bottom(fill: Color, style: String) -> Color:
+	return fill.darkened(0.2 if style == "foil" else 0.08)
 
 
 ## A small decorative jar with candies (home counter, icons, cards).

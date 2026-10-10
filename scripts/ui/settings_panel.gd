@@ -31,7 +31,7 @@ func _ready() -> void:
 	add_child(_save_timer)
 	var outer := UIKit.modal_frame(self, 900, tr("SETTINGS"))
 	UIKit.attach_close(self, close)
-	var scroll := ScrollContainer.new()
+	var scroll := WheelScroll.new()
 	scroll.custom_minimum_size = Vector2(0, minf(get_viewport_rect().size.y * 0.66, 1300))
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER

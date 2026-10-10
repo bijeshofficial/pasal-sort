@@ -58,7 +58,7 @@ func _ready() -> void:
 	head.add_child(UIKit.label(str(CurrencyManager.get_stars()), 50, UIKit.INK))
 	v.add_child(head)
 	v.add_child(_progress_bar())
-	var scroll := ScrollContainer.new()
+	var scroll := WheelScroll.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER

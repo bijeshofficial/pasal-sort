@@ -117,7 +117,7 @@ static func _analytics() -> void:
 		lines.append("%s: %d" % [k, int(counts[k])])
 	var l := UIKit.label("\n".join(lines), 30, UIKit.INK, HORIZONTAL_ALIGNMENT_LEFT, false)
 	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	var scroll := ScrollContainer.new()
+	var scroll := WheelScroll.new()
 	scroll.custom_minimum_size = Vector2(0, 900)
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	l.custom_minimum_size = Vector2(760, 0)

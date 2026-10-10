@@ -26,15 +26,29 @@ extends Control
 		queue_redraw()
 
 const NO_SHADOW := ["coin", "coin_pile", "candy", "cloth"]
+## Nudges (in 100-grid units) that centre each drawing's bounding box in the
+## icon box, measured by rendering every icon. Play keeps a little optical
+## shift to the right, and the heart sits a touch low, as they read best.
+const CENTRE_FIX := {
+	"heart": Vector2(0, -8), "jar": Vector2(4, -3), "jar_plus": Vector2(-6.2, -3.2),
+	"play": Vector2(-4, 0), "lock": Vector2(0, -5.2), "check": Vector2(-1.2, -3.8),
+	"star": Vector2(0, 3), "music": Vector2(0, 4.5), "hand": Vector2(4.2, 0),
+	"pencil": Vector2(4.2, -8), "candy": Vector2(0, -5), "clover": Vector2(0, -4.8),
+	"stats": Vector2(0, -9), "kite": Vector2(0, -3), "coin_pile": Vector2(0, -2),
+	"chest": Vector2(0, -2), "sound": Vector2(-2.5, 0), "shop": Vector2(-1.8, -1),
+	"shuffle": Vector2(-1.5, 0), "basket": Vector2(0, -1), "brush": Vector2(-1, -2),
+}
 
 
 func _draw() -> void:
+	var fix: Vector2 = CENTRE_FIX.get(icon, Vector2.ZERO) * minf(size.x, size.y) / 100.0
 	if shadow and not NO_SHADOW.has(icon):
 		var off := minf(size.x, size.y) * 0.06
-		draw_set_transform(Vector2(0, off))
+		draw_set_transform(fix + Vector2(0, off))
 		_shape(Color(shadow_color, 0.85), Color(shadow_color, 0.85))
-		draw_set_transform(Vector2.ZERO)
+	draw_set_transform(fix)
 	_shape(color, accent)
+	draw_set_transform(Vector2.ZERO)
 
 
 

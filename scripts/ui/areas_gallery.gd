@@ -7,7 +7,7 @@ extends RefCounted
 static func open(home: HomePage) -> GamePopup:
 	var list := VBoxContainer.new()
 	list.add_theme_constant_override("separation", 14)
-	var scroll := ScrollContainer.new()
+	var scroll := WheelScroll.new()
 	scroll.custom_minimum_size = Vector2(0, minf(home.get_viewport_rect().size.y * 0.55, 1100))
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER

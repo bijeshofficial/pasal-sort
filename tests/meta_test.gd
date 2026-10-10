@@ -75,6 +75,7 @@ func _main() -> void:
 	await _test_orders_and_move_limit()
 	await _test_polish()
 	await _test_popup_switching()
+	await _test_wheel_scroll()
 	_finish()
 
 
@@ -810,6 +811,52 @@ func _test_polish() -> void:
 
 ## Opening one popup from another must replace it, not stack under it
 ## (the old popup used to stay behind with its ribbon showing through).
+## The mouse wheel scrolls the shop even with the cursor on an item card.
+func _test_wheel_scroll() -> void:
+	SM.close_all_modals()
+	SM.hub_tab = "shop"
+	change_scene_to_file(HUB)
+	await _wait(1.0)
+	var shop: Node = current_scene.shop
+	var target: Control = null
+	for n in shop.scroll.find_children("*", "Button", true, false):
+		var r := (n as Control).get_global_rect()
+		if (n as Control).is_visible_in_tree() and r.size.y > 80 and root.get_visible_rect().has_point(r.get_center()):
+			target = n
+			break
+	var pos := target.get_global_rect().get_center() if target else Vector2(540, 900)
+	var move := InputEventMouseMotion.new()
+	move.position = pos
+	move.global_position = pos
+	root.push_input(move, true)
+	await process_frame
+	var before: int = shop.scroll.scroll_vertical
+	for k in 3:
+		var wheel := InputEventMouseButton.new()
+		wheel.button_index = MOUSE_BUTTON_WHEEL_DOWN
+		wheel.pressed = true
+		wheel.factor = 1.0
+		wheel.position = pos
+		wheel.global_position = pos
+		root.push_input(wheel, true)
+		await process_frame
+	_check(target != null and shop.scroll.scroll_vertical > before, "mouse wheel over a shop item scrolls the shop (%d -> %d)" % [before, shop.scroll.scroll_vertical])
+	# Under a popup the list stays put.
+	var PP = load("res://scripts/ui/popups.gd")
+	PP.show({"id": "cover", "title": "Cover", "buttons": []})
+	await process_frame
+	var held: int = shop.scroll.scroll_vertical
+	var w2 := InputEventMouseButton.new()
+	w2.button_index = MOUSE_BUTTON_WHEEL_DOWN
+	w2.pressed = true
+	w2.factor = 1.0
+	w2.position = pos
+	root.push_input(w2, true)
+	await process_frame
+	_check(shop.scroll.scroll_vertical == held, "the wheel doesn't scroll a list covered by a popup")
+	SM.close_all_modals()
+
+
 func _test_popup_switching() -> void:
 	SM.close_all_modals()
 	var LP = load("res://scripts/ui/live_popups.gd")

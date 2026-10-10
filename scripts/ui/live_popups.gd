@@ -30,7 +30,7 @@ static func open_album(on_changed: Callable = Callable()) -> GamePopup:
 		grid.add_child(_set_tile(s, func() -> void:
 			Popups.close_id("album")
 			open_set(String(s["id"]), on_changed)))
-	var scroll := ScrollContainer.new()
+	var scroll := WheelScroll.new()
 	scroll.custom_minimum_size = Vector2(0, 760)
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
