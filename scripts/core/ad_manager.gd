@@ -1,8 +1,12 @@
 extends Node
-## Mock ad service. No real SDK is integrated: a real adapter replaces only
-## the bodies of show_rewarded() / show_interstitial(). Gameplay never knows
-## which provider exists, and every request gets its own callback so each
-## reward is handled by the code that asked for it.
+## Rewarded ads. On a phone with the AdMob plugin, ads come from Google AdMob
+## (consent form first, then the SDK, then a preloaded rewarded ad; the reward
+## is given only from the "earned reward" callback). Debug builds without
+## AdMob (desktop, tests) show a labelled mock ad. A release build without
+## AdMob shows no ad and gives nothing, so a fake ad can never hand out free
+## rewards. Gameplay never knows which backend runs, and every request gets
+## its own callback so each reward is handled by the code that asked for it.
+## IDs live in data/ads.json.
 
 signal ad_started(placement: String)
 signal ad_finished(placement: String, rewarded: bool)
@@ -23,15 +27,55 @@ var _session_runs := 0
 var _last_interstitial_time := -9999.0
 var _last_rewarded_time := -9999.0
 var _showing := false
+## The real backend (AdMobProvider) when available, else null.
+var provider: AdProvider = null
+var cfg: Dictionary = {}
+var _pending: Dictionary = {}   # placement -> Callable(ok: bool)
 
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	if "--ad-fail" in OS.get_cmdline_user_args():
 		mock_fail_rate = 1.0
-	var cfg: Dictionary = GameData.economy().get("interstitial", {})
-	interstitial_every_n_runs = int(cfg.get("every_n_levels", interstitial_every_n_runs))
-	interstitial_min_seconds = float(cfg.get("min_seconds", interstitial_min_seconds))
+	var inter: Dictionary = GameData.economy().get("interstitial", {})
+	interstitial_every_n_runs = int(inter.get("every_n_levels", interstitial_every_n_runs))
+	interstitial_min_seconds = float(inter.get("min_seconds", interstitial_min_seconds))
+	cfg = GameData.load_json("res://data/ads.json")
+	# Only phones can run AdMob. (Its callbacks hold the provider, so a
+	# throwaway one on desktop would never be freed.)
+	if OS.has_feature("android") or OS.has_feature("ios"):
+		var real := AdMobProvider.new()
+		if real.available():
+			provider = real
+			provider.finished.connect(_on_provider_finished)
+			provider.initialize.call_deferred()
+
+
+## Rewarded ad unit for this platform: Google's test unit in debug builds,
+## the live unit only in release builds. "" on desktop.
+func ad_unit_id(release: bool = not OS.is_debug_build()) -> String:
+	var plat := "ios" if OS.has_feature("ios") else ("android" if OS.has_feature("android") else "")
+	if plat == "":
+		return ""
+	return String(cfg.get("ad_units" if release else "test_ad_units", {}).get(plat, ""))
+
+
+## False in a release build without AdMob: rewarded buttons then report
+## "no ad right now" and give nothing.
+func ads_available() -> bool:
+	return provider != null or OS.is_debug_build()
+
+
+## Settings shows "Ad privacy options" when this is true (EEA/UK consent).
+func privacy_options_required() -> bool:
+	return provider != null and provider.privacy_options_required()
+
+
+func show_privacy_options(on_done: Callable = Callable()) -> void:
+	if provider != null:
+		provider.show_privacy_options(on_done)
+	elif on_done.is_valid():
+		on_done.call()
 
 
 func is_showing() -> bool:
@@ -39,12 +83,19 @@ func is_showing() -> bool:
 
 
 func is_rewarded_ready(_placement: String) -> bool:
-	return not _showing
+	return not _showing and ads_available()
 
 
 func show_rewarded(placement: String, on_done: Callable) -> void:
-	if _showing:
+	if _showing or not ads_available():
 		on_done.call(false)
+		return
+	if provider != null:
+		_showing = true
+		_pending[placement] = on_done
+		AudioManager.set_ad_mute(true)
+		ad_started.emit(placement)
+		provider.show_rewarded(placement)
 		return
 	ad_started.emit(placement)
 	await _show_mock_overlay("REWARDED TEST AD\n" + placement.replace("_", " "))
@@ -54,6 +105,19 @@ func show_rewarded(placement: String, on_done: Callable) -> void:
 	if get_tree().root.has_node("AnalyticsManager"):
 		get_tree().root.get_node("AnalyticsManager").log_event("ad_mock", {"placement": placement, "rewarded": ok})
 	on_done.call(ok)
+
+
+func _on_provider_finished(placement: String, rewarded: bool) -> void:
+	_showing = false
+	AudioManager.set_ad_mute(false)
+	_last_rewarded_time = _now()
+	ad_finished.emit(placement, rewarded)
+	if get_tree().root.has_node("AnalyticsManager"):
+		get_tree().root.get_node("AnalyticsManager").log_event("ad_rewarded", {"placement": placement, "rewarded": rewarded})
+	var cb: Callable = _pending.get(placement, Callable())
+	_pending.erase(placement)
+	if cb.is_valid():
+		cb.call(rewarded)
 
 
 func show_rewarded_revive(on_done: Callable) -> void:

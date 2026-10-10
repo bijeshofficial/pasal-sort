@@ -9,7 +9,7 @@ const ROWS := [["sound", "Sound", "sound"], ["music", "Music", "music"], ["hapti
 ## Toggle id -> volume setting shown as a slider under it.
 const VOLUMES := {"sound": "sfx_volume", "music": "music_volume"}
 const LANGUAGES := [["en", "English"], ["ne", "नेपाली"]]
-const PRIVACY_URL := "https://example.com/pasal-sort/privacy"
+const PRIVACY_URL := "https://www.neuronnest.com/pasal-sort/privacy"
 
 var toggles: Dictionary = {}
 var sliders: Dictionary = {}
@@ -66,6 +66,11 @@ func _ready() -> void:
 	privacy.pressed.connect(_privacy)
 	links.add_child(privacy)
 	v.add_child(links)
+	# Where the law asks for ad consent (EEA/UK), players can change it here.
+	if AdManager.privacy_options_required():
+		var ad_privacy := UIKit.button(tr("Ad privacy options"), "neutral", "ad", 36, Vector2(0, 110))
+		ad_privacy.pressed.connect(func() -> void: AdManager.show_privacy_options())
+		v.add_child(ad_privacy)
 	var reset := UIKit.button(tr("Reset progress"), "danger", "retry", 40, Vector2(0, 120))
 	reset.pressed.connect(_reset)
 	v.add_child(reset)
@@ -174,7 +179,7 @@ func _credits() -> void:
 
 func _privacy() -> void:
 	Popups.show({"id": "privacy", "title": tr("Privacy"), "art": "lock", "art_color": UIKit.SECONDARY,
-		"body": tr("Pasal Sort keeps your progress on this device only. No account, no personal data.") + "\n" + PRIVACY_URL,
+		"body": tr("Pasal Sort keeps your progress on this device. No account is needed. Optional rewarded ads come from Google AdMob.") + "\n" + PRIVACY_URL,
 		"buttons": [{"id": "open", "text": tr("Open link"), "kind": "secondary", "cb": func() -> void: OS.shell_open(PRIVACY_URL)}, {"id": "ok", "text": tr("OK"), "kind": "primary"}]})
 
 

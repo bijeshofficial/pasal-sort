@@ -19,11 +19,11 @@ pick up the next items.
 |---|---|
 | Package / bundle ID | `com.neuronnest.pasalsort` (permanent after the first upload) |
 | App name | Pasal Sort: Sort & Renovate (27 of 30 characters) |
-| Privacy policy | https://www.neuronnest.com/pasal-sort/privacy (to be created, section 3) |
+| Privacy policy | https://www.neuronnest.com/pasal-sort/privacy |
 | app-ads.txt | https://www.neuronnest.com/app-ads.txt (already live for Aksyatra; the same file covers this app) |
 | AdMob publisher | `pub-7387045424284544` |
-| AdMob app IDs | Android `ca-app-pub-…~…` · iOS `ca-app-pub-…~…` (fill in, section 2) |
-| Rewarded ad units | Android `ca-app-pub-…/…` · iOS `ca-app-pub-…/…` (fill in, section 2) |
+| AdMob app IDs | Android `ca-app-pub-7387045424284544~8792214414` · iOS `ca-app-pub-7387045424284544~8887583185` |
+| Rewarded ad units | Android `ca-app-pub-7387045424284544/4404492820` · iOS `ca-app-pub-7387045424284544/4445775292` |
 | Support email | info@neuronnest.com |
 | Code | https://github.com/bijeshofficial/pasal-sort |
 
@@ -86,21 +86,21 @@ pick up the next items.
 Do this now. The apps don't need to be on a store yet.
 
 **Android app**
-- [ ] AdMob → **Apps → Add app** → Platform **Android**
-- [ ] "Is the app listed on a supported app store?" → **No** (link it after
+- [x] AdMob → **Apps → Add app** → Platform **Android**
+- [x] "Is the app listed on a supported app store?" → **No** (link it after
   launch, section 9)
-- [ ] App name: `Pasal Sort` → Add app
-- [ ] Copy the **App ID** (`ca-app-pub-7387045424284544~XXXXXXXXXX`, with a `~`)
-- [ ] **Ad units → Add ad unit → Rewarded**
+- [x] App name: `Pasal Sort` → Add app
+- [x] Copy the **App ID** (`ca-app-pub-7387045424284544~XXXXXXXXXX`, with a `~`)
+- [x] **Ad units → Add ad unit → Rewarded**
   - Name: `Rewarded main`
   - Reward: amount `1`, item `reward` (the game decides the real reward:
     coins, a life, +5 moves…)
   - Leave server-side verification off
-- [ ] Copy the **Ad unit ID** (`ca-app-pub-7387045424284544/XXXXXXXXXX`, with a `/`)
+- [x] Copy the **Ad unit ID** (`ca-app-pub-7387045424284544/XXXXXXXXXX`, with a `/`)
 
 **iOS app:** the same steps with Platform **iOS**
-- [ ] App ID copied
-- [ ] Rewarded ad unit `Rewarded main` created and its ID copied
+- [x] App ID copied
+- [x] Rewarded ad unit `Rewarded main` created and its ID copied
 
 **Privacy & messaging** (AdMob left menu)
 - [ ] **European regulations (GDPR):** open the existing Aksyatra message and
@@ -117,7 +117,7 @@ Do this now. The apps don't need to be on a store yet.
   game, for example gambling and dating.
 
 **Send me these four values** (paste them in chat or fill in the table at the top):
-- [ ] Android App ID, Android rewarded unit ID, iOS App ID, iOS rewarded unit ID
+- [x] Android App ID, Android rewarded unit ID, iOS App ID, iOS rewarded unit ID
 
 > Never tap your own live ads. Debug builds use Google's test ads
 > automatically. For testing release builds, add your phone under AdMob →
@@ -127,15 +127,15 @@ Do this now. The apps don't need to be on a store yet.
 
 ## 3. Website: neuron-nest (Claude, then you deploy)
 
-- [ ] (Claude) Privacy policy page `src/app/pasal-sort/privacy/page.js`. It
+- [x] (Claude) Privacy policy page `src/app/pasal-sort/privacy/page.js`. It
   covers: AdMob and its data, consent, the local-only save and analytics,
   no accounts, no data from children, deletion by email, contact.
-- [ ] (Claude) The in-game **Privacy policy** link points to it. It's
-  `example.com` right now, in `scripts/ui/settings_panel.gd`.
+- [x] (Claude) The in-game **Privacy policy** link points to it
+  (`scripts/ui/settings_panel.gd`), and its text now mentions AdMob.
 - [x] `public/app-ads.txt` already lists `pub-7387045424284544`. One line
   covers every app.
 - [ ] (you) Deploy the site and open the privacy link on your phone to
-  confirm it loads
+  confirm it loads (the page is committed and pushed to neuron-nest)
 
 ---
 
@@ -145,31 +145,34 @@ I can do everything below except the real-device test. I'll port the parts
 from Aksyatra, which already work on Godot 4.7.2.
 
 **Ads**
-- [ ] AdMob plugin v5.1.0 (`addons/admob`, Poing Studios) copied in and enabled
-- [ ] `data/ads.json`: app IDs, rewarded unit IDs, and Google's test units.
+- [x] AdMob plugin v5.1.0 (`addons/admob`, Poing Studios) copied in and enabled
+- [x] `data/ads.json`: app IDs, rewarded unit IDs, and Google's test units.
   Debug builds always use the test units; only release builds use the live ones.
-- [ ] `AdMobProvider` behind the existing `AdManager`: Google consent form
+- [x] `AdMobProvider` behind the existing `AdManager`: Google consent form
   (UMP) at startup → SDK start → preload → show → the reward is given only
   from the "earned reward" callback
-- [ ] Release safety: release builds never show the fake "REWARDED TEST AD"
+- [x] Release safety: release builds never show the fake "REWARDED TEST AD"
   overlay. With no ad available they say "No ad right now" and give nothing.
-- [ ] Settings: an **Ad privacy options** button (only where consent applies)
-- [ ] Every rewarded placement still works: daily free coins, +1 life, double
-  coins, +5 moves, the second chance. Interstitials stay off.
+- [x] Settings: an **Ad privacy options** button (only where consent applies)
+- [x] Every rewarded placement still works: daily free coins, +1 life, double
+  coins, +5 moves, the second chance. Interstitials stay off. (Tested with
+  the mock ad; real AdMob ads are checked on your phone in section 6.)
 
 **Purchases**
-- [ ] Android: the store stays hidden (already done, `store_platforms: ["iOS"]`)
+- [x] Android: the store stays hidden (`store_platforms: ["iOS"]`)
 - [ ] iOS: option A or B from section 0
 
 **Build and polish**
-- [ ] Android export preset: Gradle build, **AAB**, target API **36** (min 24),
-  arm64 + armv7, Internet + network-state permissions
-- [ ] Version `1.0.0`, code `1` (raise the code by 1 for every upload after this)
+- [x] Android export preset: Gradle build, **AAB**, target API **36** (min 24),
+  arm64 + armv7, Internet + network-state permissions. Plus an "Android APK
+  (phone test)" preset for installing on your phone.
+- [x] Version `1.0.0`, code `1` (raise the code by 1 for every upload after this)
 - [x] Launcher icon from your icon set (`assets/app_icon/`): 192 px legacy
   icon, plus an adaptive foreground and a soft lilac background that blends
   when the launcher wobbles the icon. Wired into the Android preset.
-- [ ] `tools/build_android.sh test` (APK with test ads) and `release`
-  (signed AAB), the same as Aksyatra
+- [x] `tools/build_android.sh test` (APK with test ads) and `release`
+  (signed AAB, uses `~/pasal-sort-upload.keystore`, alias `pasalsort`), the
+  same as Aksyatra. Not run yet: the first run is section 6.
 - [ ] Release build check: the debug menu is unreachable, no "TEST" overlays
   appear, and nothing is logged to the screen
 - [ ] Optional but useful for the test: an in-game **Send feedback** button
@@ -180,11 +183,11 @@ from Aksyatra, which already work on Godot 4.7.2.
 
 ## 5. Upload key (you)
 
-- [ ] Create a key just for this app (in Terminal; choose a strong password):
+- [x] Create a key just for this app (in Terminal; choose a strong password):
   ```
   keytool -genkeypair -v -keystore ~/pasal-sort-upload.keystore -alias pasalsort -keyalg RSA -keysize 2048 -validity 10000
   ```
-- [ ] **Back up `~/pasal-sort-upload.keystore` and its password in two safe
+- [x] **Back up `~/pasal-sort-upload.keystore` and its password in two safe
   places** (a password manager plus an offline copy). Every update must be
   signed with it. It stays out of the repo.
 

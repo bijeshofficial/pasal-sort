@@ -54,6 +54,7 @@ Abacus,Abacus,अबाकस,
 Achievement unlocked! Claim it in your Profile.,Achievement unlocked! Claim it in your Profile.,उपलब्धि अनलक भयो! आफ्नो प्रोफाइलमा लिनुहोस्।,
 Achievements,Achievements,उपलब्धिहरू,
 Ad not available right now,Ad not available right now,एड अहिले उपलब्ध छैन,
+Ad privacy options,Ad privacy options,विज्ञापन गोपनीयता विकल्प,
 Add an awning,Add an awning,छाना थप्नुहोस्,
 AFTER,AFTER,पछि,
 Album,Album,एल्बम,
@@ -581,7 +582,7 @@ Park steel,Park steel,पार्क स्टिल,
 Pasal Album,Pasal Album,पसल एल्बम,
 Pasal Opened,Pasal Opened,पसल खोलियो,
 Pasal Sort  v%s,Pasal Sort  v%s,Pasal Sort  v%s,
-"Pasal Sort keeps your progress on this device only. No account, no personal data.","Pasal Sort keeps your progress on this device only. No account, no personal data.","पसल सर्टले तपाईंको प्रगति यही उपकरणमा मात्र राख्छ। खाता चाहिँदैन, व्यक्तिगत जानकारी लिइँदैन।",
+Pasal Sort keeps your progress on this device. No account is needed. Optional rewarded ads come from Google AdMob.,Pasal Sort keeps your progress on this device. No account is needed. Optional rewarded ads come from Google AdMob.,पसल सर्टले तपाईंको प्रगति यही उपकरणमा राख्छ। खाता चाहिँदैन। ऐच्छिक पुरस्कार विज्ञापन Google AdMob बाट आउँछन्।,
 "Pasal Sort: Sort & Renovate
 Made with Godot Engine
 Fonts: Lilita One and Baloo 2 (SIL Open Font License)

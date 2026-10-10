@@ -8,15 +8,24 @@
 
 config_version=5
 
+[admob]
+
+general/android/app_id="ca-app-pub-7387045424284544~8792214414"
+general/ios/app_id="ca-app-pub-7387045424284544~8887583185"
+
+[animation]
+
+compatibility/default_parent_skeleton_in_mesh_instance_3d=true
+
 [application]
 
 config/name="Pasal Sort"
 config/description="A cosy Nepali candy-jar sort puzzle. Tap jars, sort the candies, bring the pasal back to life."
-config/version="0.1.0"
+config/version="1.0.0"
 run/main_scene="res://scenes/main/boot.tscn"
-config/quit_on_go_back=false
 config/auto_accept_quit=false
-config/features=PackedStringArray("4.3", "GL Compatibility")
+config/quit_on_go_back=false
+config/features=PackedStringArray("4.7", "GL Compatibility")
 boot_splash/bg_color=Color(0.984, 0.953, 0.898, 1)
 boot_splash/show_image=false
 config/icon="res://assets/app_icon/icon_512.png"
@@ -57,9 +66,21 @@ window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 window/handheld/orientation=1
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/admob/plugin.cfg")
+
+[gui]
+
+theme/custom="res://assets/ui/game_theme.tres"
+
 [input_devices]
 
 pointing/emulate_touch_from_mouse=true
+
+[internationalization]
+
+locale/translations=PackedStringArray("res://data/i18n/strings.en.translation", "res://data/i18n/strings.ne.translation")
 
 [rendering]
 
@@ -67,12 +88,3 @@ renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
 textures/vram_compression/import_etc2_astc=true
 environment/defaults/default_clear_color=Color(0.984, 0.953, 0.898, 1)
-
-[internationalization]
-
-locale/translations=PackedStringArray("res://data/i18n/strings.en.translation", "res://data/i18n/strings.ne.translation")
-locale/fallback="en"
-
-[gui]
-
-theme/custom="res://assets/ui/game_theme.tres"

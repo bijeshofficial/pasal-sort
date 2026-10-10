@@ -5,3 +5,9 @@ build/
 *.tmp
 export_credentials.cfg
 .DS_Store
+
+# signing keys and store credentials must never be committed
+*.keystore
+*.jks
+*.p12
+*.mobileprovision

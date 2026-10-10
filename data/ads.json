@@ -1,0 +1,15 @@
+{
+	"_doc": "AdMob (publisher pub-7387045424284544). Rewarded ads only, always opt-in. app_ids are also set in project.godot [admob] (the plugin writes them into the Android manifest / iOS Info.plist). ad_units are the live rewarded units: release builds only. Debug builds load Google's public test units, so your own live ads are never served or tapped while developing.",
+	"app_ids": {
+		"android": "ca-app-pub-7387045424284544~8792214414",
+		"ios": "ca-app-pub-7387045424284544~8887583185"
+	},
+	"ad_units": {
+		"android": "ca-app-pub-7387045424284544/4404492820",
+		"ios": "ca-app-pub-7387045424284544/4445775292"
+	},
+	"test_ad_units": {
+		"android": "ca-app-pub-3940256099942544/5224354917",
+		"ios": "ca-app-pub-3940256099942544/1712485313"
+	}
+}
