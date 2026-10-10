@@ -7,6 +7,7 @@ win earns a star; stars renovate the shop, the family home above it and,
 later, new branches across Nepal. Infinite levels, 10 areas.
 
 See PROGRESS.md for the build status and how the pieces fit together.
+Store listing art (screenshots, icon, feature graphic, Canva prompts): docs/STORE_ASSETS.md.
 
 ## Run
 

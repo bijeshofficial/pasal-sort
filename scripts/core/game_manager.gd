@@ -11,6 +11,9 @@ signal game_event(id: String, amount: int)
 
 ## Desktop testing aid: pretend the device has a notch (pass -- --safe-debug).
 var debug_safe_insets := Vector2.ZERO
+## Screenshot tools set this so a desktop window losing focus doesn't
+## auto-pause the level (and doesn't save anything).
+var capture_mode := false
 
 var _play_time_accum := 0.0
 
@@ -46,6 +49,8 @@ func _notification(what: int) -> void:
 		NOTIFICATION_WM_GO_BACK_REQUEST:
 			handle_back()
 		NOTIFICATION_APPLICATION_PAUSED, NOTIFICATION_APPLICATION_FOCUS_OUT:
+			if capture_mode:
+				return
 			app_paused.emit()
 			SaveManager.save_game()
 		NOTIFICATION_APPLICATION_RESUMED, NOTIFICATION_APPLICATION_FOCUS_IN:
