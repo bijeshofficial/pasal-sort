@@ -260,9 +260,14 @@ static func disk(icon_name: String, size: float = 220.0, base: Color = SECONDARY
 	var ic := icon(icon_name, size * 0.54, icon_color)
 	ic.shadow = icon_color == Color.WHITE
 	ic.accent = base
-	ic.position = Vector2(size * 0.23, size * 0.2)
 	ic.size = Vector2(size * 0.54, size * 0.54)
 	c.add_child(ic)
+	# The circle is drawn at the middle of the box, and rows often stretch the
+	# box, so the icon follows the middle too (a hair high to allow for its
+	# drop shadow).
+	var centre := func() -> void: ic.position = c.size * 0.5 - Vector2(size * 0.27, size * 0.3)
+	centre.call()
+	c.resized.connect(centre)
 	return c
 
 

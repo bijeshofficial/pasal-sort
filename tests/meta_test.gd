@@ -855,6 +855,73 @@ func _test_wheel_scroll() -> void:
 	await process_frame
 	_check(shop.scroll.scroll_vertical == held, "the wheel doesn't scroll a list covered by a popup")
 	SM.close_all_modals()
+	# Dragging from a card's button scrolls the list and doesn't press it;
+	# a plain tap on it still works.
+	_fresh(20)
+	S.data["coins"] = 5000
+	S.game()["lives"] = 1
+	SM.hub_tab = "shop"
+	change_scene_to_file(HUB)
+	await _wait(1.0)
+	shop = current_scene.shop
+	var refill: Control = null
+	for n in shop.scroll.find_children("*", "Label", true, false):
+		if (n as Label).text == "Refill lives":
+			var card: Node = n.get_parent().get_parent()
+			for b in card.find_children("*", "Button", true, false):
+				refill = b
+	if refill:
+		# Centre the button so there is room to drag both ways.
+		shop.scroll.scroll_vertical += int(refill.get_global_rect().get_center().y - shop.scroll.get_global_rect().get_center().y)
+		await _wait(0.2)
+	var rp := refill.get_global_rect().get_center() if refill else Vector2.ZERO
+	var lives0: int = LM.lives()
+	var top0: int = shop.scroll.scroll_vertical
+	# Phones deliver touches as emulated mouse events, which WheelScroll reads.
+	await _mouse(rp, true)
+	for k in 8:
+		await _mouse_move(rp + Vector2(0, -50.0 * (k + 1)), Vector2(0, -50))
+	await _mouse(rp + Vector2(0, -400), false)
+	await _wait(0.1)
+	_check(refill != null and shop.scroll.scroll_vertical > top0 + 200 and LM.lives() == lives0, "dragging from the Refill button scrolls the shop without buying (%d -> %d)" % [top0, shop.scroll.scroll_vertical])
+	await _wait(1.0)
+	shop.scroll.scroll_vertical += int(refill.get_global_rect().get_center().y - shop.scroll.get_global_rect().get_center().y)
+	await _wait(0.2)
+	var tap_at := refill.get_global_rect().get_center()
+	await _touch(tap_at, true)
+	await _touch(tap_at, false)
+	await _wait(0.1)
+	_check(LM.lives() == LM.max_lives(), "tapping Refill still refills (%d lives)" % LM.lives())
+
+
+func _touch(p: Vector2, down: bool) -> void:
+	var e := InputEventScreenTouch.new()
+	e.index = 0
+	e.pressed = down
+	e.position = p
+	root.push_input(e, true)
+	await process_frame
+
+
+func _mouse(p: Vector2, down: bool) -> void:
+	var e := InputEventMouseButton.new()
+	e.button_index = MOUSE_BUTTON_LEFT
+	e.pressed = down
+	e.button_mask = MOUSE_BUTTON_MASK_LEFT if down else 0
+	e.position = p
+	e.global_position = p
+	root.push_input(e, true)
+	await process_frame
+
+
+func _mouse_move(p: Vector2, rel: Vector2) -> void:
+	var e := InputEventMouseMotion.new()
+	e.button_mask = MOUSE_BUTTON_MASK_LEFT
+	e.position = p
+	e.global_position = p
+	e.relative = rel
+	root.push_input(e, true)
+	await process_frame
 
 
 func _test_popup_switching() -> void:
