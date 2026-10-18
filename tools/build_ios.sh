@@ -22,6 +22,7 @@ grep -q '^general/ios/app_id="ca-app-pub-7387045424284544~' project.godot && ! g
 
 rm -rf build/ios
 mkdir -p build/ios
+touch build/.gdignore   # keep Godot from importing build output
 "$GODOT" --headless --path . --export-release "iOS" build/ios/PasalSort.ipa 2>&1 | grep -E "ERROR|failed" || true
 [ -d build/ios/PasalSort.xcodeproj ] || { echo "export failed"; exit 1; }
 echo "Exported build/ios/PasalSort.xcodeproj"

@@ -23,6 +23,7 @@ MODE="${1:-test}"
 
 cd "$ROOT"
 mkdir -p build/android
+touch build/.gdignore   # keep Godot from importing build output
 
 # Godot's Android build template (res://android/build), needed for Gradle builds and the AdMob plugin.
 # Same as the editor's Project -> Install Android Build Template: unpack android_source.zip + record the version.
