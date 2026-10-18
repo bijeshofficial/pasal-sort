@@ -395,9 +395,12 @@ Apple's legal questionnaires, so those few steps are yours.
     to the user: **No**
   - **Used for tracking: Yes** (personalised ads after the tracking prompt).
     Add **Purchases** only with option B.
-- [ ] **Age rating:** None/No to everything. In-app purchases: **No** with
-  option A (**Yes** with B, and then loot boxes **Yes**, because coins buy
-  random sticker packs). Expected: **4+**.
+- [ ] **Age rating:** **Advertising: Yes** (rewarded AdMob ads). Everything
+  else None/No: in-app purchases **No** with option A (**Yes** with B, and then
+  loot boxes **Yes**, because coins buy random sticker packs), loot boxes **No**,
+  gambling/contests **No**, unrestricted web access **No** (the privacy link
+  opens Safari), user-generated content and chat **No**, parental controls and
+  age assurance **No**, all content descriptors **None**. Expected: **4+**.
 - [ ] **Submit for review.** Usually 24–48 hours. I'll ask before anything is
   submitted.
 - [ ] After approval: AdMob → Pasal Sort (iOS) → **Link to store**
