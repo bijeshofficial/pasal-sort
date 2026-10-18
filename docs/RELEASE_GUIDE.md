@@ -324,27 +324,86 @@ they're all done.
 - [ ] Every later update: raise `version/code` and `version/name` in
   `export_presets.cfg` (I can do this)
 
-## 10. App Store (after Play)
+## 10. App Store (iOS)
 
-- [ ] Apple items in section 1 done
-- [ ] (Claude) iOS export preset: bundle ID `com.neuronnest.pasalsort`, your
-  Team ID, app icon `assets/app_icon/icon_1024.png` (no transparency, ready);
-  `GADApplicationIdentifier`, `NSUserTrackingUsageDescription` and
-  Google's SKAdNetwork IDs in Info.plist
-- [ ] (Claude) Option A or B from section 0 finished
-- [ ] (you) App Store Connect → New app → bundle ID → SKU `pasalsort`
-- [ ] (you) Xcode → Archive → upload → **TestFlight** on a real iPhone
-  (TestFlight is Apple's closed test: up to 10,000 testers, no 14-day rule)
-- [ ] App Privacy label: Identifiers (Device ID), Location (coarse), Usage
-  data and Diagnostics, all linked to third-party advertising. Tracking:
-  **Yes** if ads can be personalised (the IDFA prompt). Add Purchases only
-  with option B.
-- [ ] Age rating questionnaire: all None. With option B, answer **Yes** to
-  "in-app purchases" and to **loot boxes**, because coins buy random sticker
-  packs.
-- [ ] Screenshots 6.9" 1320×2868 (`docs/store/appstore/`), subtitle,
-  keywords, promo text (Appendix A)
-- [ ] Submit for review (usually 24–48 hours)
+Done the same way as Micro Jam and Aksyatra: no Xcode clicks. Everything goes
+through `tools/build_ios.sh` and the App Store Connect API (key `R8FBS6AHU4`,
+App Manager role). That key can't create apps, register bundle IDs or answer
+Apple's legal questionnaires, so those few steps are yours.
+
+### 10.1 Before I start (you)
+- [x] Apple Developer account (individual, Team `FDJM9L3UWW`), the Apple
+  Distribution certificate, and the Free Apps agreement (all done for
+  Aksyatra and Micro Jam)
+- [ ] **Decide option A or B** (section 0). Recommended: **A**, ads only like
+  Android and Micro Jam. Purchases can come in an update.
+  - With B: also sign the **Paid Apps Agreement** (with banking and tax) in
+    App Store Connect → Business.
+- [ ] **Decide: iPhone only, or iPhone and iPad?** Recommended: **both**, like
+  Micro Jam. The game scales to iPad, and I make the iPad screenshots.
+- [ ] **Register the bundle ID:** developer.apple.com → Certificates, IDs &
+  Profiles → Identifiers → **+** → App IDs → App → Description
+  `Pasal Sort`, **Explicit** Bundle ID `com.neuronnest.pasalsort`. No extra
+  capabilities (with option B, In-App Purchase is on by default). Register.
+- [ ] **Create the app record:** App Store Connect → Apps → **+** → New App
+  - Platform **iOS**
+  - Name `Pasal Sort: Sort & Renovate`
+  - Primary language **English (U.S.)**
+  - Bundle ID `com.neuronnest.pasalsort`
+  - SKU `pasalsort`
+  - User access **Full Access**
+- [ ] **Send me the app's Apple ID**: the number on the app's App Information
+  page (Micro Jam's is 6823787820)
+- [ ] **AdMob → Privacy & messaging:** add **Pasal Sort (iOS)** to the GDPR and
+  US-states messages, and create and publish the **IDFA explainer** for it.
+  It shows before Apple's "Allow tracking?" prompt.
+
+### 10.2 Then I do (Claude)
+- [ ] iOS export preset: iPhone (and iPad), version 1.0.0 (build 1), icon
+  `assets/app_icon/icon_1024.png`, AdMob iOS app ID and Google's SKAdNetwork
+  list in Info.plist, `NSUserTrackingUsageDescription`,
+  `ITSAppUsesNonExemptEncryption = false`, `privacy/tracking_enabled = false`
+  (ITMS-91064)
+- [ ] Option A: the mock "TEST PURCHASE" store is turned off on iOS too.
+  Option B: StoreKit, Restore Purchases, and the 5 products.
+- [ ] Signing: an App Store profile for `com.neuronnest.pasalsort` via the API
+  (uses your Apple Distribution certificate), plus `tools/ios_export_options.plist`
+- [ ] `tools/build_ios.sh upload`: export, archive and upload the build to
+  App Store Connect
+- [ ] Listing via the API: subtitle, description, keywords, promo text,
+  support, marketing and privacy URLs, category Games → Puzzle (secondary
+  Casual), and Nepali if you want it
+- [ ] Screenshots: iPhone 6.9" (1320×2868, `docs/store/appstore/`) and, with
+  iPad, iPad 13" (2064×2752)
+- [ ] App Review notes, like Micro Jam's `docs/APP_REVIEW_NOTES.md`: purpose,
+  no login, features, AdMob, no purchases
+- [ ] Price **Free** and availability (all countries), and the build attached
+  to version 1.0
+
+### 10.3 After the upload (you)
+- [ ] **TestFlight:** install the build on your real iPhone. Check the ads
+  (debug builds aren't uploaded, so this shows **real** ads: don't tap them;
+  add the phone under AdMob → Settings → Test devices first), the tracking
+  prompt, the consent form, sound and the notch.
+- [ ] **App Privacy** (App Store Connect → the app → App Privacy):
+  - Data collected: **Identifiers → Device ID**; **Location → Coarse
+    location**; **Usage data → Product interaction, Advertising data**;
+    **Diagnostics → Crash data, Performance data**
+  - Each is used for **Third-party advertising** (plus Analytics), **linked**
+    to the user: **No**
+  - **Used for tracking: Yes** (personalised ads after the tracking prompt).
+    Add **Purchases** only with option B.
+- [ ] **Age rating:** None/No to everything. In-app purchases: **No** with
+  option A (**Yes** with B, and then loot boxes **Yes**, because coins buy
+  random sticker packs). Expected: **4+**.
+- [ ] **Submit for review.** Usually 24–48 hours. I'll ask before anything is
+  submitted.
+- [ ] After approval: AdMob → Pasal Sort (iOS) → **Link to store**
+
+**Next iOS release:** raise the version in both presets (Android
+`version/code` and `version/name`; iOS `application/version` and
+`application/short_version`), then `tools/build_ios.sh upload`, and create
+the new version in App Store Connect (I can do that via the API).
 
 ---
 
