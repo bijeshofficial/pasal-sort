@@ -5,9 +5,11 @@
 
 Reads  docs/store/raw/play/*.png      (1080x1920)
        docs/store/raw/appstore/*.png  (1080x2346)
+       docs/store/raw/ipad/*.png      (1440x1920)
        docs/store/canva/*.png         (transparent art)
 Writes docs/store/play/NN_name.png          Google Play phone, 1080x1920
        docs/store/appstore/NN_name.png      Apple 6.9", 1320x2868
+       docs/store/ipad/NN_name.png          Apple iPad 13", 2064x2752
        docs/store/icon_512.png, icon_1024.png   draft app icons
        docs/store/feature_graphic.png           draft 1024x500 feature graphic
 
@@ -161,5 +163,7 @@ if __name__ == "__main__":
     compose(os.path.join(STORE, "raw", "play"), os.path.join(STORE, "play"), (1080, 1920), 430, 780, 104)
     print("App Store 6.9\" (1320x2868):")
     compose(os.path.join(STORE, "raw", "appstore"), os.path.join(STORE, "appstore"), (1320, 2868), 560, 1000, 128)
+    print("App Store iPad 13\" (2064x2752):")
+    compose(os.path.join(STORE, "raw", "ipad"), os.path.join(STORE, "ipad"), (2064, 2752), 520, 1540, 150)
     print("Drafts:")
     drafts()

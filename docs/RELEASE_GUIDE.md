@@ -335,50 +335,52 @@ Apple's legal questionnaires, so those few steps are yours.
 - [x] Apple Developer account (individual, Team `FDJM9L3UWW`), the Apple
   Distribution certificate, and the Free Apps agreement (all done for
   Aksyatra and Micro Jam)
-- [ ] **Decide option A or B** (section 0). Recommended: **A**, ads only like
+- [x] **Decide option A or B** (section 0): **A** for 1.0. Recommended: **A**, ads only like
   Android and Micro Jam. Purchases can come in an update.
   - With B: also sign the **Paid Apps Agreement** (with banking and tax) in
     App Store Connect → Business.
-- [ ] **Decide: iPhone only, or iPhone and iPad?** Recommended: **both**, like
+- [x] **Decide: iPhone only, or iPhone and iPad?** Both. Recommended: **both**, like
   Micro Jam. The game scales to iPad, and I make the iPad screenshots.
-- [ ] **Register the bundle ID:** developer.apple.com → Certificates, IDs &
+- [x] **Register the bundle ID:** developer.apple.com → Certificates, IDs &
   Profiles → Identifiers → **+** → App IDs → App → Description
   `Pasal Sort`, **Explicit** Bundle ID `com.neuronnest.pasalsort`. No extra
   capabilities (with option B, In-App Purchase is on by default). Register.
-- [ ] **Create the app record:** App Store Connect → Apps → **+** → New App
+- [x] **Create the app record:** App Store Connect → Apps → **+** → New App
   - Platform **iOS**
   - Name `Pasal Sort: Sort & Renovate`
   - Primary language **English (U.S.)**
   - Bundle ID `com.neuronnest.pasalsort`
   - SKU `pasalsort`
   - User access **Full Access**
-- [ ] **Send me the app's Apple ID**: the number on the app's App Information
-  page (Micro Jam's is 6823787820)
-- [ ] **AdMob → Privacy & messaging:** add **Pasal Sort (iOS)** to the GDPR and
+- [x] **Send me the app's Apple ID**: **6824252110**
+- [x] **AdMob → Privacy & messaging:** add **Pasal Sort (iOS)** to the GDPR and
   US-states messages, and create and publish the **IDFA explainer** for it.
   It shows before Apple's "Allow tracking?" prompt.
 
 ### 10.2 Then I do (Claude)
-- [ ] iOS export preset: iPhone (and iPad), version 1.0.0 (build 1), icon
+- [x] iOS export preset: iPhone and iPad, version 1.0.0 (build 1), icon
   `assets/app_icon/icon_1024.png`, AdMob iOS app ID and Google's SKAdNetwork
   list in Info.plist, `NSUserTrackingUsageDescription`,
   `ITSAppUsesNonExemptEncryption = false`, `privacy/tracking_enabled = false`
   (ITMS-91064)
-- [ ] Option A: the mock "TEST PURCHASE" store is turned off on iOS too.
+- [x] Option A: the mock "TEST PURCHASE" store is turned off on iOS too
+  (`store_platforms: []` in `data/iap_products.json`).
   Option B: StoreKit, Restore Purchases, and the 5 products.
-- [ ] Signing: an App Store profile for `com.neuronnest.pasalsort` via the API
+- [x] Signing: the profile **Pasal Sort App Store (local)** (expires 2027-10-16), an App Store profile for `com.neuronnest.pasalsort` via the API
   (uses your Apple Distribution certificate), plus `tools/ios_export_options.plist`
-- [ ] `tools/build_ios.sh upload`: export, archive and upload the build to
-  App Store Connect
-- [ ] Listing via the API: subtitle, description, keywords, promo text,
+- [x] `tools/build_ios.sh upload`: export, archive and upload the build to
+  App Store Connect (build 1.0.0 (1) uploaded 2026-10-18, processed, attached to 1.0.0)
+- [x] Listing via the API: subtitle, description, keywords, promo text,
   support, marketing and privacy URLs, category Games → Puzzle (secondary
   Casual), and Nepali if you want it
-- [ ] Screenshots: iPhone 6.9" (1320×2868, `docs/store/appstore/`) and, with
-  iPad, iPad 13" (2064×2752)
-- [ ] App Review notes, like Micro Jam's `docs/APP_REVIEW_NOTES.md`: purpose,
+- [x] Screenshots: iPhone 6.9" (1320×2868, `docs/store/appstore/`) and iPad
+  13" (2064×2752, `docs/store/ipad/`), 8 each, regenerated with the new wrappers
+- [x] App Review notes (`docs/APP_REVIEW_NOTES.md`, also saved in App Store
+  Connect with the same contact as Micro Jam), like Micro Jam's `docs/APP_REVIEW_NOTES.md`: purpose,
   no login, features, AdMob, no purchases
-- [ ] Price **Free** and availability (all countries), and the build attached
-  to version 1.0
+- [x] Price **Free** and availability (all 175 countries, plus new ones), and
+  the build attached to version 1.0.0. TestFlight internal group **Family**
+  with you in it.
 
 ### 10.3 After the upload (you)
 - [ ] **TestFlight:** install the build on your real iPhone. Check the ads
@@ -419,7 +421,7 @@ Every field fits the stores' character limits.
 | Play short description | Sort colourful candies into jars and renovate Hajurama's old Nepali sweet shop! | 80 |
 | Apple subtitle | Candy Sort & Shop Makeover | 30 |
 | Apple promotional text | Sort sweets, earn stars and bring a family sweet shop in Kathmandu back to life, one room at a time. | 170 |
-| Apple keywords | `candy,jar,ball sort,color sort,water sort,puzzle,nepal,nepali,renovate,makeover,cozy,relaxing,offline` | 100 |
+| Apple keywords | `candy,jar,ball sort,color sort,water sort,puzzle,nepal,nepali,renovate,makeover,relaxing,offline` | 100 |
 
 ### A.2 Full description, English (up to 4,000 characters)
 

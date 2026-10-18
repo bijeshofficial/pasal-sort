@@ -12,6 +12,7 @@ extends SceneTree
 const SIZES := {
 	"play": Vector2i(1080, 1920),      # Google Play phone, 9:16
 	"appstore": Vector2i(1080, 2346),  # Apple 6.9" shape; composed up to 1320x2868
+	"ipad": Vector2i(1440, 1920),      # Apple iPad 13" (3:4); composed up to 2064x2752
 }
 
 var out_dir := "res://docs/store/raw"
@@ -195,7 +196,8 @@ func _fresh(level: int, coins: int = 640, stars: int = 3) -> void:
 	S.data["current_level"] = level
 	S.data["game"]["stars"] = stars
 	S.data["game"]["tutorial_steps"] = {"tap": true, "stack": true, "empty": true, "undo": true, "extra_jar": true, "shuffle": true,
-		"twist_wrapped": true, "twist_cloth": true, "twist_lock": true, "twist_tall": true, "first_task": true, "story_intro": true}
+		"twist_wrapped": true, "twist_cloth": true, "twist_lock": true, "twist_tall": true, "first_task": true, "story_intro": true,
+		"helper": true, "grant_helper": true}
 	for i in range(1, 11):
 		S.data["game"]["tutorial_steps"]["arrive_%d" % i] = true
 

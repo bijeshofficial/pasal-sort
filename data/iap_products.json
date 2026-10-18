@@ -1,5 +1,5 @@
 {
-	"_comment": "Mock store catalogue (real money). Only shown on store_platforms (no Play Store merchant account for Nepal, so Android has no paid products). contents use the Rewards bundle keys. one_time products can be bought once. price_label is display only: nothing is ever charged.",
+	"_comment": "Mock store catalogue (real money). Only shown on store_platforms. Empty for 1.0: Android has no Play merchant account (Nepal), and iOS ships ads-only until real StoreKit purchases are added (add iOS back to the list then). contents use the Rewards bundle keys. one_time products can be bought once. price_label is display only: nothing is ever charged.",
 	"products": [
 		{
 			"id": "coins_small",
@@ -64,7 +64,5 @@
 			}
 		}
 	],
-	"store_platforms": [
-		"iOS"
-	]
+	"store_platforms": []
 }
