@@ -383,11 +383,11 @@ Apple's legal questionnaires, so those few steps are yours.
   with you in it.
 
 ### 10.3 After the upload (you)
-- [ ] **TestFlight:** install the build on your real iPhone. Check the ads
+- [x] **TestFlight:** install the build on your real iPhone. Check the ads
   (debug builds aren't uploaded, so this shows **real** ads: don't tap them;
   add the phone under AdMob → Settings → Test devices first), the tracking
   prompt, the consent form, sound and the notch.
-- [ ] **App Privacy** (App Store Connect → the app → App Privacy):
+- [x] **App Privacy** (App Store Connect → the app → App Privacy):
   - Data collected: **Identifiers → Device ID**; **Location → Coarse
     location**; **Usage data → Product interaction, Advertising data**;
     **Diagnostics → Crash data, Performance data**
@@ -395,13 +395,13 @@ Apple's legal questionnaires, so those few steps are yours.
     to the user: **No**
   - **Used for tracking: Yes** (personalised ads after the tracking prompt).
     Add **Purchases** only with option B.
-- [ ] **Age rating:** **Advertising: Yes** (rewarded AdMob ads). Everything
+- [x] **Age rating:** **Advertising: Yes** (rewarded AdMob ads). Everything
   else None/No: in-app purchases **No** with option A (**Yes** with B, and then
   loot boxes **Yes**, because coins buy random sticker packs), loot boxes **No**,
   gambling/contests **No**, unrestricted web access **No** (the privacy link
   opens Safari), user-generated content and chat **No**, parental controls and
   age assurance **No**, all content descriptors **None**. Expected: **4+**.
-- [ ] **Submit for review.** Usually 24–48 hours. I'll ask before anything is
+- [x] **Submit for review.** Usually 24–48 hours. I'll ask before anything is
   submitted.
 - [ ] After approval: AdMob → Pasal Sort (iOS) → **Link to store**
 
