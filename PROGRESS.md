@@ -48,6 +48,18 @@ Read this first at the start of every session. Godot 4.7.2 at
   back-and-forth swaps trigger the Stuck popup. New chest art (domed planked
   chest, bands, keyhole, loot); Hajurama's Trunk is red with brass.
 
+- 2026-10-24: painted art revamp (Project Makeover style), version 1.1.0.
+  Art comes from ~/Downloads/pasal-sort-art (838 files, brief in its
+  _brief/). `python3 tools/art_brief/import_art.py` copies it into
+  assets/art (UI kit, icons, candies, jars, chests, logo as PNG; rooms at
+  1.5x, backgrounds, characters, album, avatars as WebP q90), then
+  `godot --import`, `python3 tools/art_brief/set_import.py` (WebP -> lossy
+  0.9 in builds) and `--import` again. Everything draws through `Art`
+  (scripts/visuals/art.gd) and falls back to the code-drawn version when a
+  file is missing. Characters: "bust" (cut at the waist, default), "full"
+  (cast entry `"frame": "full"`), "portrait" in dialogue. Sign plates get
+  the shop name drawn on top. iOS download ~104 MB per iPhone.
+
 ## How it fits together (meta)
 
 - Every win: 1 star + coins (`ProgressionManager.complete_level`).
