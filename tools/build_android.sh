@@ -40,7 +40,10 @@ if [ ! -f android/build/build.gradle ]; then
 fi
 if [ -f "$GRADLE_ZIP" ]; then   # use the local Gradle zip instead of the wrapper's own download
   sed -i '' "s|^distributionUrl=.*|distributionUrl=file\\\\:$GRADLE_ZIP|" android/build/gradle/wrapper/gradle-wrapper.properties
+else              # no local zip (any more): use Gradle's normal download
+  sed -i '' "s|^distributionUrl=.*|distributionUrl=https\\\\://services.gradle.org/distributions/gradle-8.11.1-bin.zip|" android/build/gradle/wrapper/gradle-wrapper.properties
 fi
+
 
 case "$MODE" in
   test)

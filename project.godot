@@ -21,7 +21,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 config/name="Pasal Sort"
 config/description="A cosy Nepali candy-jar sort puzzle. Tap jars, sort the candies, bring the pasal back to life."
-config/version="1.0.0"
+config/version="1.1.0"
 run/main_scene="res://scenes/main/boot.tscn"
 config/auto_accept_quit=false
 config/quit_on_go_back=false
