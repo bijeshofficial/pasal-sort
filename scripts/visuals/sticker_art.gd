@@ -18,7 +18,12 @@ static func draw_card(ci: CanvasItem, r: Rect2, st: Dictionary, owned: bool, t: 
 	else:
 		ci.draw_colored_polygon(DrawKit.rounded_rect(inner, 20, 6), Color("d9d4ea"))
 	var art := Rect2(inner.position + Vector2(10, 10), Vector2(inner.size.x - 20, inner.size.y * 0.66))
-	if owned:
+	var painted := Art.tex("album/stickers/" + String(st.get("id", "")))
+	if owned and painted:
+		var big := Rect2(inner.position + Vector2(4, 2), Vector2(inner.size.x - 8, inner.size.y * 0.78))
+		var bob := sin(t * 2.0 + float(String(st.get("id", "")).hash() % 7)) * 2.0
+		Art.draw_fit(ci, "album/stickers/" + String(st.get("id", "")), Rect2(big.position + Vector2(0, bob), big.size))
+	elif owned:
 		draw_glyph(ci, art, String(st.get("glyph", "candy:0")), t)
 	else:
 		var f := UIKit.font(true)

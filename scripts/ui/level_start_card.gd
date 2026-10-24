@@ -157,6 +157,15 @@ func _process(delta: float) -> void:
 ## little; grey when there is no streak yet.
 func _draw_streak() -> void:
 	var lit := StreakManager.dami() > 0
+	var flame := Art.tex("ui/streak_flame_on" if lit else "ui/streak_flame_off")
+	if flame:
+		var fs := minf(_streak.size.x, _streak.size.y) * 1.05
+		var sway := sin(_t * 3.1) * 0.05 if lit else 0.0
+		var breathe := 1.0 + (sin(_t * 5.0) * 0.03 if lit else 0.0)
+		_streak.draw_set_transform(Vector2(_streak.size.x * 0.5, _streak.size.y - 6), sway, Vector2(1.0, breathe))
+		_streak.draw_texture_rect(flame, Rect2(-fs * 0.5, -fs, fs, fs), false)
+		_streak.draw_set_transform(Vector2.ZERO)
+		return
 	var base := Vector2(_streak.size.x * 0.5, _streak.size.y - 14)
 	_streak.draw_colored_polygon(DrawKit.ellipse(base + Vector2(0, 8), 40, 8, 20), Color(0, 0, 0, 0.12))
 	var sway := sin(_t * 3.1) * 0.06 + sin(_t * 7.3) * 0.025 if lit else 0.0

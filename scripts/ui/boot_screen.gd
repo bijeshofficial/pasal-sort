@@ -26,17 +26,28 @@ var _candies := 0
 
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	var bd := ShopBackdrop.new()
-	bd.theme_id = "theme_asan"
-	bd.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	add_child(bd)
 	var vp := get_viewport_rect().size
+	var painted_bg := Art.image("backgrounds/loading")
+	if painted_bg:
+		painted_bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		painted_bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		add_child(painted_bg)
+	else:
+		var bd := ShopBackdrop.new()
+		bd.theme_id = "theme_asan"
+		bd.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		add_child(bd)
 	# A glowing glass shelf the jar stands on.
 	var counter := Control.new()
 	counter.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	counter.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	counter.draw.connect(func() -> void:
 		var y := vp.y * 0.66 + 4
+		var shelf := Art.box("jars/overlays/shelf", [120, 0, 120, 0], 0.5)
+		if shelf:
+			counter.draw_rect(Rect2(0, vp.y * 0.66 + 100, vp.x, vp.y), Color(0.06, 0.03, 0.14, 0.0))
+			counter.draw_style_box(shelf, Rect2(vp.x * 0.5 - 240, y - 14, 480, 70))
+			return
 		for k in 4:
 			counter.draw_colored_polygon(DrawKit.ellipse(Vector2(vp.x * 0.5, y), 300.0 - k * 50.0, 60.0 - k * 10.0, 40), Color(1, 1, 1, 0.05))
 		var plank := DrawKit.rounded_rect(Rect2(vp.x * 0.5 - 220, y, 440, 30), 15, 6)
@@ -46,9 +57,15 @@ func _ready() -> void:
 	var logo := Control.new()
 	logo.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	logo.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	logo.draw.connect(func() -> void: GameLogo.draw(logo, Vector2(vp.x * 0.5, vp.y * 0.12), 1.1))
+	logo.draw.connect(func() -> void:
+		if not Art.draw_fit(logo, "logo/logo", Rect2(vp.x * 0.5 - 470, vp.y * 0.05, 940, 412)):
+			GameLogo.draw(logo, Vector2(vp.x * 0.5, vp.y * 0.12), 1.1))
 	add_child(logo)
+	if painted_bg:
+		# The painted shop already has its jars: no extra jar or shelf.
+		counter.visible = false
 	var jar_layer := Node2D.new()
+	jar_layer.visible = painted_bg == null
 	add_child(jar_layer)
 	_jar = JarScene.instantiate()
 	jar_layer.add_child(_jar)
@@ -59,6 +76,13 @@ func _ready() -> void:
 	_bar.size = Vector2(660, 52)
 	_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_bar.draw.connect(func() -> void:
+		var bg := Art.box("ui/progress_bg", [32, 0, 32, 0], 0.8)
+		var fill_box := Art.box("ui/progress_fill", [32, 0, 32, 0], 0.7)
+		if bg and fill_box:
+			_bar.draw_style_box(bg, Rect2(Vector2.ZERO, _bar.size))
+			var fw := maxf(48.0, (_bar.size.x - 12) * progress)
+			_bar.draw_style_box(fill_box, Rect2(Vector2(6, 5), Vector2(fw, _bar.size.y - 10)))
+			return
 		var track := DrawKit.rounded_rect(Rect2(Vector2.ZERO, _bar.size), 24, 6)
 		_bar.draw_colored_polygon(track, Color(0.07, 0.03, 0.22, 0.7))
 		DrawKit.outline(_bar, track, Color(1, 1, 1, 0.3), 3.0)

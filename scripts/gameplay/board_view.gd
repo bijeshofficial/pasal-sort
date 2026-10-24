@@ -164,11 +164,16 @@ func _process(delta: float) -> void:
 
 ## Glass shelves under each row of jars.
 func _draw() -> void:
+	var painted := Art.box("jars/overlays/shelf", [120, 0, 120, 0], 0.5)
 	for r in _rows:
 		var y: float = r["y"]
 		var x0: float = r["x0"]
 		var x1: float = r["x1"]
 		var th := 30.0
+		if painted:
+			# The plank is the art's middle band (rows 33-106 of 140).
+			draw_style_box(painted, Rect2(x0 - 24, y - 14, x1 - x0 + 48, 70))
+			continue
 		# A glowing glass shelf.
 		var cx := (x0 + x1) * 0.5
 		var half := (x1 - x0) * 0.5
@@ -539,6 +544,12 @@ func move_cat(to: int) -> void:
 
 
 func _draw_cat() -> void:
+	if Art.has("jars/overlays/biralo_on_jar"):
+		# Biralo sits on a lid of his own in the art: its bottom on the jar top.
+		var s := jar_width * 1.25
+		var bob := sin(_cat_t * 2.4) * 3.0
+		Art.draw_fit(cat_node, "jars/overlays/biralo_on_jar", Rect2(-s * 0.5, -s * 0.92 + bob, s, s))
+		return
 	var blink := 1.0 if fmod(_cat_t, 3.7) < 0.12 else 0.0
 	CharacterArt.draw_cat(cat_node, Vector2.ZERO, _cat_unit(), "happy" if fmod(_cat_t, 6.0) < 1.5 else "neutral", _cat_t, blink)
 

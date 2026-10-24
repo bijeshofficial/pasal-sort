@@ -2,8 +2,8 @@ class_name RenoObject
 extends Node2D
 ## One renovatable object in an area scene. Draws itself with RenoArt in its
 ## broken state or one of its task's styles. A PNG at
-## res://assets/art/areas/<area>/<object>_<variant>.png (variant = "broken"
-## or the style id) replaces the drawing automatically.
+## res://assets/art/areas/<area>/<object>_<variant>.png/.webp (variant =
+## "broken" or the style id; see Art) replaces the drawing automatically.
 ## Origin = top-left of the object's rect; scaling pivots at the bottom centre.
 
 ## Kinds with small idle animations (redrawn every frame).
@@ -24,6 +24,8 @@ var layer := 0
 var _t := 0.0
 var _sprite: Sprite2D
 var _body: Node2D
+## Shop name painted over sign art (the art plates are blank).
+var _sign_text: Node2D
 
 
 func setup(area_key: String, data: Dictionary) -> void:
@@ -75,18 +77,42 @@ func _process(delta: float) -> void:
 
 
 func _apply_texture() -> void:
-	var path := "res://assets/art/areas/%s/%s_%s.png" % [area_id, object_id, style_id]
-	if ResourceLoader.exists(path):
+	var t := Art.tex("areas/%s/%s_%s" % [area_id, object_id, style_id])
+	if t:
 		if _sprite == null:
 			_sprite = Sprite2D.new()
 			_sprite.centered = false
 			_body.add_child(_sprite)
-		_sprite.texture = load(path)
+		_sprite.texture = t
 		_sprite.position = Vector2(-size.x * 0.5, -size.y)
 		_sprite.scale = size / _sprite.texture.get_size()
 		_sprite.visible = true
+		if kind in ["wall_sign", "sign_board"]:
+			if _sign_text == null:
+				_sign_text = Node2D.new()
+				_body.add_child(_sign_text)
+				_sign_text.draw.connect(_draw_sign_text)
+			_sign_text.visible = true
+			_sign_text.queue_redraw()
 	elif _sprite:
 		_sprite.visible = false
+		if _sign_text:
+			_sign_text.visible = false
+
+
+func _draw_sign_text() -> void:
+	var text := "HAJURAMA'S PASAL" if not broken else "H J R M   P S L"
+	var f := UIKit.font(true)
+	var fs := int(size.y * 0.4)
+	var tw := f.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x
+	while tw > size.x * 0.74 and fs > 12:
+		fs -= 2
+		tw = f.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x
+	var pos := Vector2(-tw * 0.5, -size.y * 0.5 + fs * 0.36)
+	var fill := Color("ffe9a8") if not broken else Color(0.9, 0.84, 0.72, 0.55)
+	var ink := Color("3a1d0e") if not broken else Color(0.2, 0.12, 0.08, 0.4)
+	_sign_text.draw_string_outline(f, pos, text, HORIZONTAL_ALIGNMENT_LEFT, -1, fs, maxi(4, fs / 6), ink)
+	_sign_text.draw_string(f, pos, text, HORIZONTAL_ALIGNMENT_LEFT, -1, fs, fill)
 
 
 func _draw_body() -> void:

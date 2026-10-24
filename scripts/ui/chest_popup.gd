@@ -158,7 +158,34 @@ func _pop_item(i: int) -> void:
 ## A planked treasure chest: domed lid, metal bands with rivets, corner
 ## caps and a keyhole plate. Opening squashes the lid back and shows its
 ## dark underside, a warm glow and coins and gems inside.
+## Painted chest (assets/art/chests/<style>_closed|open); false if missing.
+func _draw_painted_chest() -> bool:
+	var closed_t := Art.tex("chests/%s_closed" % style)
+	var open_t := Art.tex("chests/%s_open" % style)
+	if closed_t == null or open_t == null:
+		return false
+	var c := Vector2(_chest.size.x * 0.5, _chest.size.y * 0.78)
+	var t := Time.get_ticks_msec() / 1000.0
+	if _rays > 0.0:
+		var rays := Art.tex("ui/light_rays")
+		if rays:
+			var rs := 760.0 * (0.85 + 0.15 * _rays)
+			_chest.draw_set_transform(c + Vector2(0, -150), t * 0.35, Vector2.ONE)
+			_chest.draw_texture_rect(rays, Rect2(-rs * 0.5, -rs * 0.5, rs, rs), false, Color(1, 1, 1, 0.85 * _rays))
+			_chest.draw_set_transform(Vector2.ZERO)
+	var wob := sin(Time.get_ticks_msec() * 0.06) * 0.08 * _shake
+	_chest.draw_set_transform(c, wob, Vector2(1.0 + 0.04 * _shake, 1.0 - 0.04 * _shake))
+	var tex := open_t if _lid > 0.5 else closed_t
+	var w := 470.0
+	var h := w * tex.get_height() / tex.get_width()
+	_chest.draw_texture_rect(tex, Rect2(-w * 0.5, -h + 18.0, w, h), false)
+	_chest.draw_set_transform(Vector2.ZERO)
+	return true
+
+
 func _draw_chest() -> void:
+	if _draw_painted_chest():
+		return
 	var cols: Array = STYLES.get(style, STYLES["wood"])
 	var base: Color = cols[0]
 	var dark: Color = cols[1]

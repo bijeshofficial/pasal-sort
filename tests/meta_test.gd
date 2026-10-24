@@ -841,7 +841,8 @@ func _test_wheel_scroll() -> void:
 		root.push_input(wheel, true)
 		await process_frame
 	_check(target != null and shop.scroll.scroll_vertical > before, "mouse wheel over a shop item scrolls the shop (%d -> %d)" % [before, shop.scroll.scroll_vertical])
-	# Under a popup the list stays put.
+	# Under a popup the list stays put (let the wheel glide settle first).
+	await _wait(0.8)
 	var PP = load("res://scripts/ui/popups.gd")
 	PP.show({"id": "cover", "title": "Cover", "buttons": []})
 	await process_frame

@@ -102,7 +102,42 @@ func _layout_row() -> void:
 	_row.offset_bottom = -lip + lip * _press - 2
 
 
+const PAINTED := {"primary": "green", "secondary": "blue", "gold": "gold", "neutral": "cream", "paper": "cream",
+	"danger": "red", "purple": "purple", "pink": "purple"}
+
+
+## Painted 9-slice button (assets/art/ui/btn_<colour>[_pressed]); false if
+## the art is missing.
+func _draw_painted() -> bool:
+	if size.x <= 0.0 or size.y <= 0.0:
+		return false
+	# Round icon-only close button: the painted round one.
+	if _label != null and not _label.visible and _icon != null and _icon.icon == "close" and absf(size.x - size.y) < 4.0:
+		if Art.draw_fit(self, "ui/btn_close", Rect2(Vector2(0, 3.0 * _press), size)):
+			if _icon:
+				_icon.visible = false
+			return true
+	var colour: String = PAINTED.get(kind, "")
+	if colour == "":
+		return false
+	if disabled:
+		colour = "cream"
+	var k := clampf(size.y / 170.0, 0.3, 1.2)
+	var stem := "ui/btn_%s%s" % [colour, "_pressed" if _press > 0.5 else ""]
+	var sb := Art.box(stem, [70, 60, 70, 70], snappedf(k, 0.05))
+	if sb == null:
+		return false
+	if disabled:
+		var dsb: StyleBoxTexture = sb.duplicate()
+		dsb.modulate_color = Color(0.74, 0.72, 0.82)
+		sb = dsb
+	draw_style_box(sb, Rect2(Vector2.ZERO, size))
+	return true
+
+
 func _draw() -> void:
+	if _draw_painted():
+		return
 	var c := _colors()
 	var r := minf(size.y * 0.42, 64.0)
 	DrawKit.glossy_rrect(self, Rect2(Vector2.ZERO, size), r, c[0], c[1], _press, clampf(size.y * 0.04, 4.0, 6.0), _lip(), true)

@@ -127,6 +127,10 @@ func _set_plate(x: float) -> void:
 func _draw() -> void:
 	var w := size.x
 	var h := size.y
+	var bar_art := Art.box("ui/nav_bar", [120, 0, 120, 0], 1.0)
+	if bar_art:
+		draw_style_box(bar_art, Rect2(0, -24, w, h + 24))
+		return
 	for k in 4:
 		draw_rect(Rect2(0, -6 - k * 5, w, 6), Color(0.04, 0.0, 0.14, 0.06))
 	var bar := DrawKit.rounded_rect(Rect2(0, 0, w, h + 60), 56, 10)
@@ -142,6 +146,10 @@ func _draw() -> void:
 
 func _draw_plate() -> void:
 	var r := Rect2(Vector2.ZERO, _plate.size)
+	var plate_art := Art.box("ui/nav_selected", [60, 60, 60, 60], 0.8)
+	if plate_art:
+		_plate.draw_style_box(plate_art, r)
+		return
 	DrawKit.glossy_rrect(_plate, r, 46, Color("ffc23a"), Color("d9761a"), 0.0, 6.0, 14.0, true)
 	_plate.draw_colored_polygon(DrawKit.star(Vector2(r.size.x - 34, 34), 12, 4, 4), Color(1, 1, 1, 0.85))
 
@@ -151,6 +159,8 @@ func _draw_plate() -> void:
 func _draw_icon(ci: Control, id: String, on: bool) -> void:
 	var s := minf(ci.size.x, ci.size.y)
 	if s <= 0.0:
+		return
+	if Art.draw_fit(ci, "ui/nav_" + id, Rect2(Vector2.ZERO, ci.size), Color(1, 1, 1, 1.0) if on else Color(0.82, 0.8, 0.92)):
 		return
 	var u := s / 100.0
 	var o := (ci.size - Vector2(s, s)) * 0.5

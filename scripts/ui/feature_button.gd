@@ -53,7 +53,15 @@ func setup(feature_id: String, icon: String, text: String, fill: Color) -> void:
 	resized.connect(func() -> void: pivot_offset = size * 0.5)
 
 
+const PAINTED := {"calendar": "daily"}
+
+
 func _draw() -> void:
+	var stem := "ui/feature_" + String(PAINTED.get(id, id))
+	if Art.draw_fit(self, stem, Rect2(2, -8, 136, 136)):
+		_icon.visible = false
+		return
+	_icon.visible = true
 	DrawKit.glossy_circle(self, Vector2(70, 62), 58, color, color.darkened(0.35), 6.0, 9.0)
 
 

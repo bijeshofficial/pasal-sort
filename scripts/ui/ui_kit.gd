@@ -140,7 +140,17 @@ static func box(fill: Color, radius: float = 40.0, edge: Color = Color.TRANSPARE
 
 
 ## Light card with an outline all round and a thicker 3D bottom edge.
-static func card_box(fill: Color = PAPER, margin: float = 24.0, edge: Color = LINE) -> StyleBoxFlat:
+## Painted art: ui/panel_card (gold-rimmed panel_card_highlight for GOLD
+## edges); tinted fills keep the flat version.
+static func card_box(fill: Color = PAPER, margin: float = 24.0, edge: Color = LINE) -> StyleBox:
+	var stem := "ui/panel_card_highlight" if edge == GOLD else "ui/panel_card"
+	if fill in [PAPER, Color.WHITE, Color("fff6cf"), Color("fff6fb"), PAPER_DARK] and Art.has(stem):
+		var sb: StyleBoxTexture = Art.box(stem, [48, 48, 48, 48], 0.6).duplicate()
+		sb.set_content_margin_all(margin + 6)
+		sb.content_margin_bottom = margin + 12
+		if fill == PAPER_DARK:
+			sb.modulate_color = Color(0.93, 0.92, 1.0)
+		return sb
 	var s := box(fill, 36, edge, 0, margin)
 	s.border_color = edge.darkened(0.12)
 	s.set_border_width_all(5)
@@ -148,8 +158,12 @@ static func card_box(fill: Color = PAPER, margin: float = 24.0, edge: Color = LI
 	return s
 
 
-## Dark translucent pill (currency chips, HUD info).
-static func chip_box(margin: float = 12.0) -> StyleBoxFlat:
+## Dark translucent pill (currency chips, HUD info). Painted: ui/chip_pill.
+static func chip_box(margin: float = 12.0) -> StyleBox:
+	if Art.has("ui/chip_pill"):
+		var sb: StyleBoxTexture = Art.box("ui/chip_pill", [60, 0, 60, 0], 0.86).duplicate()
+		sb.set_content_margin_all(margin)
+		return sb
 	var s := box(Color(0.08, 0.04, 0.24, 0.6), 60, Color.TRANSPARENT, 0, margin)
 	s.border_color = Color(1, 1, 1, 0.25)
 	s.set_border_width_all(4)
@@ -167,6 +181,10 @@ static func panel(fill: Color = PAPER, radius: float = 56.0, margin: float = 44.
 
 
 static func draw_panel(ci: CanvasItem, rect: Rect2, radius: float, fill: Color = PAPER) -> void:
+	var painted := Art.box("ui/panel_popup", [64, 96, 64, 64], 0.75)
+	if painted and fill == PAPER:
+		ci.draw_style_box(painted, rect)
+		return
 	ci.draw_colored_polygon(DrawKit.rounded_rect(Rect2(rect.position + Vector2(0, 14), rect.size), radius, 10), Color(0.04, 0.01, 0.15, 0.35))
 	var outer := DrawKit.rounded_rect(rect, radius, 10)
 	ci.draw_colored_polygon(outer, PANEL_EDGE.darkened(0.4))
@@ -293,7 +311,11 @@ static func ribbon(text: String, width: float, color: Color = PINK, edge: Color 
 	c.custom_minimum_size = Vector2(width, 150)
 	c.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	c.z_index = 2
+	var painted_rib := color == PINK and Art.has("ui/ribbon_title")
 	c.draw.connect(func() -> void:
+		if painted_rib:
+			c.draw_style_box(Art.box("ui/ribbon_title", [160, 0, 160, 0], 0.75), Rect2(0, 0, c.size.x, 150))
+			return
 		var w := c.size.x
 		var h := 118.0
 		var y := 10.0
@@ -399,10 +421,18 @@ static func bounce(c: CanvasItem, amount: float = 1.18, duration: float = 0.22) 
 ## Glossy pill badge ("HARD", "SUPER HARD", counts).
 static func badge(text: String, fill: Color, size: int = 30, fg: Color = Color.WHITE) -> PanelContainer:
 	var p := PanelContainer.new()
-	var sb := box(fill, 40, Color.TRANSPARENT, 0, 0)
-	sb.border_color = fill.darkened(0.45)
-	sb.set_border_width_all(4)
-	sb.border_width_bottom = 8
+	var sb: StyleBox
+	if Art.has("ui/level_badge"):
+		# The painted capsule is white, tinted to the badge colour.
+		var tb: StyleBoxTexture = Art.box("ui/level_badge", [60, 0, 60, 0], size / 60.0).duplicate()
+		tb.modulate_color = fill.lightened(0.15)
+		sb = tb
+	else:
+		var fb := box(fill, 40, Color.TRANSPARENT, 0, 0)
+		fb.border_color = fill.darkened(0.45)
+		fb.set_border_width_all(4)
+		fb.border_width_bottom = 8
+		sb = fb
 	sb.content_margin_left = size * 0.7
 	sb.content_margin_right = size * 0.7
 	sb.content_margin_top = size * 0.12
@@ -428,6 +458,8 @@ static func red_dot(size: float = 34.0) -> Control:
 	d.size = Vector2(size, size)
 	d.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	d.draw.connect(func() -> void:
+		if Art.draw_fit(d, "ui/badge_dot", Rect2(Vector2.ZERO, d.size).grow(4)):
+			return
 		d.draw_circle(d.size * 0.5, size * 0.5, Color.WHITE, true, -1.0, true)
 		d.draw_circle(d.size * 0.5, size * 0.5 - 4, HEART, true, -1.0, true)
 		d.draw_circle(d.size * 0.5 - Vector2(size * 0.12, size * 0.14), size * 0.1, Color(1, 1, 1, 0.8), true, -1.0, true))

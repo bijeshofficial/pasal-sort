@@ -67,7 +67,8 @@ static func _set_tile(s: Dictionary, on_open: Callable) -> Control:
 	var first: Dictionary = (s["stickers"] as Array)[0]
 	b.draw.connect(func() -> void:
 		DrawKit.glossy_rrect(b, Rect2(Vector2(4, 4), b.size - Vector2(8, 8)), 30, col, col.darkened(0.35), 0.0, 5.0, 10.0, true)
-		StickerArt.draw_glyph(b, Rect2(Vector2(22, 30), Vector2(150, 150)), String(first["glyph"]))
+		if not Art.draw_cover(b, "album/covers/" + String(s["id"]), Rect2(Vector2(20, 24), Vector2(160, 166))):
+			StickerArt.draw_glyph(b, Rect2(Vector2(22, 30), Vector2(150, 150)), String(first["glyph"]))
 		var bar := Rect2(Vector2(190, 150), Vector2(200, 30))
 		b.draw_colored_polygon(DrawKit.rounded_rect(bar, 15, 6), Color(0, 0, 0, 0.3))
 		if n > 0:

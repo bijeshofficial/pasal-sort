@@ -108,7 +108,9 @@ func _card(i: int, style: Dictionary) -> Control:
 		var art := Rect2(r.position + Vector2(20, 20), Vector2(r.size.x - 40, r.size.y - 110))
 		var k := minf(art.size.x / osize.x, art.size.y / osize.y)
 		var off := art.position + (art.size - osize * k) * 0.5
-		RenoArt.draw_object(b, kind, osize, style, false, 0.0, false, Transform2D(0.0, Vector2(k, k), 0.0, off))
+		var area_key := String(RenovationManager.area(area_index).get("id", ""))
+		if not Art.draw_fit(b, "areas/%s/%s_%s" % [area_key, obj_id, String(style.get("id", ""))], art):
+			RenoArt.draw_object(b, kind, osize, style, false, 0.0, false, Transform2D(0.0, Vector2(k, k), 0.0, off))
 		if on:
 			b.draw_circle(r.position + Vector2(r.size.x - 20, 24), 30, UIKit.PRIMARY_EDGE, true, -1.0, true)
 			b.draw_circle(r.position + Vector2(r.size.x - 20, 22), 26, UIKit.PRIMARY, true, -1.0, true)

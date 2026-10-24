@@ -94,6 +94,8 @@ static func _xf(pts: PackedVector2Array, c: Vector2, d: float, k: float = 1.0, o
 ## style: "classic" | "striped" | "foil". hidden: plain paper wrapper.
 ## selected: a white halo so the moving group reads clearly.
 static func draw_candy(ci: CanvasItem, c: Vector2, d: float, type: int, style: String = "classic", hidden: bool = false, selected: bool = false) -> void:
+	if _draw_painted(ci, c, d, type, style, hidden, selected):
+		return
 	var col := GameData.candy_color(type)
 	var shape_name := GameData.candy_shape(type)
 	var edge := col.darkened(0.42)
@@ -168,6 +170,29 @@ static func draw_candy(ci: CanvasItem, c: Vector2, d: float, type: int, style: S
 	DrawKit.aa_rim(ci, _xf(parts["ink"], c, d), edge, 1.4)
 	if colorblind:
 		_draw_marking(ci, c, d, type)
+
+
+## Painted candies (assets/art/candies/<id>_<own|striped|foil>, hidden).
+## The art is a 256 square with the wrapper reaching its sides, so it is
+## drawn d wide (the old drawing's twist ends also spanned d).
+static func _draw_painted(ci: CanvasItem, c: Vector2, d: float, type: int, style: String, hidden: bool, selected: bool) -> bool:
+	var stem := "candies/hidden"
+	if not hidden:
+		var wrap: String = {"striped": "striped", "foil": "foil"}.get(style, "own")
+		stem = "candies/%s_%s" % [String(GameData.candy(type).get("id", "")), wrap]
+	var t := Art.tex(stem)
+	if t == null:
+		return false
+	var size := d * 1.06
+	if selected:
+		ci.draw_circle(c, d * 0.44, Color(1, 1, 1, 0.55), true, -1.0, true)
+		ci.draw_circle(c, d * 0.36, Color(1, 0.97, 0.8, 0.5), true, -1.0, true)
+	else:
+		ci.draw_colored_polygon(DrawKit.ellipse(c + Vector2(0, 0.3) * d, 0.3 * d, 0.05 * d, 20), Color(0.05, 0.02, 0.15, 0.18))
+	ci.draw_texture_rect(t, Rect2(c - Vector2(size, size) * 0.5, Vector2(size, size)), false)
+	if colorblind and not hidden:
+		_draw_marking(ci, c, d, type)
+	return true
 
 
 static func _draw_marking(ci: CanvasItem, c: Vector2, d: float, type: int) -> void:
@@ -423,9 +448,48 @@ static func _wrap_bottom(fill: Color, style: String) -> Color:
 	return fill.darkened(0.2 if style == "foil" else 0.08)
 
 
+## The painted jar (assets/art/jars/<skin>/) with candies inside.
+static func _draw_painted_mini_jar(ci: CanvasItem, bottom: Vector2, w: float, types: Array, lid_type: int, skin_id: String) -> bool:
+	if not Art.has("jars/%s/mid" % skin_id):
+		skin_id = "jar_classic"
+	var top_t := Art.tex("jars/%s/top" % skin_id)
+	var mid_t := Art.tex("jars/%s/mid" % skin_id)
+	var bot_t := Art.tex("jars/%s/bottom" % skin_id)
+	if top_t == null or mid_t == null or bot_t == null:
+		return false
+	var slot := w * 0.78
+	var step := slot * 0.78
+	var n := maxi(4, types.size())
+	var k := w * 1.06 / mid_t.get_width()
+	var dw := mid_t.get_width() * k
+	var bot_h := bot_t.get_height() * k
+	var top_h := top_t.get_height() * k
+	var body := w * 0.16 + n * step + w * 0.1
+	var rim_y := bottom.y - body - w * 0.12
+	for i in types.size():
+		draw_candy(ci, bottom + Vector2(0, -w * 0.13 - step * (i + 0.5)), slot, int(types[i]))
+	var y := bottom.y - bot_h + 1.0
+	var mid_top := rim_y + top_h
+	while y > mid_top + 0.5:
+		var h := minf(mid_t.get_height() * k, y - mid_top)
+		ci.draw_texture_rect_region(mid_t, Rect2(bottom.x - dw * 0.5, y - h, dw, h), Rect2(0, mid_t.get_height() - h / k, mid_t.get_width(), h / k))
+		y -= h
+	ci.draw_texture_rect(bot_t, Rect2(bottom.x - dw * 0.5, bottom.y - bot_h, dw, bot_h), false)
+	ci.draw_texture_rect(top_t, Rect2(bottom.x - dw * 0.5, rim_y, dw, top_h), false)
+	var lid_t := Art.tex("jars/overlays/lid")
+	if lid_type >= 0 and lid_t:
+		var lw := w * 1.0
+		var src := Rect2(25, 73, 270, 174)
+		var lh := lw * src.size.y / src.size.x
+		ci.draw_texture_rect_region(lid_t, Rect2(bottom.x - lw * 0.5, rim_y - lh * 0.55, lw, lh), src, GameData.candy_color(lid_type).lightened(0.12))
+	return true
+
+
 ## A small decorative jar with candies (home counter, icons, cards).
 ## `bottom` = bottom centre; `types` bottom -> top; lid < 0 = no lid.
-static func draw_mini_jar(ci: CanvasItem, bottom: Vector2, w: float, types: Array, lid_type: int = -1, glass: Color = Color("dcefee"), rim: Color = Color("8fb9bd")) -> void:
+static func draw_mini_jar(ci: CanvasItem, bottom: Vector2, w: float, types: Array, lid_type: int = -1, glass: Color = Color("dcefee"), rim: Color = Color("8fb9bd"), skin_id: String = "jar_classic") -> void:
+	if _draw_painted_mini_jar(ci, bottom, w, types, lid_type, skin_id):
+		return
 	var slot := w * 0.78
 	var step := slot * 0.78
 	var n := maxi(4, types.size())

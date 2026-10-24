@@ -27,6 +27,7 @@
 	"cast": [
 		{
 			"id": "kanchha",
+			"frame": "full",
 			"pos": [
 				1320,
 				1120

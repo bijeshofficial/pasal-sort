@@ -86,7 +86,12 @@ func refresh() -> void:
 func _draw() -> void:
 	var c := Vector2(size.x * 0.5, 98)
 	var cols: Array = COLORS[booster_id]
-	DrawKit.glossy_circle(self, c + Vector2(0, _press * 5.0), 88, cols[0], cols[1], 6.0, 12.0 * (1.0 - _press))
+	var d := 200.0
+	if Art.draw_fit(self, "boosters/" + booster_id, Rect2(c - Vector2(d, d) * 0.5 + Vector2(0, _press * 5.0), Vector2(d, d))):
+		_icon.visible = false
+	else:
+		_icon.visible = true
+		DrawKit.glossy_circle(self, c + Vector2(0, _press * 5.0), 88, cols[0], cols[1], 6.0, 12.0 * (1.0 - _press))
 	var n := BoosterManager.count(booster_id)
 	var bc := c + Vector2(80, -60)
 	if n > 0 or _free:

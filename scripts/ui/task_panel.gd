@@ -192,7 +192,10 @@ func _thumb(t: Dictionary, done: bool) -> Control:
 		DrawKit.glossy_rrect(c, Rect2(Vector2.ZERO, c.size), 26, Color("fff3dc") if done else Color("e9f4ff"), UIKit.LINE.darkened(0.1), 0.0, 4.0, 8.0, false)
 		var k := minf((c.size.x - 30) / osize.x, (c.size.y - 30) / osize.y)
 		var off := (c.size - osize * k) * 0.5
-		RenoArt.draw_object(c, kind, osize, style, false, 0.0, false, Transform2D(0.0, Vector2(k, k), 0.0, off)))
+		var area_key := String(RenovationManager.area(area_index).get("id", ""))
+		var variant := String(style.get("id", "")) if done else "broken"
+		if not Art.draw_fit(c, "areas/%s/%s_%s" % [area_key, obj_id, variant], Rect2(Vector2(10, 10), c.size - Vector2(20, 20))):
+			RenoArt.draw_object(c, kind, osize, style, false, 0.0, false, Transform2D(0.0, Vector2(k, k), 0.0, off)))
 	return c
 
 

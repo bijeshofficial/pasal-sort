@@ -54,9 +54,16 @@ func _ready() -> void:
 	add_child(holder)
 	portrait = CharacterScene.instantiate()
 	portrait.unit = 1.25
+	portrait.frame = "portrait"
 	holder.add_child(portrait)
 	bubble = PanelContainer.new()
-	var sb := UIKit.card_box(Color.WHITE, 40, UIKit.PANEL_EDGE)
+	var sb: StyleBox = UIKit.card_box(Color.WHITE, 40, UIKit.PANEL_EDGE)
+	var painted_bubble := Art.box("ui/speech_bubble", [80, 60, 80, 90], 0.8)
+	if painted_bubble:
+		sb = painted_bubble.duplicate()
+		sb.content_margin_left = 48
+		sb.content_margin_right = 48
+		sb.content_margin_bottom = 80
 	sb.content_margin_top = 56
 	bubble.add_theme_stylebox_override("panel", sb)
 	bubble.mouse_filter = Control.MOUSE_FILTER_IGNORE

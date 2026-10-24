@@ -26,7 +26,13 @@ static func is_cat(id: String) -> bool:
 
 
 ## pose: "idle" | "cheer" | "wave"; arm 0..1 eases arms up; blink 0..1.
-static func draw(ci: CanvasItem, id: String, origin: Vector2, unit: float, mood: String = "neutral", t: float = 0.0, pose: String = "idle", arm: float = 0.0, blink: float = 0.0) -> void:
+## frame (painted art): "bust" = the figure cut at the waist, ending at
+## `origin` (fits wherever the old drawn busts went: behind counters, popups);
+## "full" = the whole figure, waist at `origin` and legs below it;
+## "portrait" = the head-and-shoulders portrait for the mood, ending at origin.
+static func draw(ci: CanvasItem, id: String, origin: Vector2, unit: float, mood: String = "neutral", t: float = 0.0, pose: String = "idle", arm: float = 0.0, blink: float = 0.0, frame: String = "bust") -> void:
+	if draw_painted(ci, id, origin, unit, mood, t, pose, frame):
+		return
 	if is_cat(id):
 		draw_cat(ci, origin, unit, mood, t, blink)
 		return
@@ -238,6 +244,53 @@ static func _hair_front(ci: CanvasItem, c: Dictionary, head: Vector2, r: float, 
 
 
 ## Biralo, an orange tabby, sitting. Origin = bottom centre.
+## Painted characters (assets/art/characters/<id>/). Returns false when the
+## art is missing, so the caller falls back to the drawn version.
+static func draw_painted(ci: CanvasItem, id: String, origin: Vector2, unit: float, mood: String, t: float, pose: String, frame: String) -> bool:
+	var cat := is_cat(id)
+	if frame == "portrait" and not cat:
+		var pt := Art.tex("characters/%s/portrait_%s" % [id, mood if mood in MOODS else "neutral"])
+		if pt == null:
+			pt = Art.tex("characters/%s/portrait_neutral" % id)
+		if pt:
+			var side := 460.0 * unit
+			var bob := sin(t * 2.0) * 3.0 * unit
+			ci.draw_texture_rect(pt, Rect2(origin + Vector2(-side * 0.5, -side + bob), Vector2(side, side)), false)
+			return true
+	var body := "idle"
+	if cat:
+		body = {"cheer": "stretch", "wave": "walk"}.get(pose, "sit")
+	elif pose in ["wave", "cheer"]:
+		body = pose
+	elif mood in ["worried", "grumpy"]:
+		body = "worried"
+	var tex := Art.tex("characters/%s/body_%s" % [id, body])
+	if tex == null:
+		return false
+	var ts := tex.get_size()
+	var breathe := 1.0 + sin(t * 2.2) * 0.012
+	if cat:
+		# The cat sits with its feet on `origin`.
+		var ch := 330.0 * unit
+		var cw := ch * ts.x / ts.y
+		ci.draw_texture_rect(tex, Rect2(origin.x - cw * 0.5, origin.y - ch * breathe, cw, ch * breathe), false)
+		return true
+	# A grown-up's full figure is ~2.05x the old bust; kids are shorter.
+	var full_h := 900.0 * unit * (0.78 if bool(CAST.get(id, {}).get("kid", false)) else 1.0)
+	var w := full_h * ts.x / ts.y
+	var hop := absf(sin(t * 9.0)) * 18.0 * unit if pose == "cheer" else 0.0
+	# The waist (52% down the figure) sits on `origin`, where the old drawn
+	# bust ended. Bust = only the part above it; full = legs too.
+	var cut := 0.52
+	if frame == "full":
+		var top := origin.y - full_h * cut * breathe - hop
+		ci.draw_texture_rect(tex, Rect2(origin.x - w * 0.5, top, w, full_h * breathe), false)
+		return true
+	var dst_h := full_h * cut * breathe
+	ci.draw_texture_rect_region(tex, Rect2(origin.x - w * 0.5, origin.y - dst_h - hop, w, dst_h), Rect2(0, 0, ts.x, ts.y * cut))
+	return true
+
+
 static func draw_cat(ci: CanvasItem, origin: Vector2, unit: float, mood: String = "neutral", t: float = 0.0, blink: float = 0.0) -> void:
 	var u := unit
 	var fur := Color("f0a04b")

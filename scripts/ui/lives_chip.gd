@@ -15,7 +15,10 @@ func _init() -> void:
 	add_theme_stylebox_override("normal", UIKit.chip_box(8))
 	add_theme_stylebox_override("hover", UIKit.chip_box(8))
 	var pressed_box := UIKit.chip_box(8)
-	pressed_box.bg_color = Color(0.08, 0.04, 0.24, 0.8)
+	if pressed_box is StyleBoxFlat:
+		(pressed_box as StyleBoxFlat).bg_color = Color(0.08, 0.04, 0.24, 0.8)
+	elif pressed_box is StyleBoxTexture:
+		(pressed_box as StyleBoxTexture).modulate_color = Color(0.85, 0.85, 0.9)
 	add_theme_stylebox_override("pressed", pressed_box)
 	add_theme_stylebox_override("focus", StyleBoxEmpty.new())
 

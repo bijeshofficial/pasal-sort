@@ -67,6 +67,11 @@ func _draw() -> void:
 	var h := size.y
 	if w <= 0 or h <= 0:
 		return
+	# Painted background for the theme (assets/art/backgrounds/), covering
+	# the screen; a light veil keeps jars and cards easy to read.
+	if Art.draw_cover(self, "backgrounds/puzzle_" + theme_id, Rect2(0, 0, w, h)):
+		draw_rect(Rect2(0, 0, w, h), Color(0.08, 0.04, 0.18, 0.34 if calm else 0.26))
+		return
 	var u := w / 1080.0
 	var top := pal("top")
 	var mid := pal("mid")

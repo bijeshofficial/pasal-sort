@@ -16,6 +16,8 @@ void fragment() {
 """
 
 var kind := "interior"
+## Area id: a painted assets/art/areas/<id>/backdrop replaces the drawing.
+var area_id := ""
 var world := Vector2(1800, 1500)
 var night := false
 var saturation := 1.0:
@@ -66,6 +68,10 @@ func _draw() -> void:
 	draw_rect(Rect2(-3000, h, w + 6000, 3000), edges[1])
 	draw_rect(Rect2(-3000, 0, 3000, h), edges[0])
 	draw_rect(Rect2(w, 0, 3000, h), edges[0])
+	var painted := Art.tex("areas/%s/backdrop" % area_id) if area_id != "" else null
+	if painted:
+		draw_texture_rect(painted, Rect2(Vector2.ZERO, world), false)
+		return
 	match kind:
 		"interior":
 			draw_rect(Rect2(Vector2.ZERO, world), Color("3b2a20"))

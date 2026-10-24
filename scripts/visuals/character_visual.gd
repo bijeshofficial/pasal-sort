@@ -10,6 +10,8 @@ extends Node2D
 		queue_redraw()
 @export var mood := "neutral"
 @export var unit := 1.0
+## Painted art framing: "bust" (cut at the waist), "full" or "portrait".
+@export var frame := "bust"
 
 var pose := "idle"
 var _t := 0.0
@@ -32,7 +34,7 @@ func _process(delta: float) -> void:
 
 
 func _draw() -> void:
-	CharacterArt.draw(self, id, Vector2.ZERO, unit, mood, _t, pose, _arm, _blink)
+	CharacterArt.draw(self, id, Vector2.ZERO, unit, mood, _t, pose, _arm, _blink, frame)
 
 
 func cheer(duration: float = 1.6) -> void:

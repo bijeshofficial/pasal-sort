@@ -11,7 +11,7 @@
 	"intro_story": "a3.arrive",
 	"outro_story": "a3.outro",
 	"cast": [
-		{"id": "kanchha", "pos": [1110, 1240], "unit": 0.8, "z": 1},
+		{"id": "kanchha", "pos": [1110, 1240], "unit": 0.8, "z": 1, "frame": "full"},
 		{"id": "biralo", "pos": [330, 1080], "unit": 0.42, "z": 4, "home": "sacks", "away_pos": [1460, 1440]}
 	],
 	"objects": [

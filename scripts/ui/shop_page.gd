@@ -298,7 +298,7 @@ func _cosmetic_card(item: Dictionary) -> Control:
 	match String(item["category"]):
 		"jar":
 			prev.draw.connect(func() -> void:
-				CandyArt.draw_mini_jar(prev, Vector2(prev.size.x * 0.5, prev.size.y - 8), 60, [7, 7, 7, 7], 7, Color.html(String(item["glass"])), Color.html(String(item["rim"]))))
+				CandyArt.draw_mini_jar(prev, Vector2(prev.size.x * 0.5, prev.size.y - 8), 60, [7, 7, 7, 7], 7, Color.html(String(item["glass"])), Color.html(String(item["rim"])), String(item["id"])))
 		"wrapper":
 			prev.draw.connect(func() -> void:
 				CandyArt.draw_candy(prev, prev.size * 0.5 + Vector2(-62, 14), 120, 2, String(item["style"]))

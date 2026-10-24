@@ -9,6 +9,9 @@ extends ScrollContainer
 ##   Letting go keeps a little momentum. Phones deliver touches as emulated
 ##   mouse events too, so one mouse-based path covers both.
 ## - the mouse wheel or trackpad, with the cursor anywhere over its items.
+##   Wheel steps glide to their target instead of jumping.
+## Scrolling keeps a float position, so slow drags and momentum stay smooth
+## instead of snapping to whole pixels.
 ## Only the innermost WheelScroll under the pointer reacts, and nothing
 ## reacts under a covering popup.
 
@@ -18,10 +21,14 @@ const FRICTION := 5.0          # momentum decay per second
 const MIN_SPEED := 30.0        # px/s below which momentum stops
 const CANCEL_POS := Vector2(-100000, -100000)
 
+const GLIDE := 16.0            # wheel glide speed (higher = snappier)
+
 var _press_pos := Vector2.INF  # where a press inside this list started
 var _dragging := false
 var _velocity := Vector2.ZERO
 var _last_motion_ms := 0
+var _pos := Vector2.ZERO       # precise scroll position (float)
+var _glide_target := Vector2.INF
 
 
 func _ready() -> void:
@@ -65,13 +72,18 @@ func _input(event: InputEvent) -> void:
 	if vertical_scroll_mode == ScrollContainer.SCROLL_MODE_DISABLED and delta.x == 0.0:
 		delta = Vector2(delta.y, 0)
 	_stop_momentum()
-	_scroll_by(delta)
+	_sync_pos()
+	var from: Vector2 = _glide_target if _glide_target != Vector2.INF else _pos
+	_glide_target = _clamp(from + delta)
+	set_process(true)
 	get_viewport().set_input_as_handled()
 
 
 func _on_left_button(event: InputEventMouseButton) -> void:
 	if event.pressed:
 		_stop_momentum()
+		_glide_target = Vector2.INF
+		_sync_pos()
 		_dragging = false
 		_press_pos = event.position if _owns_point(event.position) else Vector2.INF
 		return
@@ -122,6 +134,15 @@ func _cancel_press() -> void:
 
 
 func _process(delta: float) -> void:
+	if _glide_target != Vector2.INF:
+		_pos = _pos.lerp(_glide_target, 1.0 - exp(-GLIDE * delta))
+		if _pos.distance_to(_glide_target) < 0.5:
+			_pos = _glide_target
+			_glide_target = Vector2.INF
+		_apply_pos()
+		if _glide_target == Vector2.INF and _velocity == Vector2.ZERO:
+			set_process(false)
+		return
 	_scroll_by(_velocity * delta)
 	_velocity *= exp(-FRICTION * delta)
 	if _velocity.length() < MIN_SPEED:
@@ -130,12 +151,34 @@ func _process(delta: float) -> void:
 
 func _stop_momentum() -> void:
 	_velocity = Vector2.ZERO
-	set_process(false)
+	if _glide_target == Vector2.INF:
+		set_process(false)
+
+
+## Picks up position changes made elsewhere (code calling scroll_vertical,
+## ensure_control_visible, the scroll bar).
+func _sync_pos() -> void:
+	if int(round(_pos.y)) != scroll_vertical:
+		_pos.y = scroll_vertical
+	if int(round(_pos.x)) != scroll_horizontal:
+		_pos.x = scroll_horizontal
+
+
+func _clamp(p: Vector2) -> Vector2:
+	var vb := get_v_scroll_bar()
+	var hb := get_h_scroll_bar()
+	return Vector2(clampf(p.x, 0.0, maxf(0.0, hb.max_value - hb.page)), clampf(p.y, 0.0, maxf(0.0, vb.max_value - vb.page)))
 
 
 func _scroll_by(d: Vector2) -> void:
-	scroll_vertical += int(round(d.y))
-	scroll_horizontal += int(round(d.x))
+	_sync_pos()
+	_pos = _clamp(_pos + d)
+	_apply_pos()
+
+
+func _apply_pos() -> void:
+	scroll_vertical = int(round(_pos.y))
+	scroll_horizontal = int(round(_pos.x))
 
 
 ## True when `p` is over this list, no popup covers the list, and no

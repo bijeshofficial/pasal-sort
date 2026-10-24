@@ -52,6 +52,7 @@ func build(index: int, mode_value: String = "live") -> void:
 	# Children are added in draw order (no z_index, so the scene never sorts
 	# against the UI drawn around it).
 	backdrop = AreaBackdrop.new()
+	backdrop.area_id = String(data.get("id", ""))
 	backdrop.setup(String(data.get("backdrop", "interior")), world_size, night)
 	add_child(backdrop)
 
@@ -72,6 +73,9 @@ func build(index: int, mode_value: String = "live") -> void:
 		var ch: CharacterVisual = CharacterScene.instantiate()
 		ch.id = String(c["id"])
 		ch.unit = float(c.get("unit", 0.9))
+		# Painted figures: "bust" behind counters (default), "full" when
+		# standing in the open (feet at pos).
+		ch.frame = String(c.get("frame", "bust"))
 		cast[ch.id] = ch
 		layered.append([int(c.get("z", 0)), layered.size(), ch])
 	layered.sort_custom(func(a: Array, b: Array) -> bool:
@@ -292,11 +296,14 @@ func _setup_ambient() -> void:
 		for k in 26:
 			_motes.append(Vector2(rng.randf() * world_size.x, rng.randf() * world_size.y * 0.7))
 		return
-	for k in 4:
+	# A painted backdrop brings its own sky: no code-drawn clouds or
+	# flat-cartoon passers-by on top of it (birds still fly by).
+	var painted := Art.has("areas/%s/backdrop" % String(data.get("id", "")))
+	for k in (0 if painted else 4):
 		_clouds.append({"x": rng.randf() * world_size.x, "y": rng.randf_range(0.05, 0.25) * world_size.y, "s": rng.randf_range(0.7, 1.3)})
 	for k in 3:
 		_birds.append({"x": rng.randf() * world_size.x, "y": rng.randf_range(0.08, 0.3) * world_size.y, "speed": rng.randf_range(60, 110)})
-	if kind in ["exterior", "courtyard", "night", "lakeside", "mountain", "rooftop"]:
+	if kind in ["exterior", "courtyard", "night", "lakeside", "mountain", "rooftop"] and not painted:
 		var cols := [Color("2f7fc1"), Color("c0392b"), Color("2e8b57"), Color("8e44ad"), Color("e67e22")]
 		var skins := [Color("c98b5e"), Color("a86e45"), Color("b97c55")]
 		for k in 3:

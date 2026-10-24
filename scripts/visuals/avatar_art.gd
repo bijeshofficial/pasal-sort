@@ -7,6 +7,24 @@ const SKINS := ["c98b5e", "d9a07a", "b87a50", "e0ae84", "c48a62", "b98060", "d49
 const HAIR := Color("2b1d16")
 
 
+## Painted avatar (assets/art/avatars/<id>), cropped to the circle.
+static func draw_painted(ci: CanvasItem, c: Vector2, r: float, idx: int) -> bool:
+	var ids: Array = []
+	for a in GameData.meta().get("avatars", []):
+		ids.append(String(a.get("id", "")) if a is Dictionary else String(a))
+	if ids.is_empty():
+		return false
+	var t := Art.tex("avatars/" + String(ids[posmod(idx, ids.size())]))
+	if t == null:
+		return false
+	var pts := DrawKit.ellipse(c, r, r, 48)
+	var uvs := PackedVector2Array()
+	for p in pts:
+		uvs.append((p - c) / (2.0 * r) + Vector2(0.5, 0.5))
+	ci.draw_colored_polygon(pts, Color.WHITE, uvs, t)
+	return true
+
+
 static func draw_avatar(ci: CanvasItem, c: Vector2, r: float, idx: int) -> void:
 	idx = posmod(idx, 8)
 	var u := r / 100.0

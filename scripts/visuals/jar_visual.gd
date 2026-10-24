@@ -111,12 +111,27 @@ func _skin_color(key: String, fallback: String) -> Color:
 	return Color.html(String(skin.get(key, fallback)))
 
 
+## Painted jar skin folder (assets/art/jars/<skin>/top|mid|bottom), or "".
+func _painted_skin() -> String:
+	var id := String(skin.get("id", "jar_classic"))
+	if Art.has("jars/%s/mid" % id):
+		return id
+	return "jar_classic" if Art.has("jars/jar_classic/mid") else ""
+
+
 func _draw() -> void:
 	var w := jar_width
 	var glass := _skin_color("glass", "dcefee")
 	var base := _skin_color("base", "b8d6d6")
 	# Shadow on the shelf.
 	draw_colored_polygon(DrawKit.ellipse(Vector2(0, 2), w * 0.56, w * 0.07, 28), Color(0.2, 0.12, 0.06, 0.22))
+	if _painted_skin() != "":
+		# The painted glass is drawn in front of the candies (_draw_front);
+		# only a faint back pane goes behind them.
+		draw_colored_polygon(_body, Color(glass, 0.12))
+		if gift_slots > 0 and gift_open < 1.0:
+			_draw_gift()
+		return
 	# Back glass.
 	draw_colored_polygon(_body, Color(glass, 0.2))
 	# Inside back wall of the neck (the opening).
@@ -135,6 +150,10 @@ func _draw_gift() -> void:
 	var c := Vector2(0, -base_height() - slot_step() * 0.5)
 	var s := candy_diameter() * 0.86
 	var a := 1.0 - gift_open
+	if Art.has("jars/overlays/gift"):
+		var gs := s * 1.15
+		Art.draw_fit(self, "jars/overlays/gift", Rect2(c.x - gs * 0.5, c.y - gs * 0.5 - gift_open * w * 0.6, gs, gs), Color(1, 1, 1, a))
+		return
 	var box := Rect2(c.x - s * 0.5, c.y - s * 0.32, s, s * 0.7)
 	draw_colored_polygon(DrawKit.rounded_rect(box, s * 0.08, 4), Color(Color("e8457a"), a))
 	draw_rect(Rect2(c.x - s * 0.08, box.position.y, s * 0.16, box.size.y), Color(Color("ffd23f"), a))
@@ -153,9 +172,56 @@ func open_gift() -> void:
 		queue_redraw(), 0.0, 1.0, 0.6).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
 
+## The painted jar: bottom, a repeating middle and the neck, scaled to this
+## jar's width and stacked to its height (4-6 candies tall).
+func _draw_painted_glass(f: Node2D, sk: String) -> void:
+	var w := jar_width
+	var top_t := Art.tex("jars/%s/top" % sk)
+	var mid_t := Art.tex("jars/%s/mid" % sk)
+	var bot_t := Art.tex("jars/%s/bottom" % sk)
+	if top_t == null or mid_t == null or bot_t == null:
+		return
+	var k := w * 1.06 / mid_t.get_width()
+	var dw := mid_t.get_width() * k
+	var x0 := -dw * 0.5
+	var bot_h := bot_t.get_height() * k
+	var top_h := top_t.get_height() * k
+	var rim_y := -body_height() - neck_height() - w * 0.1
+	var mid_top := rim_y + top_h
+	var mid_bottom := -bot_h + 2.0
+	# Middle: whole tiles from the bottom up, the last one cropped.
+	var tile_h := mid_t.get_height() * k
+	var y := mid_bottom
+	while y > mid_top + 0.5:
+		var h := minf(tile_h, y - mid_top)
+		var src_h := h / k
+		f.draw_texture_rect_region(mid_t, Rect2(x0, y - h, dw, h), Rect2(0, mid_t.get_height() - src_h, mid_t.get_width(), src_h))
+		y -= h
+	f.draw_texture_rect(bot_t, Rect2(x0, -bot_h, dw, bot_h), false)
+	f.draw_texture_rect(top_t, Rect2(x0, rim_y, dw, top_h), false)
+
+
 func _draw_front() -> void:
 	var f := front
 	var w := jar_width
+	var sk := _painted_skin()
+	if sk != "":
+		_draw_painted_glass(f, sk)
+		if shine >= 0.0:
+			var bh2 := body_height()
+			var x := lerpf(-w * 1.1, w * 1.1, shine)
+			var band := PackedVector2Array([Vector2(x - w * 0.12, 0), Vector2(x + w * 0.12, 0), Vector2(x + w * 0.52, -bh2 - w), Vector2(x + w * 0.28, -bh2 - w)])
+			for part in Geometry2D.intersect_polygons(_body, band):
+				f.draw_colored_polygon(part, Color(shine_color, shine_color.a * 0.7))
+		if cloth_on or (cloth_slide > 0.0 and cloth_slide < 1.0):
+			_draw_cloth(f)
+		if lock_type >= 0 and lock_open < 1.0:
+			_draw_lock(f)
+		if done:
+			_draw_lid(f, -body_height() - neck_height() - w * 0.06)
+		if dimmed:
+			f.draw_colored_polygon(_body, Color(0.2, 0.14, 0.1, 0.18))
+		return
 	var glass := _skin_color("glass", "dcefee")
 	var rim := _skin_color("rim", "8fb9bd")
 	var rim_w := float(skin.get("rim_width", 1.0))
@@ -239,6 +305,13 @@ func _draw_lid(f: Node2D, top: float) -> void:
 	var lh := w * 0.2 * lid_squash
 	var y := top - lh + w * 0.03 - lid_drop * w * 2.2
 	var r := Rect2(-lw * 0.5, y, lw, lh)
+	var lid_t := Art.tex("jars/overlays/lid")
+	if lid_t:
+		# The painted lid is white: tint it to the candy (or skin metal).
+		var src := Rect2(25, 73, 270, 174)   # the lid's opaque area in the art
+		var dh := lw * src.size.y / src.size.x
+		f.draw_texture_rect_region(lid_t, Rect2(-lw * 0.5, y + lh - dh * 0.8, lw, dh), src, col.lightened(0.12))
+		return
 	f.draw_colored_polygon(DrawKit.rounded_rect(r.grow(3), w * 0.07, 5), col.darkened(0.4))
 	f.draw_colored_polygon(DrawKit.rounded_rect(r, w * 0.065, 5), col)
 	# Screw ridges and a top highlight.
@@ -257,6 +330,11 @@ func _draw_cloth(f: Node2D) -> void:
 	var a := 1.0 - t
 	var top := -body_height() - neck_height() - w * 0.16
 	var r := Rect2(-w * 0.56, top, w * 1.12, -top + w * 0.02)
+	var cloth_t := Art.tex("jars/overlays/cloth")
+	if cloth_t:
+		var src := Rect2(25, 51, 270, 219)   # the drape's opaque area in the art
+		f.draw_texture_rect_region(cloth_t, Rect2(r.position + off - Vector2(w * 0.04, 0), r.size + Vector2(w * 0.08, w * 0.06)), src, Color(1, 1, 1, a))
+		return
 	var drape := DrawKit.rounded_rect(r, w * 0.34, 8)
 	var shifted := PackedVector2Array()
 	for p in drape:
@@ -299,6 +377,16 @@ func _draw_lock(f: Node2D) -> void:
 	var t := lock_open
 	var a := 1.0 - clampf((t - 0.5) * 2.0, 0.0, 1.0)
 	var c := Vector2(0, -body_height() * 0.45 + t * w * 0.4)
+	if Art.has("jars/overlays/padlock"):
+		var ls := w * 0.86
+		var lift := minf(t * 2.0, 1.0) * w * 0.12
+		Art.draw_fit(f, "jars/overlays/padlock", Rect2(c.x - ls * 0.5, c.y - ls * 0.62 - lift, ls, ls), Color(1, 1, 1, a))
+		# Badge: which candy opens it, on the lock's body.
+		if a > 0.99:
+			var bc := c + Vector2(0, w * 0.12)
+			f.draw_circle(bc, w * 0.17, Color(1, 0.97, 0.9, 0.95), true, -1.0, true)
+			CandyArt.draw_candy(f, bc, w * 0.42, lock_type, "classic", false, false)
+		return
 	var brass := Color(Color("d6a53a"), a)
 	var brass_dark := Color(Color("8e6a1c"), a)
 	# Shackle (lifts open).

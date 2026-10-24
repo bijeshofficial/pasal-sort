@@ -40,7 +40,14 @@ const CENTRE_FIX := {
 }
 
 
+## Painted icons (assets/art/icons/<name>, a few from the UI kit).
+const PAINTED := {"coin": "ui/coin", "star": "ui/star_full", "heart": "ui/heart", "infinity": "ui/heart_infinity", "coin_pile": "ui/coin_pile", "hand": "ui/tutorial_hand", "fire": "ui/streak_flame_on"}
+
+
 func _draw() -> void:
+	var stem: String = PAINTED.get(icon, "icons/" + icon)
+	if Art.draw_fit(self, stem, Rect2(Vector2.ZERO, size), Color(1, 1, 1, color.a)):
+		return
 	var fix: Vector2 = CENTRE_FIX.get(icon, Vector2.ZERO) * minf(size.x, size.y) / 100.0
 	if shadow and not NO_SHADOW.has(icon):
 		var off := minf(size.x, size.y) * 0.06
